@@ -1161,3 +1161,8 @@ bid:
 # Settings for Test User Dashboard modules
 test_user_dashboard:
   env: dev
+
+lighthouse_health_immunization:
+  key_path: ~
+  access_token_url: 'https://sandbox-api.va.gov/oauth2/health/system/v1/token'
+  api_url: 'https://sandbox-api.va.gov/services/fhir/v0/r4'
