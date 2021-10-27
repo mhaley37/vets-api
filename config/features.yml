@@ -12,6 +12,10 @@
 # Sorted using http://yaml-sorter.herokuapp.com/
 
 features:
+  caregiver_sigi_enabled:
+    actor_type: user
+    description: Whether Self-Identifying Gender Identity is enabled for caregiver.
+    enable_in_development: true
   can_upload_10_10cg_poa:
     actor_type: cookie_id
     description: Allows users to upload POA documentation when completing the 10-10CG.
@@ -54,6 +58,10 @@ features:
     actor_type: user
     description: Enables the health care check-in experiences to use the lowest tier of authentication, i.e. last 4 and last name
     enable_in_development: true
+  check_in_experience_next_of_kin_enabled:
+    actor_type: user
+    description: Enables the health care check-in experiences to show the next of kin page.
+    enable_in_development: true
   check_in_experience_update_information_page_enabled:
     actor_type: user
     description: Enables the Update Information question in the health care check-in experience application
@@ -66,6 +74,9 @@ features:
     actor_type: user
     description: Feature gates the certificate of eligibility application
     enable_in_development: true
+  communication_preferences:
+    actor_type: user
+    description: Allow user to access backend communication_preferences API
   contact_info_change_email:
     actor_type: user
     description: Send user a notification email when their contact info changes.
@@ -154,10 +165,6 @@ features:
   facilities_ppms_suppress_pharmacies:
     actor_type: user
     description: Front End Flag to suppress the ability to search for pharmacies
-  facilities_vet_center_automate_nearby:
-    actor_type: user
-    description: Automatically fetch nearby Vet Centers on Vet Center locations pages
-    enable_in_development: true
   facility_locator_covid_vaccine_walk_in_availability_text_frontend:
     actor_type: user
     description: Enable covid vaccine walk-in availability text within covid vaccine related search results
@@ -331,6 +338,10 @@ features:
   show_financial_status_report_wizard:
     actor_type: user
     description: Enables the Wizard for VA Form 5655 (Financial Status Report)
+    enable_in_development: true
+  show_header_v2:
+    action_type: user
+    description: Enables the new header
     enable_in_development: true
   show_meb_mock_endpoints:
     actor_type: user
