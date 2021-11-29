@@ -79,7 +79,10 @@ RSpec.describe 'FacilitiesApi::V1::Ccp', type: :request, team: :facilities, vcr:
       end
 
       describe '#index' do
-        context 'Empty Results', vcr: vcr_options.merge(cassette_name: 'facilities/ppms/ppms_empty_search') do
+        context 'Empty Results', vcr: vcr_options.merge(
+          cassette_name: 'facilities/ppms/ppms_empty_search',
+          match_requests_on: [:method]
+        ) do
           it 'responds to GET #index with success even if no providers are found' do
             get '/facilities_api/v1/ccp', params: params
 
@@ -178,8 +181,8 @@ RSpec.describe 'FacilitiesApi::V1::Ccp', type: :request, team: :facilities, vcr:
             [1, 5, 6],
             [2, 5, 11],
             [3, 1, 4]
-          ].each do |(page, per_page, total_items)|
-            it "paginates ppms responses (page: #{page}, per_page: #{per_page}, total_items: #{total_items})" do
+          ].each do |(page, per_page, total_entries)|
+            it "paginates ppms responses (page: #{page}, per_page: #{per_page}, total_items: #{total_entries})" do
               params_with_pagination = params.merge(
                 page: page.to_s,
                 per_page: per_page.to_s
@@ -196,7 +199,7 @@ RSpec.describe 'FacilitiesApi::V1::Ccp', type: :request, team: :facilities, vcr:
 
               expect(client).to receive(mock_method).and_return(
                 FacilitiesApi::V1::PPMS::Response.new(
-                  FactoryBot.build_list(:facilities_api_v1_ppms_provider, total_items).collect(&:attributes),
+                  FactoryBot.build_list(:facilities_api_v1_ppms_provider, total_entries).collect(&:attributes),
                   params_with_pagination
                 ).providers
               )
@@ -210,7 +213,8 @@ RSpec.describe 'FacilitiesApi::V1::Ccp', type: :request, team: :facilities, vcr:
                   'current_page' => page,
                   'prev_page' => prev_page,
                   'next_page' => page + 1,
-                  'total_pages' => page + 1
+                  'total_pages' => page + 1,
+                  'total_entries' => total_entries
                 }
               )
             end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_29_224522) do
+ActiveRecord::Schema.define(version: 2021_11_23_181757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -29,10 +29,12 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "current_verification"
+    t.datetime "logingov_at"
     t.index ["account_id"], name: "index_account_login_stats_on_account_id", unique: true
     t.index ["current_verification"], name: "index_account_login_stats_on_current_verification"
     t.index ["dslogon_at"], name: "index_account_login_stats_on_dslogon_at"
     t.index ["idme_at"], name: "index_account_login_stats_on_idme_at"
+    t.index ["logingov_at"], name: "index_account_login_stats_on_logingov_at"
     t.index ["myhealthevet_at"], name: "index_account_login_stats_on_myhealthevet_at"
   end
 
@@ -174,6 +176,7 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.text "form_data_ciphertext"
     t.text "auth_headers_ciphertext"
     t.text "encrypted_kms_key"
+    t.boolean "evidence_submission_indicated"
   end
 
   create_table "async_transactions", id: :serial, force: :cascade do |t|
@@ -482,6 +485,8 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.string "error_class"
     t.string "error_message"
     t.datetime "updated_at", null: false
+    t.jsonb "bgjob_errors", default: {}
+    t.index ["bgjob_errors"], name: "index_form526_job_statuses_on_bgjob_errors", using: :gin
     t.index ["form526_submission_id"], name: "index_form526_job_statuses_on_form526_submission_id"
     t.index ["job_id"], name: "index_form526_job_statuses_on_job_id", unique: true
   end
@@ -603,6 +608,15 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["icn"], name: "index_mobile_users_on_icn", unique: true
+  end
+
+  create_table "mobile_vaccines", force: :cascade do |t|
+    t.integer "cvx_code", null: false
+    t.string "group_name", null: false
+    t.string "manufacturer"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["cvx_code"], name: "index_mobile_vaccines_on_cvx_code", unique: true
   end
 
   create_table "notifications", id: :serial, force: :cascade do |t|
@@ -740,6 +754,27 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.index ["user_uuid"], name: "index_terms_and_conditions_acceptances_on_user_uuid"
   end
 
+  create_table "test_user_dashboard_tud_account_availability_logs", force: :cascade do |t|
+    t.string "account_uuid"
+    t.datetime "checkout_time"
+    t.datetime "checkin_time"
+    t.boolean "has_checkin_error"
+    t.boolean "is_manual_checkin"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["account_uuid"], name: "tud_account_availability_logs"
+  end
+
+  create_table "test_user_dashboard_tud_account_checkouts", force: :cascade do |t|
+    t.string "account_uuid"
+    t.datetime "checkout_time"
+    t.datetime "checkin_time"
+    t.boolean "has_checkin_error"
+    t.boolean "is_manual_checkin"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "test_user_dashboard_tud_accounts", force: :cascade do |t|
     t.string "account_uuid"
     t.string "first_name"
@@ -758,7 +793,6 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.string "id_type"
     t.string "loa"
     t.string "account_type"
-
     t.uuid "idme_uuid"
     t.text "notes"
   end
@@ -783,7 +817,7 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.index ["idme_uuid"], name: "index_user_verifications_on_idme_uuid", unique: true
     t.index ["logingov_uuid"], name: "index_user_verifications_on_logingov_uuid", unique: true
     t.index ["mhv_uuid"], name: "index_user_verifications_on_mhv_uuid", unique: true
-    t.index ["user_account_id"], name: "index_user_verifications_on_user_account_id", unique: true
+    t.index ["user_account_id"], name: "index_user_verifications_on_user_account_id"
     t.index ["verified_at"], name: "index_user_verifications_on_verified_at"
   end
 
@@ -879,6 +913,7 @@ ActiveRecord::Schema.define(version: 2021_10_29_224522) do
     t.text "dob_ciphertext"
     t.text "encrypted_kms_key"
     t.index ["representative_id", "first_name", "last_name"], name: "index_vso_grp", unique: true
+    t.check_constraint "representative_id IS NOT NULL", name: "veteran_representatives_representative_id_null"
   end
 
   create_table "vic_submissions", id: :serial, force: :cascade do |t|

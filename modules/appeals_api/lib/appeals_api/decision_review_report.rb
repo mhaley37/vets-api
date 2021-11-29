@@ -17,7 +17,15 @@ module AppealsApi
     end
 
     def faulty_hlr
-      @faulty_hlr ||= HigherLevelReview.where(created_at: from..to, status: FAULTY_STATUSES)
+      @faulty_hlr ||= HigherLevelReview.where(created_at: from..to, status: FAULTY_STATUSES).order(created_at: :desc)
+    end
+
+    def stuck_hlr
+      @stuck_hlr ||= stuck_records(HigherLevelReview, HlrStatus)
+    end
+
+    def total_hlr_successes
+      @total_hlr_successes ||= total_success_count(HigherLevelReview)
     end
 
     # NOD
@@ -26,7 +34,15 @@ module AppealsApi
     end
 
     def faulty_nod
-      @faulty_nod ||= NoticeOfDisagreement.where(created_at: from..to, status: FAULTY_STATUSES)
+      @faulty_nod ||= NoticeOfDisagreement.where(created_at: from..to, status: FAULTY_STATUSES).order(created_at: :desc)
+    end
+
+    def stuck_nod
+      @stuck_nod ||= stuck_records(NoticeOfDisagreement, NodStatus, 1.month.ago)
+    end
+
+    def total_nod_successes
+      @total_nod_successes ||= total_success_count(NoticeOfDisagreement)
     end
 
     # SC
@@ -35,7 +51,15 @@ module AppealsApi
     end
 
     def faulty_sc
-      @faulty_sc ||= SupplementalClaim.where(created_at: from..to, status: FAULTY_STATUSES)
+      @faulty_sc ||= SupplementalClaim.where(created_at: from..to, status: FAULTY_STATUSES).order(created_at: :desc)
+    end
+
+    def stuck_sc
+      @stuck_sc = stuck_records(SupplementalClaim, ScStatus)
+    end
+
+    def total_sc_successes
+      @total_sc_successes ||= total_success_count(SupplementalClaim)
     end
 
     # Evidence submissions - NOD
@@ -80,6 +104,16 @@ module AppealsApi
         .each { |status, record_list| statuses[status] = record_list.size }
 
       statuses
+    end
+
+    def total_success_count(record_type)
+      record_type.where(status: 'success').count
+    end
+
+    def stuck_records(record_type, status_class, timeframe = 1.week.ago)
+      record_type.where('updated_at < ?', timeframe.beginning_of_day)
+                 .where(status: status_class::STATUSES - status_class::COMPLETE_STATUSES)
+                 .order(created_at: :desc)
     end
   end
 end
