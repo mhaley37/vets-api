@@ -8,7 +8,7 @@ RSpec.describe 'IntentToFiles', type: :request do
   describe 'IntentToFiles' do
     describe 'type' do
       let(:type) { 'compensation' }
-      let(:itf_type_path) { "/services/benefits/v2/veterans/#{veteran_id}/intent-to-files/#{type}" }
+      let(:itf_type_path) { "/services/benefits/v2/veterans/#{veteran_id}/intent_to_files/#{type}" }
       let(:scopes) { %w[claim.read] }
 
       describe 'auth header' do

@@ -4,7 +4,7 @@ require 'swagger_helper'
 require 'rails_helper'
 
 describe 'IntentToFile', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/swagger.json' do
-  path '/veterans/{veteranId}/intent-to-files/{type}' do
+  path '/veterans/{veteranId}/intent_to_files/{type}' do
     get "Returns last active Intent to File form submission for given 'type'." do
       tags 'Intent to File'
       operationId 'active0966itf'

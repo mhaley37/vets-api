@@ -384,7 +384,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
               expect(::Veteran::Service::Representative).to receive(:where).and_return(
                 [OpenStruct.new(user_types: user_types)]
               )
-              expect(::Veteran::Service::Organization).to receive(:find_by).and_return(
+              allow(::Veteran::Service::Organization).to receive(:find_by).and_return(
                 OpenStruct.new(name: 'Some Great Organization', phone: '555-555-5555')
               )
 
