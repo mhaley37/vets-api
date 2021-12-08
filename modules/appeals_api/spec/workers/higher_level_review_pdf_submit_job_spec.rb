@@ -25,7 +25,7 @@ RSpec.describe AppealsApi::HigherLevelReviewPdfSubmitJob, type: :job do
     allow(faraday_response).to receive(:body).and_return('')
     allow(faraday_response).to receive(:success?).and_return(true)
     capture_body = nil
-    allow(client_stub).to receive(:upload) { |arg|
+    expect(client_stub).to receive(:upload) { |arg|
       capture_body = arg
       faraday_response
     }
@@ -45,7 +45,7 @@ RSpec.describe AppealsApi::HigherLevelReviewPdfSubmitJob, type: :job do
     allow(faraday_response).to receive(:body).and_return('')
     allow(faraday_response).to receive(:success?).and_return(false)
     capture_body = nil
-    allow(client_stub).to receive(:upload) { |arg|
+    expect(client_stub).to receive(:upload) { |arg|
       capture_body = arg
       faraday_response
     }
@@ -70,7 +70,7 @@ RSpec.describe AppealsApi::HigherLevelReviewPdfSubmitJob, type: :job do
     end
 
     it 'puts the HLR into an error state' do
-      allow(client_stub).to receive(:upload) { |_arg| faraday_response }
+      expect(client_stub).to receive(:upload) { |_arg| faraday_response }
       messager_instance = instance_double(AppealsApi::Slack::Messager)
       allow(AppealsApi::Slack::Messager).to receive(:new).and_return(messager_instance)
       allow(messager_instance).to receive(:notify!).and_return(true)
@@ -80,7 +80,7 @@ RSpec.describe AppealsApi::HigherLevelReviewPdfSubmitJob, type: :job do
     end
 
     it 'sends a retry notification' do
-      allow(client_stub).to receive(:upload) { |_arg| faraday_response }
+      expect(client_stub).to receive(:upload) { |_arg| faraday_response }
       messager_instance = instance_double(AppealsApi::Slack::Messager)
       allow(AppealsApi::Slack::Messager).to receive(:new).and_return(messager_instance)
       allow(messager_instance).to receive(:notify!).and_return(true)

@@ -180,8 +180,8 @@ RSpec/MultipleMemoizedHelpers:
   Max: 37
 
 # Offense count: 585
-RSpec/StubbedMock:
-  Enabled: false
+# RSpec/StubbedMock:
+#   Enabled: false
 
 # Offense count: 4
 # Configuration parameters: ForbiddenMethods, AllowedMethods.
