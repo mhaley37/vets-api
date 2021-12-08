@@ -32,7 +32,7 @@ describe CovidVaccine::V0::EnrollmentUploadService do
       with_settings(Settings.covid_vaccine.enrollment_service.sftp, host: host, username: username,
                                                                     password: password, port: port) do
         allow(Net::SFTP).to receive(:start).with(host, username, password: password,
-                                                                  port: port).and_yield(sftp_connection_double)
+                                                                 port: port).and_yield(sftp_connection_double)
         expect(sftp_connection_double)
           .to receive(:upload!).with(subject.io, file_name, name: file_name, progress: instance_of(handler))
         subject.upload
