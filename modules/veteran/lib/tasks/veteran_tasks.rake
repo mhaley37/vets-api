@@ -21,7 +21,7 @@ namespace :veteran do
       first_name: 'Tamara',
       last_name: 'Ellis',
       email: 'va.api.user+idme.001@gmail.com',
-      user_types: ['attorney', 'veteran_service_officer']
+      user_types: %w[attorney veteran_service_officer]
     )
     Veteran::Service::Representative.create(
       representative_id: '12345',
@@ -29,7 +29,7 @@ namespace :veteran do
       first_name: 'John',
       last_name: 'Doe',
       email: 'va.api.user+idme.007@gmail.com',
-      user_types: ['attorney', 'veteran_service_officer']
+      user_types: %w[attorney veteran_service_officer]
     )
   end
 end
