@@ -62,6 +62,10 @@ features:
     actor_type: user
     description: Enables the health care check-in experiences to show the next of kin page.
     enable_in_development: true
+  check_in_experience_emergency_contact_enabled:
+    actor_type: user
+    description: Enables the health care check-in experiences to show the emergency contact page.
+    enable_in_development: true
   check_in_experience_pre_check_in_enabled:
     actor_type: user
     description: Enables the health care check-in experiences to show the pre-check-in experience.
@@ -148,6 +152,10 @@ features:
   direct_deposit_vanotify:
     actor_type: user
     description: Send direct deposit emails using VaNotify service
+  disability_hypertension_compensation_fast_track:
+    actor_type: user
+    description: Fast tracks 526 disability compensation claims by submitting additional health data
+    enable_in_development: true
   disability_compensation_flashes:
     actor_type: user
     description: enables sending flashes to BGS for disability_compensation submissions.
@@ -269,7 +277,7 @@ features:
   gibct_school_ratings:
     actor_type: user
     description: Show/Hide the school ratings section of the Comparison Tool School Profile Page.
-  gi_sandbox_comparision_tool_toggle:
+  gi_sandbox_comparison_tool_toggle:
     actor_type: user
     description: Shows gi-bill-comparison-tool-sandbox CT if active else shows the gi-bill-comparison-tool CT.
     enable_in_development: true
@@ -517,6 +525,10 @@ features:
     actor_type: user
     enable_in_development: true
     description: Toggle for VAOS community care flow iterations.
+  va_online_scheduling_poc_health_apt:
+    actor_type: user
+    enable_in_development: true
+    description: Toggle for health apartment proof of concept   
   va_view_dependents_access:
     actor_type: user
     description: Allows us to gate the View/ Modify dependents content in a progressive rollout

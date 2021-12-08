@@ -115,7 +115,7 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
 
         let(:sc_body) do
           request_body = JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995.json')))
-          request_body['data']['attributes'].delete('noticeAcknowledgement')
+          request_body['data']['attributes'].delete('5103NoticeAcknowledged')
           request_body
         end
 
@@ -299,28 +299,8 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
         let(:sc_uuid) { FactoryBot.create(:supplemental_claim).id }
         let(:'X-VA-SSN') { '000000000' }
 
-        schema type: :object,
-               properties: {
-                 title: {
-                   type: 'string',
-                   enum: [
-                     'unprocessable_entity'
-                   ],
-                   example: 'unprocessable_entity'
-                 },
-                 detail: {
-                   type: 'string',
-                   enum: [
-                     "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                   ],
-                   example: "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                 },
-                 status: {
-                   type: 'integer',
-                   description: 'Standard HTTP error response code.',
-                   example: 422
-                 }
-               }
+        schema '$ref' => '#/components/schemas/errorModel'
+
         before do |example|
           submit_request(example.metadata)
         end
