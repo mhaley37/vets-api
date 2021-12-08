@@ -265,7 +265,7 @@ RSpec.describe 'Disability Claims ', type: :request do
     end
 
     it 'responds with a 422 when unknown error' do
-      expect(ClaimsApi::ClaimUploader).to receive(:perform_async).and_raise(Common::Exceptions::UnprocessableEntity)
+      allow(ClaimsApi::ClaimUploader).to receive(:perform_async).and_raise(Common::Exceptions::UnprocessableEntity)
       put "/services/claims/v0/forms/526/#{auto_claim.id}", params: binary_params, headers: headers
       expect(response.status).to eq(422)
     end

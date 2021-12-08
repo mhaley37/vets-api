@@ -25,7 +25,7 @@ RSpec.describe 'IntentToFiles', type: :request do
         context 'when provided' do
           it 'returns a 200' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )
@@ -74,7 +74,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
             it 'returns a 200' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::IntentToFileWebService)
+                allow_any_instance_of(BGS::IntentToFileWebService)
                   .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                     stub_response
                   )
@@ -90,7 +90,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
             it 'returns a 200' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::IntentToFileWebService)
+                allow_any_instance_of(BGS::IntentToFileWebService)
                   .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                     stub_response
                   )
@@ -106,7 +106,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
             it 'returns a 200' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::IntentToFileWebService)
+                allow_any_instance_of(BGS::IntentToFileWebService)
                   .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                     stub_response
                   )
@@ -122,7 +122,7 @@ RSpec.describe 'IntentToFiles', type: :request do
       context 'when no record is found in BGS' do
         it 'returns a 404' do
           with_okta_user(scopes) do |auth_header|
-            expect_any_instance_of(BGS::IntentToFileWebService)
+            allow_any_instance_of(BGS::IntentToFileWebService)
               .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                 nil
               )
@@ -156,7 +156,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
           it 'chooses the first non-expired ITF' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )
@@ -192,7 +192,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
           it 'returns 404' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )
@@ -226,7 +226,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
           it 'returns 404' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )
@@ -253,7 +253,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
           it 'returns a 404' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )
@@ -278,7 +278,7 @@ RSpec.describe 'IntentToFiles', type: :request do
 
           it 'returns a 404' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(
                   stub_response
                 )

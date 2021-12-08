@@ -549,9 +549,9 @@ describe 'Power of Attorney', swagger_doc: 'modules/claims_api/app/swagger/claim
             with_okta_user(scopes) do
               allow(BGS::PowerOfAttorneyVerifier).to receive(:new).and_return(bgs_poa_verifier)
               allow(::Veteran::Service::Representative).to receive(:for_user).and_return(true)
-              expect(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new('HelloWorld'))
-              expect(bgs_poa_verifier).to receive(:previous_poa_code).and_return(nil)
-              expect_any_instance_of(
+              allow(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new('HelloWorld'))
+              allow(bgs_poa_verifier).to receive(:previous_poa_code).and_return(nil)
+              allow_any_instance_of(
                 ClaimsApi::V1::Forms::PowerOfAttorneyController
               ).to receive(:build_representative_info).and_return(representative_info)
               submit_request(example.metadata)
@@ -618,7 +618,7 @@ describe 'Power of Attorney', swagger_doc: 'modules/claims_api/app/swagger/claim
             with_okta_user(scopes) do
               allow(BGS::PowerOfAttorneyVerifier).to receive(:new).and_return(bgs_poa_verifier)
               allow(::Veteran::Service::Representative).to receive(:for_user).and_return(true)
-              expect(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new(nil))
+              allow(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new(nil))
               submit_request(example.metadata)
             end
           end

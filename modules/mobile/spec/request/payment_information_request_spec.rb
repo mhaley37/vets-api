@@ -224,7 +224,7 @@ RSpec.describe 'payment_information', type: :request do
 
           it 'logs a message to Sentry' do
             VCR.use_cassette('evss/ppiu/update_payment_information') do
-              expect_any_instance_of(User).to receive(:all_emails).and_return([])
+              allow_any_instance_of(User).to receive(:all_emails).and_return([])
               expect(Raven).to receive(:capture_message).once
 
               put '/mobile/v0/payment-information/benefits', params: payment_info_request,

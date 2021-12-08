@@ -17,7 +17,7 @@ RSpec.describe CovidVaccine::RegistrationEmailJob, type: :worker do
       with_settings(
         Settings.vanotify.services.va_gov, { api_key: test_service_api_key }
       ) do
-        expect(VaNotify::Service).to receive(:new).with(test_service_api_key).and_return(instance)
+        allow(VaNotify::Service).to receive(:new).with(test_service_api_key).and_return(instance)
         described_class.new.perform(email, date, confirmation_id)
       end
     end

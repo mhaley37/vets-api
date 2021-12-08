@@ -146,7 +146,7 @@ describe 'Intent to file', swagger_doc: 'modules/claims_api/app/swagger/claims_a
             stub_mpi
 
             with_okta_user(scopes) do
-              expect_any_instance_of(
+              allow_any_instance_of(
                 ClaimsApi::V1::Forms::IntentToFileController
               ).to receive(:veteran_submitting_burial_itf?).and_return(true)
               VCR.use_cassette('bgs/intent_to_file_web_service/insert_intent_to_file') do

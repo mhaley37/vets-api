@@ -75,9 +75,9 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'confirms veteran status for persons with a title38 status of V1' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
-        expect_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
           .and_return(veteran_status_response)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -85,9 +85,9 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm for title38 status codes other than V1' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
-        expect_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
           .and_return(non_veteran_status_response)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -95,7 +95,7 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'raises an exception if MVI returns a server error' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(server_error_mvi_profile)
 
         expect do
@@ -104,7 +104,7 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm if a profile is not found in MVI' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(not_found_mvi_profile)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -113,10 +113,10 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm if EMIS returns an error response' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
 
-        expect_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
           .and_return(emis_error)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -125,10 +125,10 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm if EMIS returns an empty response' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
 
-        expect_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::VeteranStatusService).to receive(:get_veteran_status)
           .and_return(empty_veteran_status_response)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -148,9 +148,9 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'confirms veteran status for persons with a title38 status of V1' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
-        expect_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
           .and_return(veteran_status_response)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -158,9 +158,9 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm for title38 status codes other than V1' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
-        expect_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
           .and_return(non_veteran_status_response)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -168,7 +168,7 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'raises an exception if MVI returns a server error' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(server_error_mvi_profile)
 
         expect do
@@ -177,7 +177,7 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm if a profile is not found in MVI' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(not_found_mvi_profile)
 
         result = subject.get_by_attributes(valid_attributes)
@@ -186,10 +186,10 @@ RSpec.describe VeteranConfirmation::StatusService do
       end
 
       it 'does not confirm if EMIS returns an error response' do
-        expect_any_instance_of(MPI::AttrService).to receive(:find_profile)
+        allow_any_instance_of(MPI::AttrService).to receive(:find_profile)
           .and_return(mvi_profile)
 
-        expect_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
+        allow_any_instance_of(EMIS::MockVeteranStatusService).to receive(:get_veteran_status)
           .and_return(emis_error)
 
         result = subject.get_by_attributes(valid_attributes)

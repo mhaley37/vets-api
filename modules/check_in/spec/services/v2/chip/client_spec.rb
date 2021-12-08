@@ -42,7 +42,7 @@ describe V2::Chip::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:post).with('/dev/token').and_yield(Faraday::Request.new)
+      allow_any_instance_of(Faraday::Connection).to receive(:post).with('/dev/token').and_yield(Faraday::Request.new)
 
       subject.token
     end
@@ -62,7 +62,7 @@ describe V2::Chip::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:post)
+      allow_any_instance_of(Faraday::Connection).to receive(:post)
         .with("/dev/actions/check-in/#{uuid}").and_yield(Faraday::Request.new)
 
       subject.check_in_appointment(token: token, appointment_ien: appointment_ien)
@@ -83,7 +83,7 @@ describe V2::Chip::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:post)
+      allow_any_instance_of(Faraday::Connection).to receive(:post)
         .with("/dev/actions/refresh-appointments/#{uuid}").and_yield(Faraday::Request.new)
 
       subject.refresh_appointments(token: token, identifier_params: identifier_params)
@@ -115,7 +115,7 @@ describe V2::Chip::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:post)
+      allow_any_instance_of(Faraday::Connection).to receive(:post)
         .with("/dev/actions/pre-checkin/#{uuid}").and_yield(Faraday::Request.new)
 
       subject.pre_check_in(token: token, demographic_confirmations: demographic_confirmations)

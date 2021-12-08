@@ -41,7 +41,7 @@ RSpec.describe 'Covid Vaccine Expanded Registration', type: :request do
 
     context 'when encountering an Internal Server Error' do
       it 'raises a BackendServiceException' do
-        expect(CovidVaccine::V0::ExpandedRegistrationSubmission).to receive(:create!)
+        allow(CovidVaccine::V0::ExpandedRegistrationSubmission).to receive(:create!)
           .and_raise(ActiveRecord::RecordInvalid.new(nil))
         post '/covid_vaccine/v0/expanded_registration', params: { registration: registration_attributes }
 

@@ -45,7 +45,7 @@ describe CovidVaccine::V0::RegistrationService do
   describe '#register', vcr: vcr_options do
     context 'unauthenticated' do
       it 'coerces input to vetext format' do
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .with(hash_including(:first_name,
                                :last_name,
                                :patient_ssn,
@@ -60,7 +60,7 @@ describe CovidVaccine::V0::RegistrationService do
                                :sta3n,
                                :authenticated))
           .and_return({ sid: SecureRandom.uuid })
-        expect_any_instance_of(MPI::Service).to receive(:find_profile)
+        allow_any_instance_of(MPI::Service).to receive(:find_profile)
           .and_return(mvi_profile_response)
 
         expect { subject.register(submission, 'unauthenticated') }
@@ -68,10 +68,10 @@ describe CovidVaccine::V0::RegistrationService do
       end
 
       it 'passes authenticated attribute as false' do
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .with(hash_including(authenticated: false))
           .and_return({ sid: SecureRandom.uuid })
-        expect_any_instance_of(MPI::Service).to receive(:find_profile)
+        allow_any_instance_of(MPI::Service).to receive(:find_profile)
           .and_return(mvi_profile_response)
         expect { subject.register(submission, 'unauthenticated') }
           .to change(CovidVaccine::RegistrationEmailJob.jobs, :size).by(1)
@@ -79,9 +79,9 @@ describe CovidVaccine::V0::RegistrationService do
 
       it 'updates submission record' do
         sid = SecureRandom.uuid
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .and_return({ sid: sid })
-        expect_any_instance_of(MPI::Service).to receive(:find_profile)
+        allow_any_instance_of(MPI::Service).to receive(:find_profile)
           .and_return(mvi_profile_response)
 
         expect { subject.register(submission, 'unauthenticated') }
@@ -91,9 +91,9 @@ describe CovidVaccine::V0::RegistrationService do
 
       context 'with sufficient traits' do
         it 'injects user traits from MPI when found' do
-          expect_any_instance_of(MPI::Service).to receive(:find_profile)
+          allow_any_instance_of(MPI::Service).to receive(:find_profile)
             .and_return(mvi_profile_response)
-          expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+          allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
             .with(hash_including(first_name: mvi_profile.given_names&.first))
             .and_return({ sid: SecureRandom.uuid })
           expect { subject.register(submission, 'unauthenticated') }
@@ -101,9 +101,9 @@ describe CovidVaccine::V0::RegistrationService do
         end
 
         it 'proceeds without traits from MPI when not found' do
-          expect_any_instance_of(MPI::Service).to receive(:find_profile)
+          allow_any_instance_of(MPI::Service).to receive(:find_profile)
             .and_return(mvi_profile_not_found)
-          expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+          allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
             .with(hash_including(first_name: submission.raw_form_data['first_name']))
             .and_return({ sid: SecureRandom.uuid })
           expect { subject.register(submission, 'unauthenticated') }
@@ -113,7 +113,7 @@ describe CovidVaccine::V0::RegistrationService do
 
       context 'with insufficient traits' do
         it 'omits MPI query' do
-          expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+          allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
             .and_return({ sid: SecureRandom.uuid })
           expect_any_instance_of(MPI::Service).not_to receive(:find_profile)
           expect { subject.register(insufficient_submission, 'unauthenticated') }
@@ -129,7 +129,7 @@ describe CovidVaccine::V0::RegistrationService do
         end
 
         it 'omits MPI query' do
-          expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+          allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
             .and_return({ sid: SecureRandom.uuid })
           expect_any_instance_of(MPI::Service).not_to receive(:find_profile)
           expect { subject.register(bad_date_submission, 'unauthenticated') }
@@ -142,7 +142,7 @@ describe CovidVaccine::V0::RegistrationService do
       let(:user) { build(:user, :mhv) }
 
       it 'uses traits from proofed user' do
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .with(hash_including(first_name: loa3_submission.raw_form_data['first_name']))
           .and_return({ sid: SecureRandom.uuid })
         expect { subject.register(loa3_submission, 'loa3') }
@@ -151,7 +151,7 @@ describe CovidVaccine::V0::RegistrationService do
 
       it 'omits MPI query' do
         expect_any_instance_of(MPI::Service).not_to receive(:find_profile)
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .and_return({ sid: SecureRandom.uuid })
         expect { subject.register(loa3_submission, 'loa3') }
           .to change(CovidVaccine::RegistrationEmailJob.jobs, :size).by(1)
@@ -159,7 +159,7 @@ describe CovidVaccine::V0::RegistrationService do
 
       it 'passes authenticated attribute as true' do
         expect_any_instance_of(MPI::Service).not_to receive(:find_profile)
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .with(hash_including(authenticated: true))
           .and_return({ sid: SecureRandom.uuid })
         expect { subject.register(loa3_submission, 'loa3') }
@@ -172,9 +172,9 @@ describe CovidVaccine::V0::RegistrationService do
 
       context 'with sufficient traits' do
         it 'injects user traits from MPI when found' do
-          expect_any_instance_of(MPI::Service).to receive(:find_profile)
+          allow_any_instance_of(MPI::Service).to receive(:find_profile)
             .and_return(mvi_profile_response)
-          expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+          allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
             .with(hash_including(first_name: mvi_profile.given_names&.first))
             .and_return({ sid: SecureRandom.uuid })
           expect { subject.register(submission, 'loa1') }
@@ -183,10 +183,10 @@ describe CovidVaccine::V0::RegistrationService do
       end
 
       it 'passes authenticated attribute as false' do
-        expect_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
+        allow_any_instance_of(CovidVaccine::V0::VetextService).to receive(:put_vaccine_registry)
           .with(hash_including(authenticated: false))
           .and_return({ sid: SecureRandom.uuid })
-        expect_any_instance_of(MPI::Service).to receive(:find_profile)
+        allow_any_instance_of(MPI::Service).to receive(:find_profile)
           .and_return(mvi_profile_response)
         expect { subject.register(submission, 'loa1') }
           .to change(CovidVaccine::RegistrationEmailJob.jobs, :size).by(1)

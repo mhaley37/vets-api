@@ -22,10 +22,10 @@ RSpec.describe 'Veteran Identifier Endpoint', type: :request do
       context 'when veteran icn is found' do
         context 'when user is a Veteran representative' do
           it 'returns an id' do
-            expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+            allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
             allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
             allow(veteran_mpi_data).to receive(:icn).and_return(test_user_icn)
-            expect(::Veteran::Service::Representative).to receive(:find_by).and_return(true)
+            allow(::Veteran::Service::Representative).to receive(:find_by).and_return(true)
             with_okta_user(scopes) do |auth_header|
               post path, params: data, headers: auth_header
               icn = JSON.parse(response.body)['id']
@@ -53,7 +53,7 @@ RSpec.describe 'Veteran Identifier Endpoint', type: :request do
           end
 
           it 'returns an id' do
-            expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+            allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
             allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
             allow(veteran_mpi_data).to receive(:icn).and_return(test_user_icn)
             with_okta_user(scopes) do |auth_header|
@@ -88,7 +88,7 @@ RSpec.describe 'Veteran Identifier Endpoint', type: :request do
 
     context 'when veteran icn cannot be found' do
       it 'returns a 404' do
-        expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+        allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
         allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
         allow(veteran_mpi_data).to receive(:icn).and_return(nil)
         with_okta_user(scopes) do |auth_header|
@@ -177,10 +177,10 @@ RSpec.describe 'Veteran Identifier Endpoint', type: :request do
     context 'when request is forbidden' do
       context 'when user is not a Veteran representative, nor the matching Veteran' do
         it 'reutrns a 403 forbidden response' do
-          expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+          allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
           allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
           allow(veteran_mpi_data).to receive(:icn).and_return(test_user_icn)
-          expect(::Veteran::Service::Representative).to receive(:find_by).and_return(nil)
+          allow(::Veteran::Service::Representative).to receive(:find_by).and_return(nil)
           with_okta_user(scopes) do |auth_header|
             post path, params: data, headers: auth_header
 

@@ -42,7 +42,7 @@ describe V2::Lorota::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:post).with(anything).and_yield(Faraday::Request.new)
+      allow_any_instance_of(Faraday::Connection).to receive(:post).with(anything).and_yield(Faraday::Request.new)
 
       subject.token
     end
@@ -63,7 +63,7 @@ describe V2::Lorota::Client do
     end
 
     it 'yields to block' do
-      expect_any_instance_of(Faraday::Connection).to receive(:get).with(anything).and_yield(Faraday::Request.new)
+      allow_any_instance_of(Faraday::Connection).to receive(:get).with(anything).and_yield(Faraday::Request.new)
 
       subject.data(token: token)
     end

@@ -15,13 +15,13 @@ RSpec.describe 'Claims', type: :request do
         context 'when provided' do
           it 'returns a 200' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(
                   benefit_claims_dto: {
                     benefit_claim: []
                   }
                 )
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return([])
 
               get all_claims_path, headers: auth_header
@@ -45,9 +45,9 @@ RSpec.describe 'Claims', type: :request do
           context 'when current user is not a representative of the target veteran' do
             it 'returns a 403' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(ClaimsApi::V2::ApplicationController)
+                allow_any_instance_of(ClaimsApi::V2::ApplicationController)
                   .to receive(:user_is_target_veteran?).and_return(false)
-                expect_any_instance_of(ClaimsApi::V2::ApplicationController)
+                allow_any_instance_of(ClaimsApi::V2::ApplicationController)
                   .to receive(:user_represents_veteran?).and_return(false)
 
                 get all_claims_path, headers: auth_header
@@ -73,13 +73,13 @@ RSpec.describe 'Claims', type: :request do
         context 'when known veteran_id is provided' do
           it 'returns a 200' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(
                   benefit_claims_dto: {
                     benefit_claim: []
                   }
                 )
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return([])
 
               get all_claims_path, headers: auth_header
@@ -93,7 +93,7 @@ RSpec.describe 'Claims', type: :request do
 
           it 'returns a 403 error code' do
             with_okta_user(scopes) do |auth_header|
-              expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+              allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
 
               get all_claims_path, headers: auth_header
               expect(response.status).to eq(403)
@@ -131,9 +131,9 @@ RSpec.describe 'Claims', type: :request do
 
             it 'returns a collection that contains the claim with the Lighthouse id, BGS type, & BGS status' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_claims)
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:where).and_return(lighthouse_claims)
 
                 get all_claims_path, headers: auth_header
@@ -177,9 +177,9 @@ RSpec.describe 'Claims', type: :request do
 
             it 'returns a collection that contains both Lighthouse claim and BGS claim' do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_claims)
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:where).and_return(lighthouse_claims)
 
                 get all_claims_path, headers: auth_header
@@ -214,9 +214,9 @@ RSpec.describe 'Claims', type: :request do
 
           it 'returns a collection that contains the BGS claims' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_claims)
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return(lighthouse_claims)
 
               get all_claims_path, headers: auth_header
@@ -251,9 +251,9 @@ RSpec.describe 'Claims', type: :request do
 
           it 'returns a collection that contains the Lighthouse claims' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_claims)
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return(lighthouse_claims)
 
               get all_claims_path, headers: auth_header
@@ -280,9 +280,9 @@ RSpec.describe 'Claims', type: :request do
 
           it 'returns an empty collection' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_claims)
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return(lighthouse_claims)
 
               get all_claims_path, headers: auth_header
@@ -311,9 +311,9 @@ RSpec.describe 'Claims', type: :request do
         context 'when current user is not a representative of the target veteran' do
           it 'returns a 403' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(ClaimsApi::V2::ApplicationController)
+              allow_any_instance_of(ClaimsApi::V2::ApplicationController)
                 .to receive(:user_is_target_veteran?).and_return(false)
-              expect_any_instance_of(ClaimsApi::V2::ApplicationController)
+              allow_any_instance_of(ClaimsApi::V2::ApplicationController)
                 .to receive(:user_represents_veteran?).and_return(false)
 
               get claim_by_id_path, headers: auth_header
@@ -329,7 +329,7 @@ RSpec.describe 'Claims', type: :request do
         context 'when a Lighthouse claim does not exist' do
           it 'returns a 404' do
             with_okta_user(scopes) do |auth_header|
-              expect(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
+              allow(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
 
               get claim_by_id_path, headers: auth_header
 
@@ -353,9 +353,9 @@ RSpec.describe 'Claims', type: :request do
 
             it 'returns the Lighthouse claim' do
               with_okta_user(scopes) do |auth_header|
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:get_by_id_or_evss_id).and_return(lighthouse_claim)
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(bgs_claim)
 
                 get claim_by_id_path, headers: auth_header
@@ -384,9 +384,9 @@ RSpec.describe 'Claims', type: :request do
 
             it "returns a claim with the Lighthouse 'id', BGS 'type', & BGS 'status'" do
               with_okta_user(scopes) do |auth_header|
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:get_by_id_or_evss_id).and_return(lighthouse_claim)
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(bgs_claim)
 
                 get claim_by_id_path, headers: auth_header
@@ -409,7 +409,7 @@ RSpec.describe 'Claims', type: :request do
         context 'when a BGS claim does not exist' do
           it 'returns a 404' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(nil)
 
               get claim_by_id_path, headers: auth_header
@@ -444,9 +444,9 @@ RSpec.describe 'Claims', type: :request do
 
             it "returns a claim with the Lighthouse 'id' and the BGS 'type'" do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(bgs_claim)
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:get_by_id_or_evss_id).and_return(lighthouse_claim)
 
                 get claim_by_id_path, headers: auth_header
@@ -464,9 +464,9 @@ RSpec.describe 'Claims', type: :request do
           context 'and a Lighthouse claim does not exit' do
             it "returns a claim with the BGS 'id'" do
               with_okta_user(scopes) do |auth_header|
-                expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+                allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                   .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(bgs_claim)
-                expect(ClaimsApi::AutoEstablishedClaim)
+                allow(ClaimsApi::AutoEstablishedClaim)
                   .to receive(:get_by_id_or_evss_id).and_return(nil)
 
                 get claim_by_id_path, headers: auth_header

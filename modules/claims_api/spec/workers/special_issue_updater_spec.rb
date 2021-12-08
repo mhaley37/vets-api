@@ -29,7 +29,7 @@ RSpec.describe ClaimsApi::SpecialIssueUpdater, type: :job do
     let(:claims) { { benefit_claims: [] } }
 
     it 'job fails and retries later' do
-      expect_any_instance_of(BGS::ContentionService).to receive(:find_contentions_by_ptcpnt_id)
+      allow_any_instance_of(BGS::ContentionService).to receive(:find_contentions_by_ptcpnt_id)
         .and_return(claims)
 
       expect do
@@ -40,7 +40,7 @@ RSpec.describe ClaimsApi::SpecialIssueUpdater, type: :job do
 
   context 'when a matching claim is found' do
     before do
-      expect_any_instance_of(BGS::ContentionService).to receive(:find_contentions_by_ptcpnt_id)
+      allow_any_instance_of(BGS::ContentionService).to receive(:find_contentions_by_ptcpnt_id)
         .and_return(claims)
     end
 
@@ -115,7 +115,7 @@ RSpec.describe ClaimsApi::SpecialIssueUpdater, type: :job do
           end
 
           it 'stores bgs exceptions correctly' do
-            expect_any_instance_of(BGS::ContentionService).to receive(:manage_contentions)
+            allow_any_instance_of(BGS::ContentionService).to receive(:manage_contentions)
               .and_raise(BGS::ShareError.new('failed', 500))
 
             subject.new.perform(user, contention_id, special_issues, claim_record.id)

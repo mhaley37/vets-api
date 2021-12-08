@@ -18,9 +18,9 @@ describe AppealsApi::HigherLevelReviewUploadStatusUpdater, type: :job do
 
   describe '#perform' do
     it 'updates the status of a HigherLevelReview' do
-      expect(CentralMail::Service).to receive(:new) { client_stub }
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(CentralMail::Service).to receive(:new) { client_stub }
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       in_process_element[0]['uuid'] = upload.id
       expect(faraday_response).to receive(:body).at_least(:once).and_return([in_process_element].to_json)
 

@@ -1565,7 +1565,7 @@ RSpec.describe 'Disability Claims ', type: :request do
         let(:classification_type_codes) { [{ clsfcn_id: '1111' }] }
 
         before do
-          expect_any_instance_of(BGS::StandardDataService)
+          allow_any_instance_of(BGS::StandardDataService)
             .to receive(:get_contention_classification_type_code_list).and_return(classification_type_codes)
         end
 
@@ -1603,7 +1603,7 @@ RSpec.describe 'Disability Claims ', type: :request do
         let(:classification_type_codes) { [{ clsfcn_id: '1111' }] }
 
         before do
-          expect_any_instance_of(BGS::StandardDataService)
+          allow_any_instance_of(BGS::StandardDataService)
             .to receive(:get_contention_classification_type_code_list).and_return(classification_type_codes)
         end
 
@@ -1763,7 +1763,7 @@ RSpec.describe 'Disability Claims ', type: :request do
         before do
           stub_mpi
 
-          expect_any_instance_of(BGS::StandardDataService)
+          allow_any_instance_of(BGS::StandardDataService)
             .to receive(:get_contention_classification_type_code_list).and_return(classification_type_codes)
         end
 

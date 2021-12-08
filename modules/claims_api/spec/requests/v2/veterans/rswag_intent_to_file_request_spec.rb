@@ -55,7 +55,7 @@ describe 'IntentToFile', swagger_doc: 'modules/claims_api/app/swagger/claims_api
             Timecop.freeze(Time.zone.parse('2022-01-01T08:00:00Z'))
 
             with_okta_user(scopes) do
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(bgs_response)
 
               submit_request(example.metadata)
@@ -115,7 +115,7 @@ describe 'IntentToFile', swagger_doc: 'modules/claims_api/app/swagger/claims_api
 
           before do |example|
             with_okta_user(scopes) do
-              expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+              allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
 
               submit_request(example.metadata)
             end
@@ -146,7 +146,7 @@ describe 'IntentToFile', swagger_doc: 'modules/claims_api/app/swagger/claims_api
 
           before do |example|
             with_okta_user(scopes) do
-              expect_any_instance_of(BGS::IntentToFileWebService)
+              allow_any_instance_of(BGS::IntentToFileWebService)
                 .to receive(:find_intent_to_file_by_ptcpnt_id_itf_type_cd).and_return(nil)
 
               submit_request(example.metadata)

@@ -44,10 +44,10 @@ describe 'Veteran Identifier', swagger_doc: 'modules/claims_api/app/swagger/clai
           )
 
           before do |example|
-            expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+            allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
             allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
             allow(veteran_mpi_data).to receive(:icn).and_return(test_user_icn)
-            expect(::Veteran::Service::Representative).to receive(:find_by).and_return(true)
+            allow(::Veteran::Service::Representative).to receive(:find_by).and_return(true)
             with_okta_user(scopes) do |auth_header|
               Authorization = auth_header # rubocop:disable Naming/ConstantName
               submit_request(example.metadata)
@@ -130,10 +130,10 @@ describe 'Veteran Identifier', swagger_doc: 'modules/claims_api/app/swagger/clai
 
       describe 'Getting a 403 response' do
         before do |example|
-          expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+          allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
           allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
           allow(veteran_mpi_data).to receive(:icn).and_return(test_user_icn)
-          expect(::Veteran::Service::Representative).to receive(:find_by).and_return(nil)
+          allow(::Veteran::Service::Representative).to receive(:find_by).and_return(nil)
           with_okta_user(scopes) do |auth_header|
             Authorization = auth_header # rubocop:disable Naming/ConstantName
             submit_request(example.metadata)
@@ -163,7 +163,7 @@ describe 'Veteran Identifier', swagger_doc: 'modules/claims_api/app/swagger/clai
 
       describe 'Getting a 404 response' do
         before do |example|
-          expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+          allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
           allow(veteran).to receive(:mpi).and_return(veteran_mpi_data)
           allow(veteran_mpi_data).to receive(:icn).and_return(nil)
           with_okta_user(scopes) do |auth_header|

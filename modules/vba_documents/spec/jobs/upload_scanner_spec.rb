@@ -16,8 +16,8 @@ RSpec.describe VBADocuments::UploadScanner, type: :job do
   describe '#perform' do
     it 'spawns processor jobs and updates state' do
       with_settings(Settings.vba_documents.s3, enabled: true) do
-        expect(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
-        expect(@s3_object).to receive(:exists?).and_return(true)
+        allow(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
+        allow(@s3_object).to receive(:exists?).and_return(true)
         processor = class_double(VBADocuments::UploadProcessor).as_stubbed_const
         expect(processor).to receive(:perform_async).with(upload.guid, caller: described_class.name)
         described_class.new.perform
@@ -28,8 +28,8 @@ RSpec.describe VBADocuments::UploadScanner, type: :job do
 
     it 'skips objects that have not been uploaded' do
       with_settings(Settings.vba_documents.s3, enabled: true) do
-        expect(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
-        expect(@s3_object).to receive(:exists?).and_return(false)
+        allow(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
+        allow(@s3_object).to receive(:exists?).and_return(false)
         processor = class_double(VBADocuments::UploadProcessor).as_stubbed_const
         expect(processor).not_to receive(:perform_async).with(upload.guid)
         described_class.new.perform
@@ -40,8 +40,8 @@ RSpec.describe VBADocuments::UploadScanner, type: :job do
 
     it 'expires objects for which no upload has occurred' do
       with_settings(Settings.vba_documents.s3, enabled: true) do
-        expect(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
-        expect(@s3_object).to receive(:exists?).and_return(false)
+        allow(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
+        allow(@s3_object).to receive(:exists?).and_return(false)
         processor = class_double(VBADocuments::UploadProcessor).as_stubbed_const
         expect(processor).not_to receive(:perform_async).with(upload.guid)
         Timecop.travel(Time.zone.now + 25.minutes) do
@@ -54,8 +54,8 @@ RSpec.describe VBADocuments::UploadScanner, type: :job do
 
     it 'does not expire objects for which upload has occurred' do
       with_settings(Settings.vba_documents.s3, enabled: true) do
-        expect(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
-        expect(@s3_object).to receive(:exists?).and_return(true)
+        allow(@s3_bucket).to receive(:object).with(upload.guid).and_return(@s3_object)
+        allow(@s3_object).to receive(:exists?).and_return(true)
         processor = class_double(VBADocuments::UploadProcessor).as_stubbed_const
         expect(processor).to receive(:perform_async).with(upload.guid, caller: described_class.name)
         Timecop.travel(Time.zone.now + 25.minutes) do

@@ -70,7 +70,7 @@ RSpec.describe ClaimsApi::ClaimEstablisher, type: :job do
     evss_service_stub = instance_double('EVSS::DisabilityCompensationForm::Service')
     allow(EVSS::DisabilityCompensationForm::Service).to receive(:new) { evss_service_stub }
     allow(evss_service_stub).to receive(:submit_form526) { OpenStruct.new(claim_id: 1337) }
-    expect_any_instance_of(ClaimsApi::AutoEstablishedClaim).to receive(:save!)
+    allow_any_instance_of(ClaimsApi::AutoEstablishedClaim).to receive(:save!)
       .and_raise(ActiveRecord::RecordInvalid.new(claim))
 
     expect do

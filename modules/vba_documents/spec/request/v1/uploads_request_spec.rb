@@ -98,10 +98,10 @@ RSpec.describe 'VBA Document Uploads Endpoint', type: :request, retry: 3 do
         allow(faraday_response).to receive(:body).and_return([[], []].to_json)
         allow(faraday_response).to receive(:success?).and_return(true)
         allow(VBADocuments::PayloadManager).to receive(:download_raw_file) { [Tempfile.new, Time.zone.now] }
-        expect(client_stub).to receive(:upload) {
+        allow(client_stub).to receive(:upload) {
           faraday_response
         }
-        expect(client_stub).to receive(:status) {
+        allow(client_stub).to receive(:status) {
           faraday_response
         }
       end

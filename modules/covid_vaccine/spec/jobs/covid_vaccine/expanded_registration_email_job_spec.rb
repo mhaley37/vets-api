@@ -60,14 +60,14 @@ RSpec.describe CovidVaccine::ExpandedRegistrationEmailJob, type: :worker do
 
     context 'with an error response from VANotify' do
       it 'raises an exception' do
-        expect_any_instance_of(VaNotify::Service).to receive(:send_email)
+        allow_any_instance_of(VaNotify::Service).to receive(:send_email)
           .and_raise(Common::Exceptions::BadGateway)
         expect(StatsD).to receive(:increment).with('worker.covid_vaccine_expanded_registration_email.error')
         expect { subject.perform(registration_submission.id) }.to raise_error(StandardError)
       end
 
       it 'increments the StatsD error counter' do
-        expect_any_instance_of(VaNotify::Service).to receive(:send_email)
+        allow_any_instance_of(VaNotify::Service).to receive(:send_email)
           .and_raise(StandardError.new('test error'))
         expect(StatsD).to receive(:increment).with('worker.covid_vaccine_expanded_registration_email.error')
         expect { subject.perform(registration_submission.id) }.to raise_error(StandardError)

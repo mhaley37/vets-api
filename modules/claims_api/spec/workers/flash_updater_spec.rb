@@ -38,7 +38,7 @@ RSpec.describe ClaimsApi::FlashUpdater, type: :job do
       expect_any_instance_of(BGS::ClaimantWebService)
         .to receive(:add_flash).with(file_number: user['ssn'], flash_name: flash_name)
     end
-    expect_any_instance_of(BGS::ClaimantWebService)
+    allow_any_instance_of(BGS::ClaimantWebService)
       .to receive(:find_assigned_flashes).with(user['ssn']).and_return(assigned_flashes)
 
     subject.new.perform(user, flashes)
@@ -47,14 +47,14 @@ RSpec.describe ClaimsApi::FlashUpdater, type: :job do
   it 'continues submitting flashes on exception' do
     flashes.each_with_index do |flash_name, index|
       if index.zero?
-        expect_any_instance_of(BGS::ClaimantWebService).to receive(:add_flash)
+        allow_any_instance_of(BGS::ClaimantWebService).to receive(:add_flash)
           .with(file_number: user['ssn'], flash_name: flash_name).and_raise(BGS::ShareError.new('failed', 500))
       else
         expect_any_instance_of(BGS::ClaimantWebService)
           .to receive(:add_flash).with(file_number: user['ssn'], flash_name: flash_name)
       end
     end
-    expect_any_instance_of(BGS::ClaimantWebService)
+    allow_any_instance_of(BGS::ClaimantWebService)
       .to receive(:find_assigned_flashes).with(user['ssn']).and_return(assigned_flashes)
 
     subject.new.perform(user, flashes, claim.id)
@@ -62,10 +62,10 @@ RSpec.describe ClaimsApi::FlashUpdater, type: :job do
 
   it 'stores multiple bgs exceptions correctly' do
     flashes.each do |flash_name|
-      expect_any_instance_of(BGS::ClaimantWebService).to receive(:add_flash)
+      allow_any_instance_of(BGS::ClaimantWebService).to receive(:add_flash)
         .with(file_number: user['ssn'], flash_name: flash_name).and_raise(BGS::ShareError.new('failed', 500))
     end
-    expect_any_instance_of(BGS::ClaimantWebService)
+    allow_any_instance_of(BGS::ClaimantWebService)
       .to receive(:find_assigned_flashes).with(user['ssn']).and_return({ flashes: [] })
 
     subject.new.perform(user, flashes, claim.id)

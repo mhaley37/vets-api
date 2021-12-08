@@ -70,7 +70,7 @@ RSpec.describe ClaimsApi::VBMSUpdater, type: :job do
       allow_poa_c_add: allow_poa_c_add
     )
     service_double = instance_double('BGS::Services')
-    expect(service_double).to receive(:corporate_update).and_return(corporate_update_stub)
-    expect(BGS::Services).to receive(:new).and_return(service_double)
+    allow(service_double).to receive(:corporate_update).and_return(corporate_update_stub)
+    allow(BGS::Services).to receive(:new).and_return(service_double)
   end
 end

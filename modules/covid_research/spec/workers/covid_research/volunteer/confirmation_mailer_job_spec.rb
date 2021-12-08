@@ -13,7 +13,7 @@ RSpec.describe CovidResearch::Volunteer::ConfirmationMailerJob do
   describe '#perform' do
     it 'builds an email to the given email' do
       allow(dummy).to receive(:deliver)
-      expect(CovidResearch::Volunteer::SubmissionMailer).to receive(:build).with(recipient).and_return(dummy)
+      allow(CovidResearch::Volunteer::SubmissionMailer).to receive(:build).with(recipient).and_return(dummy)
 
       subject.perform(recipient)
     end

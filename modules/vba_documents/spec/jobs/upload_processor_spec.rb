@@ -132,7 +132,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       allow(faraday_response).to receive(:body).and_return('')
       allow(faraday_response).to receive(:success?).and_return(true)
       capture_body = nil
-      expect(client_stub).to receive(:upload) { |arg|
+      allow(client_stub).to receive(:upload) { |arg|
         capture_body = arg
         faraday_response
       }
@@ -173,7 +173,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       allow(faraday_response).to receive(:body).and_return('')
       allow(faraday_response).to receive(:success?).and_return(true)
       capture_body = nil
-      expect(client_stub).to receive(:upload) { |arg|
+      allow(client_stub).to receive(:upload) { |arg|
         capture_body = arg
         faraday_response
       }
@@ -194,7 +194,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       allow(faraday_response).to receive(:body).and_return('')
       allow(faraday_response).to receive(:success?).and_return(true)
       capture_body = nil
-      expect(client_stub).to receive(:upload) { |arg|
+      allow(client_stub).to receive(:upload) { |arg|
         capture_body = arg
         faraday_response
       }
@@ -265,7 +265,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
         allow(faraday_response).to receive(:status).and_return(200)
         allow(faraday_response).to receive(:body).and_return('')
         allow(faraday_response).to receive(:success?).and_return(true)
-        expect(client_stub).to receive(:upload) { faraday_response }
+        allow(client_stub).to receive(:upload) { faraday_response }
         described_class.new.perform(upload.guid, test_caller)
         updated = VBADocuments::UploadSubmission.find_by(guid: upload.guid)
         expect(updated.status).to eq('received')
@@ -493,7 +493,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
         allow(faraday_response).to receive(:body).and_return('')
         allow(faraday_response).to receive(:success?).and_return(true)
         capture_body = nil
-        expect(client_stub).to receive(:upload) { |arg|
+        allow(client_stub).to receive(:upload) { |arg|
           capture_body = arg
           faraday_response
         }
@@ -559,7 +559,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       )
       allow(faraday_response).to receive(:success?).and_return(false)
       capture_body = nil
-      expect(client_stub).to receive(:upload) { |arg|
+      allow(client_stub).to receive(:upload) { |arg|
         capture_body = arg
         faraday_response
       }
@@ -584,7 +584,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       allow(faraday_response).to receive(:body).and_return('')
       allow(faraday_response).to receive(:success?).and_return(false)
       capture_body = nil
-      expect(client_stub).to receive(:upload) { |arg|
+      allow(client_stub).to receive(:upload) { |arg|
         capture_body = arg
         faraday_response
       }
@@ -610,7 +610,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
 
       it 'does not set error status for upstream server error' do
         capture_body = nil
-        expect(client_stub).to receive(:upload) { |arg|
+        allow(client_stub).to receive(:upload) { |arg|
           capture_body = arg
           faraday_response
         }
@@ -628,7 +628,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       it 'sets error status for upstream server error after retries' do
         capture_body = nil
         after_retries = 4
-        expect(client_stub).to receive(:upload) { |arg|
+        allow(client_stub).to receive(:upload) { |arg|
           capture_body = arg
           faraday_response
         }
@@ -644,7 +644,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
       end
 
       it 'queues another job to retry the request' do
-        expect(client_stub).to receive(:upload) { |_arg| faraday_response }
+        allow(client_stub).to receive(:upload) { |_arg| faraday_response }
         Timecop.freeze(Time.zone.now)
         described_class.new.perform(upload.guid, test_caller)
         expect(described_class.jobs.last['at']).to eq(30.minutes.from_now.to_f)
@@ -655,7 +655,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
     it 'checks for updated status for Gateway timeout error' do
       allow(VBADocuments::MultipartParser).to receive(:parse) { valid_parts }
       allow(CentralMail::Service).to receive(:new) { client_stub }
-      expect(client_stub).to receive(:upload)
+      allow(client_stub).to receive(:upload)
         .and_raise(Common::Exceptions::GatewayTimeout.new)
       expect do
         described_class.new.perform(upload.guid, test_caller)
@@ -667,7 +667,7 @@ RSpec.describe VBADocuments::UploadProcessor, type: :job do
     it 'checks for updated status for Faraday timeout error' do
       allow(VBADocuments::MultipartParser).to receive(:parse) { valid_parts }
       allow(CentralMail::Service).to receive(:new) { client_stub }
-      expect(client_stub).to receive(:upload)
+      allow(client_stub).to receive(:upload)
         .and_raise(Faraday::TimeoutError.new)
       expect { described_class.new.perform(upload.guid, test_caller) }.not_to raise_error(Faraday::TimeoutError)
       upload.reload

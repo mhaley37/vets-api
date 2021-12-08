@@ -40,7 +40,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
                                                       'get.json')))
 
           before do |example|
-            expect_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
+            allow_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
             allow_any_instance_of(BGS::OrgWebService).to receive(:find_poa_history_by_ptcpnt_id)
               .and_return({ person_poa_history: nil })
             Veteran::Service::Representative.new(representative_id: '12345',
@@ -73,7 +73,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
 
         response '204', 'Successful response with no current Power of Attorney' do
           before do |example|
-            expect_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
+            allow_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
             allow_any_instance_of(BGS::OrgWebService).to receive(:find_poa_history_by_ptcpnt_id)
               .and_return({ person_poa_history: nil })
             with_okta_user(scopes) do |auth_header|
@@ -197,7 +197,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
                                                       'get.json')))
 
           before do |example|
-            expect_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
+            allow_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id).and_return(bgs_poa)
             allow_any_instance_of(BGS::OrgWebService).to receive(:find_poa_history_by_ptcpnt_id)
               .and_return({ person_poa_history: nil })
             Veteran::Service::Representative.new(representative_id: '67890',

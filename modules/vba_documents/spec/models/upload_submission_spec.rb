@@ -98,8 +98,8 @@ describe VBADocuments::UploadSubmission, type: :model do
 
   describe 'refresh_status!' do
     it 'updates received status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(received_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -107,8 +107,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'updates processing status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(processing_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -116,8 +116,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'updates processing success status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(processing_success_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -127,8 +127,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     it 'updates completed status from upstream to VBMS' do
       resp = status_complete_packets(VBADocuments::UploadSubmission::COMPLETED_DOWNLOAD_CONFIRMED,
                                      VBADocuments::UploadSubmission::COMPLETED_UPLOAD_SUCCEEDED)
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(resp)
       upload_success.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_success.guid)
@@ -138,8 +138,8 @@ describe VBADocuments::UploadSubmission, type: :model do
 
     it 'updates completed status from upstream to SUCCESS and marked as final' do
       resp = status_complete_packets(VBADocuments::UploadSubmission::COMPLETED_DOWNLOAD_CONFIRMED)
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(resp)
       upload_success.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_success.guid)
@@ -151,8 +151,8 @@ describe VBADocuments::UploadSubmission, type: :model do
       resp = status_complete_packets(VBADocuments::UploadSubmission::COMPLETED_DOWNLOAD_CONFIRMED,
                                      VBADocuments::UploadSubmission::COMPLETED_UNIDENTIFIABLE_MAIL,
                                      VBADocuments::UploadSubmission::COMPLETED_DOWNLOAD_CONFIRMED)
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(resp)
       upload_success.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_success.guid)
@@ -163,8 +163,8 @@ describe VBADocuments::UploadSubmission, type: :model do
 
     it 'Logs an error if no packets are sent' do
       resp = status_complete_packets
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(resp)
       upload_success.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_success.guid)
@@ -186,8 +186,8 @@ describe VBADocuments::UploadSubmission, type: :model do
         ]
       }]].to_json
 
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(resp)
       upload_success.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_success.guid)
@@ -195,8 +195,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'updates success status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(success_body)
       upload_processing.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_processing.guid)
@@ -204,8 +204,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'updates error status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(processing_error_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -215,8 +215,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'updates processing error status from upstream' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(error_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -241,9 +241,9 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'raises on error status from upstream without updating state' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(false)
-      expect(faraday_response).to receive(:status).and_return(401)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(false)
+      allow(faraday_response).to receive(:status).and_return(401)
       expect(faraday_response).to receive(:body).at_least(:once).and_return('Unauthorized')
       expect { upload_received.refresh_status! }.to raise_error(Common::Exceptions::BadGateway)
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -251,9 +251,9 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'raises on duplicate error status from upstream and updates state' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(false)
-      expect(faraday_response).to receive(:status).and_return(401)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(false)
+      allow(faraday_response).to receive(:status).and_return(401)
       expect(faraday_response).to receive(:body).at_least(:once).and_return('Document already uploaded with uuid')
       expect { upload_received.refresh_status! }.to raise_error(Common::Exceptions::BadGateway)
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -261,8 +261,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'raises on unexpected status from upstream without updating state' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(nonsense_body)
       expect { upload_received.refresh_status! }.to raise_error(Common::Exceptions::BadGateway)
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)
@@ -270,8 +270,8 @@ describe VBADocuments::UploadSubmission, type: :model do
     end
 
     it 'ignores empty status from upstream for known uuid' do
-      expect(client_stub).to receive(:status).and_return(faraday_response)
-      expect(faraday_response).to receive(:success?).and_return(true)
+      allow(client_stub).to receive(:status).and_return(faraday_response)
+      allow(faraday_response).to receive(:success?).and_return(true)
       expect(faraday_response).to receive(:body).at_least(:once).and_return(empty_body)
       upload_received.refresh_status!
       updated = VBADocuments::UploadSubmission.find_by(guid: upload_received.guid)

@@ -141,7 +141,7 @@ RSpec.describe 'EVSS Claims management', type: :request do
                  auth_headers: { some: 'data' },
                  evss_id: 600_118_851,
                  id: 'd5536c5c-0465-4038-a368-1a9d9daf65c9')
-          expect_any_instance_of(ClaimsApi::UnsynchronizedEVSSClaimService).to receive(:update_from_remote)
+          allow_any_instance_of(ClaimsApi::UnsynchronizedEVSSClaimService).to receive(:update_from_remote)
             .and_raise(StandardError.new('no claim found'))
           VCR.use_cassette('evss/claims/claim') do
             get(
@@ -243,7 +243,7 @@ RSpec.describe 'EVSS Claims management', type: :request do
 
   context "when a 'Token Validation Error' is received" do
     it "raises a 'Common::Exceptions::Unauthorized' exception", run_at: 'Tue, 12 Dec 2017 03:09:06 GMT' do
-      expect_any_instance_of(Token).to receive(:initialize).and_raise(
+      allow_any_instance_of(Token).to receive(:initialize).and_raise(
         Common::Exceptions::TokenValidationError.new(detail: 'Some Error')
       )
 

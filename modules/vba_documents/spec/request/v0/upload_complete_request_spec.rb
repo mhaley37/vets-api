@@ -49,7 +49,7 @@ RSpec.describe 'VBA Document SNS upload complete notification', type: :request d
             token: token,
             topic_arn: 'arn:aws:sns:us-west-2:123456789012:MyTopic'
           )
-          expect(Aws::SNS::Client).to receive(:new).with(region: 'us-gov-west-1').and_return(client)
+          allow(Aws::SNS::Client).to receive(:new).with(region: 'us-gov-west-1').and_return(client)
           verifier = double(Aws::SNS::MessageVerifier)
           allow(verifier).to receive(:authentic?).and_return(true)
           allow(Aws::SNS::MessageVerifier).to receive(:new).and_return(verifier)

@@ -33,7 +33,7 @@ RSpec.describe 'Power Of Attorney', type: :request do
         context 'when provided' do
           it 'returns a 200' do
             with_okta_user(scopes) do |auth_header|
-              expect_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id)
+              allow_any_instance_of(BGS::ClaimantWebService).to receive(:find_poa_by_participant_id)
                 .and_return(bgs_poa)
               allow_any_instance_of(BGS::OrgWebService).to receive(:find_poa_history_by_ptcpnt_id)
                 .and_return({ person_poa_history: nil })

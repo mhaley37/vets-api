@@ -45,9 +45,9 @@ describe 'Claims', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/sw
 
           before do |example|
             with_okta_user(scopes) do
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claims_status_by_ptcpnt_id).and_return(bgs_response)
-              expect(ClaimsApi::AutoEstablishedClaim)
+              allow(ClaimsApi::AutoEstablishedClaim)
                 .to receive(:where).and_return([])
 
               submit_request(example.metadata)
@@ -106,7 +106,7 @@ describe 'Claims', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/sw
 
           before do |example|
             with_okta_user(scopes) do
-              expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+              allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
 
               submit_request(example.metadata)
             end
@@ -171,8 +171,8 @@ describe 'Claims', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/sw
 
           before do |example|
             with_okta_user(scopes) do
-              expect(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(bgs_response)
 
               submit_request(example.metadata)
@@ -231,7 +231,7 @@ describe 'Claims', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/sw
 
           before do |example|
             with_okta_user(scopes) do
-              expect(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
+              allow(ClaimsApi::Veteran).to receive(:new).and_return(veteran)
 
               submit_request(example.metadata)
             end
@@ -263,8 +263,8 @@ describe 'Claims', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/sw
 
           before do |example|
             with_okta_user(scopes) do
-              expect(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
-              expect_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
+              allow(ClaimsApi::AutoEstablishedClaim).to receive(:get_by_id_or_evss_id).and_return(nil)
+              allow_any_instance_of(BGS::EbenefitsBenefitClaimsStatus)
                 .to receive(:find_benefit_claim_details_by_benefit_claim_id).and_return(nil)
 
               submit_request(example.metadata)

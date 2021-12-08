@@ -199,7 +199,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
         describe 'Clamping Results' do
           it 'page and per_page is not required' do
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -257,7 +257,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
         describe 'Clamping Radius' do
           it 'limits radius to 500' do
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -274,7 +274,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
           end
 
           it 'limits radius to 1' do
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -293,7 +293,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
         describe 'Sanitizing Longitude and Latitude' do
           it 'only sends 5 digits of accuracy to ppms' do
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -328,7 +328,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
           it 'accepts upto 5 specialties' do
             allow(fake_response).to receive(:body)
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -352,7 +352,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
           it 'ignores more than 5 specialties' do
             allow(fake_response).to receive(:body)
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -523,7 +523,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
           it 'accepts upto 5 specialties' do
             allow(fake_response).to receive(:body)
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
@@ -545,7 +545,7 @@ RSpec.describe FacilitiesApi::V1::PPMS::Client, team: :facilities, vcr: vcr_opti
 
           it 'ignores more than 5 specialties' do
             allow(fake_response).to receive(:body)
-            expect(client).to receive(:perform).with(
+            allow(client).to receive(:perform).with(
               :get,
               path,
               {
