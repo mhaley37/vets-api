@@ -3964,7 +3964,7 @@
                       }
                     ]
                   },
-                  "noticeAcknowledgement": {
+                  "5103NoticeAcknowledged": {
                     "enum": [
                       true,
                       false
@@ -3978,7 +3978,7 @@
                   "veteran",
                   "evidenceSubmission",
                   "socOptIn",
-                  "noticeAcknowledgement"
+                  "5103NoticeAcknowledged"
                 ],
                 "if": {
                   "properties": {
@@ -3989,7 +3989,7 @@
                 },
                 "then": {
                   "properties": {
-                    "noticeAcknowledgement": {
+                    "5103NoticeAcknowledged": {
                       "const": true
                     }
                   }
@@ -9420,29 +9420,7 @@
                   ]
                 },
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "enum": [
-                        "unprocessable_entity"
-                      ],
-                      "example": "unprocessable_entity"
-                    },
-                    "detail": {
-                      "type": "string",
-                      "enum": [
-                        "Request header 'X-VA-SSN' does not match the associated Notice of Disagreement's SSN",
-                        "Corresponding Notice of Disagreement 'boardReviewOption' must be 'evidence_submission'"
-                      ],
-                      "example": "Corresponding Notice of Disagreement 'boardReviewOption' must be 'evidence_submission'"
-                    },
-                    "status": {
-                      "type": "integer",
-                      "description": "Standard HTTP error response code.",
-                      "example": 422
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorModel"
                 }
               }
             }
@@ -9770,7 +9748,7 @@
                                   "timezone": "America/Chicago"
                                 },
                                 "socOptIn": false,
-                                "noticeAcknowledgement": true,
+                                "5103NoticeAcknowledged": true,
                                 "evidenceSubmission": {
                                   "evidenceType": [
                                     "upload"
@@ -9825,7 +9803,7 @@
                                   "timezone": "America/Chicago"
                                 },
                                 "socOptIn": true,
-                                "noticeAcknowledgement": true,
+                                "5103NoticeAcknowledged": true,
                                 "evidenceSubmission": {
                                   "evidenceType": [
                                     "upload",
@@ -9995,7 +9973,7 @@
                       "status": "422",
                       "meta": {
                         "missing_fields": [
-                          "noticeAcknowledgement"
+                          "5103NoticeAcknowledged"
                         ]
                       }
                     }
@@ -10036,7 +10014,7 @@
                           "timezone": "America/Chicago"
                         },
                         "socOptIn": false,
-                        "noticeAcknowledgement": true,
+                        "5103NoticeAcknowledged": true,
                         "evidenceSubmission": {
                           "evidenceType": [
                             "upload"
@@ -10080,7 +10058,7 @@
                           "timezone": "America/Chicago"
                         },
                         "socOptIn": true,
-                        "noticeAcknowledgement": true,
+                        "5103NoticeAcknowledged": true,
                         "evidenceSubmission": {
                           "evidenceType": [
                             "upload",
@@ -10289,7 +10267,7 @@
                               "timezone": "America/Chicago"
                             },
                             "socOptIn": false,
-                            "noticeAcknowledgement": true,
+                            "5103NoticeAcknowledged": true,
                             "evidenceSubmission": {
                               "evidenceType": [
                                 "upload"
@@ -10507,28 +10485,7 @@
                   ]
                 },
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "enum": [
-                        "unprocessable_entity"
-                      ],
-                      "example": "unprocessable_entity"
-                    },
-                    "detail": {
-                      "type": "string",
-                      "enum": [
-                        "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                      ],
-                      "example": "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                    },
-                    "status": {
-                      "type": "integer",
-                      "description": "Standard HTTP error response code.",
-                      "example": 422
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorModel"
                 }
               }
             }
