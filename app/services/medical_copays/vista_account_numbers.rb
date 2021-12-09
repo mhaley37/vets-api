@@ -22,6 +22,8 @@ module MedicalCopays
     def initialize(opts)
       @data = opts[:data]
       @user = opts[:user]
+
+      log_data
     end
 
     ##
@@ -49,13 +51,6 @@ module MedicalCopays
     # @return [String]
     #
     def vista_account_id(key, id)
-      Rails.logger.info(
-        'Building Vista Account ID',
-        user_uuid: user.uuid,
-        facility_id: key,
-        vista_id_length: id.to_s.length
-      )
-
       offset = 16 - (key + id).length
       padding = '0' * offset if offset >= 0
 
@@ -69,6 +64,25 @@ module MedicalCopays
     #
     def default
       [0]
+    end
+
+    def log_data
+      if data.blank?
+        Rails.logger.info('User VHA facility hash blank')
+      else
+        Rails.logger.info('User VHA facility hash present')
+
+        data.each do { |facility_id, vista_ids| 
+          vista_ids.each do |vista_id|
+            Rails.logger.info(
+              'Vista Account Id',
+              user_uuid: user.uuid,
+              facility_id: facility_id,
+              vista_id_length: vista_id.to_s.length
+            )
+          end
+        }
+      end
     end
   end
 end
