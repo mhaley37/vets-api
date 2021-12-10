@@ -43,8 +43,8 @@ module MebApi
                     'endDate': '2020-01-01',
                     'characterOfService': 'Honorable',
                     'reasonForSeparation': 'Hardship',
-                    'exclusionPeriods': [],
-                    'trainingPeriods': []
+                    'trainingPeriods': [{ 'beginDate': '2018-10-26T18:00:54.302Z', 'endDate': '2019-10-26T18:00:54.302Z' }],
+                    'exclusionPeriods': [{ 'beginDate': '2012-10-26T18:00:54.302Z', 'endDate': '2013-10-26T18:00:54.302Z' }],
                   }
                 ]
               }
