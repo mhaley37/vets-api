@@ -29,6 +29,6 @@ redis:
 
 ## Running
 
-1. To start Postgres and Redis: `docker-compose -f docker-compose-deps.yml up`
+1. To start Postgres and Redis: `bin/deps`
 
 1. Start vets-api as per the [native running instructions](running_natively.md).
