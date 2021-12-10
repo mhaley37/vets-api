@@ -6,7 +6,10 @@ module Mobile
   module V0
     class ImmunizationsController < ApplicationController
       def index
-        render json: Mobile::V0::ImmunizationSerializer.new(immunizations_adapter.parse(service.get_immunizations))
+        json = service.get_immunizations
+        data = Common::Collection.new(Immunization, data: json[:data])
+        data.paginate(pagination_params)
+        render json: Mobile::V0::ImmunizationSerializer.new(immunizations_adapter.parse(data))
       end
 
       private
@@ -17,6 +20,13 @@ module Mobile
 
       def service
         Mobile::V0::LighthouseHealth::Service.new(@current_user)
+      end
+
+      def pagination_params
+        {
+          # page: params[:page],
+          per_page: 2
+        }
       end
     end
   end
