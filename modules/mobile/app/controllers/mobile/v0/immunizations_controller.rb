@@ -8,10 +8,10 @@ module Mobile
       def index
         data = service.get_immunizations
         parsed = immunizations_adapter.parse(data)
-        # data = Mobile::V0::ImmunizationSerializer.new(parsed)
         collection = Common::Collection.new(Immunization, data: parsed)
+        paginated = collection.paginate(pagination_params)
 
-        render json: collection.paginate(pagination_params)
+        render json: Mobile::V0::ImmunizationSerializer.new(paginated.data)
       end
 
       private
@@ -26,8 +26,8 @@ module Mobile
 
       def pagination_params
         {
-          # page: params[:page],
-          per_page: 2
+          page: params[:page],
+          per_page: params[:per_page]
         }
       end
     end
