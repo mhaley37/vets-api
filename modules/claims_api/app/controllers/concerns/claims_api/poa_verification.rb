@@ -97,9 +97,8 @@ module ClaimsApi
 
         representative = ::Veteran::Service::Representative.where('? = ANY(poa_codes)', poa_code).first
 
-        return false if representative.user_types.blank?
-
-        representative.user_types.include?('attorney') || representative.user_types.include?('claim_agents')
+        # As long as the representative has some kind of user_type, they're valid
+        representative.user_types.count > 0
       end
     end
   end
