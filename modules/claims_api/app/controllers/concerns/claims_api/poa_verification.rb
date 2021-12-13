@@ -82,9 +82,14 @@ module ClaimsApi
 
       def poa_code_in_organization?(poa_code)
         organization = ::Veteran::Service::Organization.find_by(poa: poa_code)
-        representative = ::Veteran::Service::Representative.where('? = ANY(poa_codes)', poa_code).first
 
-        organization.present? && representative.user_types.include?('veteran_service_officer')
+        if user_is_target_veteran?
+          organization.present?
+        else
+          representative = ::Veteran::Service::Representative.find_by(first_name: @current_user.first_name,
+                                                                      last_name: @current_user.last_name)
+          organization.present? && representative.poa_codes.include?(poa_code)
+        end
       end
 
       def poa_code_is_individual?(poa_code)
