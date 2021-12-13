@@ -6,10 +6,12 @@ module Mobile
   module V0
     class ImmunizationsController < ApplicationController
       def index
-        json = service.get_immunizations
-        data = Common::Collection.new(Immunization, data: json[:data])
-        data.paginate(pagination_params)
-        render json: Mobile::V0::ImmunizationSerializer.new(immunizations_adapter.parse(data))
+        data = service.get_immunizations
+        parsed = immunizations_adapter.parse(data)
+        # data = Mobile::V0::ImmunizationSerializer.new(parsed)
+        collection = Common::Collection.new(Immunization, data: parsed)
+
+        render json: collection.paginate(pagination_params)
       end
 
       private
