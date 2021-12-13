@@ -81,7 +81,7 @@ module MebApi
         render json:
         { data: {
           'claimId': 0,
-          'status': 'InProgress'
+          'claimStatus': 'INPROGRESS'
         } }
       end
 
