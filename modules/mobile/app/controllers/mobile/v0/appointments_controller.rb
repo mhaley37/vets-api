@@ -82,38 +82,9 @@ module Mobile
         appointments = appointments.filter do |appointment|
           appointment.start_date_utc.between? validated_params[:start_date], validated_params[:end_date]
         end
-        page_appointments, page_meta_data = paginate(list: appointments, validated_params: validated_params)
+        page_appointments, page_meta_data = Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, request: request)
 
-        Mobile::V0::AppointmentSerializer.new(page_appointments, options(page_meta_data))
-      end
-
-      def paginate(list:, validated_params:)
-        page_number = validated_params[:page_number]
-        page_size = validated_params[:page_size]
-        pages = list.each_slice(page_size).to_a
-        page_meta_data = {
-          links: Mobile::PaginationLinksHelper.links(pages.size, validated_params, request),
-          pagination: {
-            current_page: page_number,
-            per_page: page_size,
-            total_pages: pages.size,
-            total_entries: list.size
-          }
-        }
-
-        return [[], page_meta_data] if page_number > pages.size
-
-        [pages[page_number - 1], page_meta_data]
-      end
-
-      def options(page_meta_data)
-        {
-          errors: nil,
-          meta: {
-            pagination: page_meta_data[:pagination]
-          },
-          links: page_meta_data[:links]
-        }
+        Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
       end
 
       def appointments_proxy
