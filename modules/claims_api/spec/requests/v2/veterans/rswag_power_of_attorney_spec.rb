@@ -320,7 +320,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
   path '/veterans/{veteranId}/power_of_attorney/appoint_organization' do
     put 'Appoint an organization Power of Attorney for a Veteran.' do
       tags 'Power of Attorney'
-      operationId 'appointIndividualPowerOfAttorney'
+      operationId 'appointOrganizationPowerOfAttorney'
       security [
         { productionOauth: ['claim.write'] },
         { sandboxOauth: ['claim.write'] },
