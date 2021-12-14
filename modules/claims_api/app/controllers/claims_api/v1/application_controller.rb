@@ -46,6 +46,10 @@ module ClaimsApi
         "#{user.first_name} #{user.last_name}"
       end
 
+      def user_is_target_veteran?
+        !header_request?
+      end
+
       private
 
       def claims_service

@@ -4,9 +4,9 @@ require 'rails_helper'
 
 RSpec.describe 'Power Of Attorney', type: :request do
   let(:veteran_id) { '1013062086V794840' }
-  let(:appoint_individual_path) { "/services/benefits/v2/veterans/#{veteran_id}/power_of_attorney/appoint_individual" }
+  let(:appoint_individual_path) { "/services/benefits/v2/veterans/#{veteran_id}/power-of-attorney/appoint-individual" }
   let(:appoint_organization_path) do
-    "/services/benefits/v2/veterans/#{veteran_id}/power_of_attorney/appoint_organization"
+    "/services/benefits/v2/veterans/#{veteran_id}/power-of-attorney/appoint-organization"
   end
   let(:scopes) { %w[claim.write] }
   let(:individual_poa_code) { 'A1H' }

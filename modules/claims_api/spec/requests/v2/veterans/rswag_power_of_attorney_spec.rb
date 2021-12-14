@@ -6,7 +6,7 @@ require 'rails_helper'
 require_relative '../../../support/swagger_shared_components'
 
 describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_api/v2/swagger.json' do
-  path '/veterans/{veteranId}/power_of_attorney' do
+  path '/veterans/{veteranId}/power-of-attorney' do
     get 'Find current Power of Attorney for a Veteran.' do
       tags 'Power of Attorney'
       operationId 'findPowerOfAttorney'
@@ -152,7 +152,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
     end
   end
 
-  path '/veterans/{veteranId}/power_of_attorney/appoint_individual' do
+  path '/veterans/{veteranId}/power-of-attorney/appoint-individual' do
     put 'Appoint an individual Power of Attorney for a Veteran.' do
       tags 'Power of Attorney'
       operationId 'appointIndividualPowerOfAttorney'
@@ -317,7 +317,7 @@ describe 'PowerOfAttorney', swagger_doc: 'modules/claims_api/app/swagger/claims_
     end
   end
 
-  path '/veterans/{veteranId}/power_of_attorney/appoint_organization' do
+  path '/veterans/{veteranId}/power-of-attorney/appoint-organization' do
     put 'Appoint an organization Power of Attorney for a Veteran.' do
       tags 'Power of Attorney'
       operationId 'appointOrganizationPowerOfAttorney'

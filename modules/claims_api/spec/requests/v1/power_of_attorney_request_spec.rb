@@ -381,17 +381,16 @@ RSpec.describe 'Power of Attorney ', type: :request do
               allow(BGS::PowerOfAttorneyVerifier).to receive(:new).and_return(bgs_poa_verifier)
               expect(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new('HelloWorld'))
               expect(bgs_poa_verifier).to receive(:previous_poa_code).and_return(nil)
-              expect(::Veteran::Service::Representative).to receive(:where).and_return(
-                [OpenStruct.new(user_types: user_types)]
-              )
               allow(::Veteran::Service::Organization).to receive(:find_by).and_return(
                 OpenStruct.new(name: 'Some Great Organization', phone: '555-555-5555')
+              )
+              allow(::Veteran::Service::Representative).to receive(:find_by).and_return(
+                OpenStruct.new(first_name: 'John', last_name: 'Doe', poa_codes: ['HelloWorld'])
               )
 
               get('/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header))
 
               parsed = JSON.parse(response.body)
-
               expect(response.status).to eq(200)
               expect(parsed['data']['attributes']['representative']['service_organization']['organization_name'])
                 .to eq('Some Great Organization')
@@ -416,16 +415,16 @@ RSpec.describe 'Power of Attorney ', type: :request do
               allow(BGS::PowerOfAttorneyVerifier).to receive(:new).and_return(bgs_poa_verifier)
               expect(bgs_poa_verifier).to receive(:current_poa).and_return(Struct.new(:code).new('HelloWorld'))
               expect(bgs_poa_verifier).to receive(:previous_poa_code).and_return(nil)
-              allow(::Veteran::Service::Representative).to receive(:where).and_return(
-                [
-                  OpenStruct.new(
-                    first_name: 'Tommy',
-                    last_name: 'Testerson',
-                    phone: '555-555-5555',
-                    user_types: user_types
-                  )
-                ]
-              )
+              representative = [
+                OpenStruct.new(
+                  first_name: 'Tommy',
+                  last_name: 'Testerson',
+                  phone: '555-555-5555',
+                  user_types: user_types
+                )
+              ]
+              allow(::Veteran::Service::Representative).to receive(:find_by).and_return(representative)
+              allow(::Veteran::Service::Representative).to receive(:where).and_return(representative)
 
               get('/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header))
 
