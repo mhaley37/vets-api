@@ -29,7 +29,7 @@ RSpec.describe 'immunizations', type: :request do
     context 'when the expected fields have data' do
       before do
         VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/health/immunizations', headers: iam_headers, params: {per_page: 100}
+          get '/mobile/v0/health/immunizations', headers: iam_headers, params: nil
         end
       end
 
@@ -469,34 +469,6 @@ RSpec.describe 'immunizations', type: :request do
               'shortDescription' => 'Influenza  seasonal  injectable  preservative free'
             }
           )
-        end
-      end
-    end
-
-    describe 'pagination' do
-      it 'defaults to 10' do
-        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/health/immunizations', headers: iam_headers, params: nil
-        end
-
-        expect(response.parsed_body['data'].length).to eq(10)
-      end
-
-      it 'returns per_page number of records' do
-        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/health/immunizations', headers: iam_headers, params: {per_page: 2}
-        end
-
-        expect(response.parsed_body['data'].length).to eq(2)
-      end
-
-      it 'returns the correct page' do
-        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/health/immunizations', headers: iam_headers, params: {per_page: 2, page: 3}
-          ids = response.parsed_body['data'].map {|i| i['id'] }
-
-          # these are the fifth and sixth records in the vcr cassette
-          expect(ids).to eq(['I2-LA34JJPECU7NQFSNCRULFSVQ3M000000', 'I2-DOUHUYLFJLLPSJLACUDAJF5GF4000000'])
         end
       end
     end
