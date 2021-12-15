@@ -50,7 +50,7 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
 
         it 'returns from the class if the claim observations does NOT include bp readings from the past year' do
           expect(FastTrack::HypertensionMedicationRequestData).not_to receive(:new)
-          subject.new.perform(submission_for_user_wo_bp.id, user_full_name)
+          expect(subject.new.perform(submission_for_user_wo_bp.id, user_full_name)).to be_nil
         end
       end
 
@@ -61,8 +61,18 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
             .to receive(:transform).and_return(mocked_observation_data)
         end
 
+        it 'emails the stakeholders' do
+          expect { FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name) }
+            .to change { ActionMailer::Base.deliveries.count }.by(1)
+          expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Claim Submitted'
+          expect(ActionMailer::Base.deliveries.last.body.raw_source)
+            .to eq "A claim was just submitted on the #{Rails.env} environment with submission id: #{submission.id}"
+        end
+
         it 'finishes successfully' do
-          expect(FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)).to eq true
+          expect do
+            FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
+          end.not_to raise_error
         end
 
         context 'failure' do

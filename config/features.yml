@@ -78,10 +78,6 @@ features:
     actor_type: user
     description: Enables the health care check-in experiences to show multiple appointments
     enable_in_development: true
-  check_in_experience_chip_service_refactor:
-    actor_type: user
-    description: Refactor CHIP service objects and use clients
-    enable_in_development: true
   coe_access:
     actor_type: user
     description: Feature gates the certificate of eligibility application
@@ -155,6 +151,10 @@ features:
   disability_hypertension_compensation_fast_track:
     actor_type: user
     description: Fast tracks 526 disability compensation claims by submitting additional health data
+    enable_in_development: true
+  disability_hypertension_compensation_fast_track_add_rrd:
+    actor_type: user
+    description: Fast tracks 526 disability compensation claims by submitting additional health data and adding the RRD special issue to the claim.
     enable_in_development: true
   disability_compensation_flashes:
     actor_type: user

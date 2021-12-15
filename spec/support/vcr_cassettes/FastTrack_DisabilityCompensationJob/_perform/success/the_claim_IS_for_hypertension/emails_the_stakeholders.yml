@@ -5,7 +5,7 @@ http_interactions:
     uri: https://sandbox-api.va.gov/oauth2/health/system/v1/token
     body:
       encoding: US-ASCII
-      string: grant_type=client_credentials&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIwb2FheTM4a3I4TFFicU5XUTJwNyIsInN1YiI6IjBvYWF5MzhrcjhMUWJxTldRMnA3IiwiYXVkIjoiaHR0cHM6Ly9kZXB0dmEtZXZhbC5va3RhLmNvbS9vYXV0aDIvYXVzOG5tMXEwZjdWUTBhNDgycDcvdjEvdG9rZW4iLCJleHAiOjE2Mzc5NTkyMDh9.bj5vQGL-xpiW1Z7KrU6O5wUHPq_SRjVUOtgcqfWOvZWxXmUZUf0RDHTPYq9lil89Fxpt71oIxDoMfuzCzn5gfjeTwFLaFaVsJpKaCLEB8kcCQ1pEkeDWSXxxVKr-VIhT6G2J6HNhB8ECb0ViTq4p2_RSoPNMmGBjKt_Ag2HmroUcIJns0S1L3t7OVNM2b4iA6MVV2-NRNJauaeDiYLfvPCiFRg8Gc18LBmIzeIbDYnysucFmDZECF2byM-BXJUJ0smyrr4nESNuzZ81NPWcCiv5XVci23zdeztZIOKJB97hCt5v2qX8svYK1CDt_nADMsnbvUgPBbaPAwlUKci1aaM7z1kldG_4iGCEc-UhtcsrFZgYH6f7ejQT5VwTKQJHcKNnb2T23MxfyvEXpRzah1BEkN-xHiHxde_gq2G2kEDZ14_bqFtxJpeWYKgDgjJslBVlwS9CdNBp9SOD7_4D-WoL5WHFQ3k6PvPv32ySL2aa3-nwBUkUqzzVjHcr_bN5gDXu2jWOvjfjh4HLbi5auQN7SEe1mNyj-_3-B3TcEe6X3sQqOc8EcBqTLmkIGyKP4R4ZfebC9gpsBw3od5iwls-UHhWOLbSSeqzE9t1YxaLPk8b3kierxc3Rct9MsnVQo-0jJeNT2Z8us2uaubzeXNDHbRUmZtuFgAb1f2Fpw9X0&scope=launch+launch%2Fpatient+patient%2FPatient.read+patient%2FCondition.read+patient%2FObservation.read+patient%2FPractitioner.read+patient%2FMedication.read+patient%2FMedicationRequest.read+system%2FEndpoint.read&launch=2000163
+      string: grant_type=client_credentials&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIwb2FheTM4a3I4TFFicU5XUTJwNyIsInN1YiI6IjBvYWF5MzhrcjhMUWJxTldRMnA3IiwiYXVkIjoiaHR0cHM6Ly9kZXB0dmEtZXZhbC5va3RhLmNvbS9vYXV0aDIvYXVzOG5tMXEwZjdWUTBhNDgycDcvdjEvdG9rZW4iLCJleHAiOjE2Mzk0MDg0MzF9.Mc4BFS0PLX1eMG0mJ924VyZh9CEvcoe__0H7YsnbpBslg0SQQ7LaS-Crvv2FAjbQJwSdpCLCDYwzDAccQWvktotXkdg8l45EdYSSByWS-dzOaGeONsQ_OdB5XojNyN4AVnZaLhGEJ2H1K9O-3jM7psluVaZM-efVSiX5nQNd4Gxa2oP26tauMziRDr4GvHACMEaGwYBAhw0NvoXEBjZS1Pql93TLkUNrBnCIENGnpnkwM48JWei8M1i19lNAHlZSNFJSSInGjoYJg-CelreAAOPRoKfkKhwapN8OdOc4FStf-cnz6bVJ2tb6aSuaxj4oJBWyrORqgn-b4PPHYxsRvrK9vLsCbeF7JX1jwe1M2FEHyhJpZk2t9TAETqzpA6LM3Bc0i2ksbtvGb4jdQaI-Wr0UkCQ5Gx5G6aj699GVj4VMUNNzxf0W7Qh_YetKwlS6IbDF5ooPdxbXNI-FL9X4BCiqAmjZH_3yShNEAgAu9IVjLfW8DLRLuaCpjHEgcNfB_cKdDzP_D-Mt7PS3vvjbKDf973IG9TVPZqxfnAbS9_mBblQI1PxBAxwzol_1CJh7T0b2OPIPcyGM7HeYrkWvkh5XqhBh4vIaWdBOIQQ1qGaPyLryy2Du0OCgiFK7tf0WZ0VfOwYW5K_rP_DibyqPhsk5Jhtti58EC55QJaZ0KOQ&scope=launch+patient%2FPatient.read+system%2FPatient.read+patient%2FObservation.read+patient%2FPractitioner.read+patient%2FMedicationRequest.read&launch=eyJwYXRpZW50IjogIjIwMDAxNjMifQ%3D%3D
     headers:
       Accept:
       - application/json
@@ -21,7 +21,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 26 Nov 2021 20:25:09 GMT
+      - Mon, 13 Dec 2021 14:58:53 GMT
       Content-Type:
       - application/json; charset=utf-8
       Connection:
@@ -29,20 +29,20 @@ http_interactions:
       Vary:
       - Origin
       Etag:
-      - W/"564-+8xBJSN63uh1wjpCqhyCCGU3ZCg"
+      - W/"4c9-mcnpAM0yvNhf/FvbADngBKgBKY4"
       Cache-Control:
       - ''
       Set-Cookie:
-      - TS01dd66bd=01874af5a41326df3ce5f5cf3efb88e1ebd4d32f029e1cb52ded1191d8b5a8520fe4150978bf948b34a713dc6684ab59e5592d63ed;
+      - TS01dd66bd=01874af5a43ff385042c86b62bac75493c9fae453c8da727c740336c78e84259346a2569b80a486307fbbd171db7ec053f82d9b960;
         Max-Age=900; Path=/
       Transfer-Encoding:
       - chunked
     body:
       encoding: ASCII-8BIT
-      string: '{"access_token":"eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlNsRjJ2aUNhaEh6ZmVhWk9WWTh2NC1iajVNQklrVTZtUXBITjNMV19waTgiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzc5NTgzMDksImV4cCI6MTYzNzk1ODYwOSwiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJsYXVuY2gvcGF0aWVudCIsInBhdGllbnQvUHJhY3RpdGlvbmVyLnJlYWQiLCJwYXRpZW50L01lZGljYXRpb24ucmVhZCIsInN5c3RlbS9FbmRwb2ludC5yZWFkIiwicGF0aWVudC9Db25kaXRpb24ucmVhZCIsInBhdGllbnQvT2JzZXJ2YXRpb24ucmVhZCIsInBhdGllbnQvTWVkaWNhdGlvblJlcXVlc3QucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.TUdBt7GogSrd_unk1flvIUpzURV8OSKFcoFjgs4e7rnqEfKDja4s2uua3bxVa-M2njYj8YFzHAdCZ-pPhNagm0bcS4T8yousM7ompFhRjhyIRUEeudjFicgMLD4HqTf2NJ7nLbI_kBluPd0ca4uoozHgtCZETvj00zNunKOiZfbK_zlVZjgrTlwT4jEz9BBgfRrwgCV_710hks5-TvSeoTEV2tzPUj1kVdv6f5n_z1fZf8vpmqpt7A4qYUHyjwD9lTDDpIHFcJPZ6BggGUgw3lCpz4HTTNH3zwceqnj55FF5qbG6Hnx7iRYonzbokbYmvW2u8_BEF0W3uPE8Dq4J4A","token_type":"Bearer","scope":"launch
-        patient/Patient.read launch/patient patient/Practitioner.read patient/Medication.read
-        system/Endpoint.read patient/Condition.read patient/Observation.read patient/MedicationRequest.read","expires_in":300,"state":null,"patient":"2000163"}'
-  recorded_at: Fri, 26 Nov 2021 20:25:09 GMT
+      string: '{"access_token":"eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULk9VNm0zR0YzV1N0dWhxTFZZWkRQdlFDM1JXdUtBZk9xcnYxQ0NpTDZ1a1kiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzk0MDc1MzMsImV4cCI6MTYzOTQwNzgzMywiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJwYXRpZW50L1ByYWN0aXRpb25lci5yZWFkIiwicGF0aWVudC9PYnNlcnZhdGlvbi5yZWFkIiwicGF0aWVudC9NZWRpY2F0aW9uUmVxdWVzdC5yZWFkIiwic3lzdGVtL1BhdGllbnQucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.U9rbw2hkful5JKfpg4mQkVLxkdHgP17Ne6tPXg6ZVJHwwMiqfRkxjCAcDnW9HmWiE-nzLD5iKOI1WgMN2siv3AIF19fdQnKRrK_idnvKdNWkVoTYrNFwyL-bHjuitAm6gIn12SoINebf6LDuv-0JoN5PkKhnPjtWAuDowPXQm_bZZac64czA-BduGHIFCH5dXCbwG2JaEumERH1jAbxIXj4qVdymX38pJTSfpTAmum9OkQ43iuxSAXp-WQ8v5gUIxRPE1xr1A97Z3LBNat2l8A-vTGPxbbDBiaXuKz2GXw-z6szOPsD0K9XdEqdbwkD5uvK3MnyuQabdwR-BTegQ7Q","token_type":"Bearer","scope":"launch
+        patient/Patient.read patient/Practitioner.read patient/Observation.read patient/MedicationRequest.read
+        system/Patient.read","expires_in":300,"state":null,"patient":"2000163"}'
+  recorded_at: Mon, 13 Dec 2021 14:58:53 GMT
 - request:
     method: get
     uri: https://sandbox-api.va.gov/services/fhir/v0/r4/Observation?category=vital-signs&code=85354-9&patient=2000163
@@ -57,7 +57,7 @@ http_interactions:
       User-Agent:
       - Vets.gov Agent
       Authorization:
-      - Bearer eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlNsRjJ2aUNhaEh6ZmVhWk9WWTh2NC1iajVNQklrVTZtUXBITjNMV19waTgiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzc5NTgzMDksImV4cCI6MTYzNzk1ODYwOSwiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJsYXVuY2gvcGF0aWVudCIsInBhdGllbnQvUHJhY3RpdGlvbmVyLnJlYWQiLCJwYXRpZW50L01lZGljYXRpb24ucmVhZCIsInN5c3RlbS9FbmRwb2ludC5yZWFkIiwicGF0aWVudC9Db25kaXRpb24ucmVhZCIsInBhdGllbnQvT2JzZXJ2YXRpb24ucmVhZCIsInBhdGllbnQvTWVkaWNhdGlvblJlcXVlc3QucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.TUdBt7GogSrd_unk1flvIUpzURV8OSKFcoFjgs4e7rnqEfKDja4s2uua3bxVa-M2njYj8YFzHAdCZ-pPhNagm0bcS4T8yousM7ompFhRjhyIRUEeudjFicgMLD4HqTf2NJ7nLbI_kBluPd0ca4uoozHgtCZETvj00zNunKOiZfbK_zlVZjgrTlwT4jEz9BBgfRrwgCV_710hks5-TvSeoTEV2tzPUj1kVdv6f5n_z1fZf8vpmqpt7A4qYUHyjwD9lTDDpIHFcJPZ6BggGUgw3lCpz4HTTNH3zwceqnj55FF5qbG6Hnx7iRYonzbokbYmvW2u8_BEF0W3uPE8Dq4J4A
+      - Bearer eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULk9VNm0zR0YzV1N0dWhxTFZZWkRQdlFDM1JXdUtBZk9xcnYxQ0NpTDZ1a1kiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzk0MDc1MzMsImV4cCI6MTYzOTQwNzgzMywiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJwYXRpZW50L1ByYWN0aXRpb25lci5yZWFkIiwicGF0aWVudC9PYnNlcnZhdGlvbi5yZWFkIiwicGF0aWVudC9NZWRpY2F0aW9uUmVxdWVzdC5yZWFkIiwic3lzdGVtL1BhdGllbnQucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.U9rbw2hkful5JKfpg4mQkVLxkdHgP17Ne6tPXg6ZVJHwwMiqfRkxjCAcDnW9HmWiE-nzLD5iKOI1WgMN2siv3AIF19fdQnKRrK_idnvKdNWkVoTYrNFwyL-bHjuitAm6gIn12SoINebf6LDuv-0JoN5PkKhnPjtWAuDowPXQm_bZZac64czA-BduGHIFCH5dXCbwG2JaEumERH1jAbxIXj4qVdymX38pJTSfpTAmum9OkQ43iuxSAXp-WQ8v5gUIxRPE1xr1A97Z3LBNat2l8A-vTGPxbbDBiaXuKz2GXw-z6szOPsD0K9XdEqdbwkD5uvK3MnyuQabdwR-BTegQ7Q
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
   response:
@@ -66,21 +66,21 @@ http_interactions:
       message: ''
     headers:
       Date:
-      - Fri, 26 Nov 2021 20:25:10 GMT
+      - Mon, 13 Dec 2021 14:58:55 GMT
       Content-Type:
       - application/json
       Connection:
       - keep-alive
       X-Ratelimit-Remaining-Minute:
-      - '295'
+      - '299'
       X-Ratelimit-Limit-Minute:
       - '300'
       Ratelimit-Remaining:
-      - '295'
+      - '299'
       Ratelimit-Limit:
       - '300'
       Ratelimit-Reset:
-      - '51'
+      - '6'
       Vary:
       - Accept-Encoding
       - Origin
@@ -90,9 +90,9 @@ http_interactions:
       - no-cache
       - no-cache
       X-Kong-Upstream-Latency:
-      - '442'
+      - '1342'
       X-Kong-Proxy-Latency:
-      - '1'
+      - '0'
       Via:
       - kong/2.3.2
       Strict-Transport-Security:
@@ -103,7 +103,7 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Set-Cookie:
-      - TS01dd66bd=01874af5a4fa2f9957e8a599eb7ed1dfd82bde72f0a221c8d2f39128f1907215fa3f1e6e9933f630852aa3faad5d64a59618b6873b;
+      - TS01dd66bd=01874af5a410ea571d536f375c6898b6adfb24c72fc6856e954cfe3c9204169e674e64c45356d29707bb11903ba71b3d6ca782272b;
         Max-Age=900; Path=/
       Transfer-Encoding:
       - chunked
@@ -156,7 +156,7 @@ http_interactions:
         JANE460 DOE922 MD"}],"component":[{"code":{"coding":[{"system":"http://loinc.org","code":"8480-6","display":"Systolic
         blood pressure"}],"text":"Systolic blood pressure"},"valueQuantity":{"value":153.0,"unit":"mm[Hg]","system":"http://unitsofmeasure.org","code":"mm[Hg]"}},{"code":{"coding":[{"system":"http://loinc.org","code":"8462-4","display":"Diastolic
         blood pressure"}],"text":"Diastolic blood pressure"},"valueQuantity":{"value":99.0,"unit":"mm[Hg]","system":"http://unitsofmeasure.org","code":"mm[Hg]"}}]},"search":{"mode":"match"}}]}'
-  recorded_at: Fri, 26 Nov 2021 20:25:10 GMT
+  recorded_at: Mon, 13 Dec 2021 14:58:55 GMT
 - request:
     method: get
     uri: https://sandbox-api.va.gov/services/fhir/v0/r4/MedicationRequest?patient=2000163
@@ -171,7 +171,7 @@ http_interactions:
       User-Agent:
       - Vets.gov Agent
       Authorization:
-      - Bearer eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlNsRjJ2aUNhaEh6ZmVhWk9WWTh2NC1iajVNQklrVTZtUXBITjNMV19waTgiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzc5NTgzMDksImV4cCI6MTYzNzk1ODYwOSwiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJsYXVuY2gvcGF0aWVudCIsInBhdGllbnQvUHJhY3RpdGlvbmVyLnJlYWQiLCJwYXRpZW50L01lZGljYXRpb24ucmVhZCIsInN5c3RlbS9FbmRwb2ludC5yZWFkIiwicGF0aWVudC9Db25kaXRpb24ucmVhZCIsInBhdGllbnQvT2JzZXJ2YXRpb24ucmVhZCIsInBhdGllbnQvTWVkaWNhdGlvblJlcXVlc3QucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.TUdBt7GogSrd_unk1flvIUpzURV8OSKFcoFjgs4e7rnqEfKDja4s2uua3bxVa-M2njYj8YFzHAdCZ-pPhNagm0bcS4T8yousM7ompFhRjhyIRUEeudjFicgMLD4HqTf2NJ7nLbI_kBluPd0ca4uoozHgtCZETvj00zNunKOiZfbK_zlVZjgrTlwT4jEz9BBgfRrwgCV_710hks5-TvSeoTEV2tzPUj1kVdv6f5n_z1fZf8vpmqpt7A4qYUHyjwD9lTDDpIHFcJPZ6BggGUgw3lCpz4HTTNH3zwceqnj55FF5qbG6Hnx7iRYonzbokbYmvW2u8_BEF0W3uPE8Dq4J4A
+      - Bearer eyJraWQiOiIyWGlHcG5XRjR0U0wtdENPX19zNDZhMGlkd3I1UUd6YVlwTm4xeEZNX1Y4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULk9VNm0zR0YzV1N0dWhxTFZZWkRQdlFDM1JXdUtBZk9xcnYxQ0NpTDZ1a1kiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXM4bm0xcTBmN1ZRMGE0ODJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2ZoaXIiLCJpYXQiOjE2Mzk0MDc1MzMsImV4cCI6MTYzOTQwNzgzMywiY2lkIjoiMG9hYXkzOGtyOExRYnFOV1EycDciLCJzY3AiOlsibGF1bmNoIiwicGF0aWVudC9QYXRpZW50LnJlYWQiLCJwYXRpZW50L1ByYWN0aXRpb25lci5yZWFkIiwicGF0aWVudC9PYnNlcnZhdGlvbi5yZWFkIiwicGF0aWVudC9NZWRpY2F0aW9uUmVxdWVzdC5yZWFkIiwic3lzdGVtL1BhdGllbnQucmVhZCJdLCJzdWIiOiIwb2FheTM4a3I4TFFicU5XUTJwNyJ9.U9rbw2hkful5JKfpg4mQkVLxkdHgP17Ne6tPXg6ZVJHwwMiqfRkxjCAcDnW9HmWiE-nzLD5iKOI1WgMN2siv3AIF19fdQnKRrK_idnvKdNWkVoTYrNFwyL-bHjuitAm6gIn12SoINebf6LDuv-0JoN5PkKhnPjtWAuDowPXQm_bZZac64czA-BduGHIFCH5dXCbwG2JaEumERH1jAbxIXj4qVdymX38pJTSfpTAmum9OkQ43iuxSAXp-WQ8v5gUIxRPE1xr1A97Z3LBNat2l8A-vTGPxbbDBiaXuKz2GXw-z6szOPsD0K9XdEqdbwkD5uvK3MnyuQabdwR-BTegQ7Q
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
   response:
@@ -180,21 +180,21 @@ http_interactions:
       message: ''
     headers:
       Date:
-      - Fri, 26 Nov 2021 20:25:11 GMT
+      - Mon, 13 Dec 2021 14:58:57 GMT
       Content-Type:
       - application/json
       Connection:
       - keep-alive
       X-Ratelimit-Remaining-Minute:
-      - '294'
+      - '298'
       X-Ratelimit-Limit-Minute:
       - '300'
       Ratelimit-Remaining:
-      - '294'
+      - '298'
       Ratelimit-Limit:
       - '300'
       Ratelimit-Reset:
-      - '49'
+      - '4'
       Vary:
       - Accept-Encoding
       - Origin
@@ -204,9 +204,9 @@ http_interactions:
       - no-cache
       - no-cache
       X-Kong-Upstream-Latency:
-      - '155'
+      - '951'
       X-Kong-Proxy-Latency:
-      - '0'
+      - '1'
       Via:
       - kong/2.3.2
       Strict-Transport-Security:
@@ -217,7 +217,7 @@ http_interactions:
       Cache-Control:
       - no-cache, no-store
       Set-Cookie:
-      - TS01dd66bd=01874af5a472856a0407377e38c20b76e286230ed758883472b385423204ef4751080d0ae89248c3d92d20a88ba10e7207da01d698;
+      - TS01dd66bd=01874af5a47e27579d35d35ce162ed6743fce65ed025be485748364e446c755014eb65235bfbe0582f6e3777b8366f72ab52196d91;
         Max-Age=900; Path=/
       Transfer-Encoding:
       - chunked
@@ -260,5 +260,5 @@ http_interactions:
         Aurelio227 Cruickshank494"},"authoredOn":"2013-04-15T01:15:52Z","_requester":{"extension":[{"url":"https://hl7.org/fhir/extension-data-absent-reason.html","valueCode":"unknown"}]},"note":[{"text":"Hydrochlorothiazide
         25 MG"}],"dosageInstruction":[{"text":"Once per day.","timing":{"repeat":{"boundsPeriod":{"start":"2013-04-15T01:15:52Z"}},"code":{"text":"As
         directed by physician."}},"route":{"text":"As directed by physician."}}]},"search":{"mode":"match"}}]}'
-  recorded_at: Fri, 26 Nov 2021 20:25:11 GMT
+  recorded_at: Mon, 13 Dec 2021 14:58:57 GMT
 recorded_with: VCR 6.0.0
