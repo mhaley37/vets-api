@@ -63,7 +63,7 @@ module MedicalCopays
       # @return [Array]
       #
       def transformed_body
-        last_six_months_statements.each do |copay|
+        body.each do |copay|
           copay.deep_transform_keys! { |key| key.camelize(:lower) }
         end
       end
