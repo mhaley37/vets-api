@@ -8,9 +8,14 @@ module Mobile
       page_number = validated_params[:page_number]
       page_size = validated_params[:page_size]
 
-      query_string = "?startDate=#{validated_params[:start_date]}&endDate=#{validated_params[:end_date]}"\
-                     "&useCache=#{validated_params[:use_cache]}"
-      url = request.base_url + request.path + query_string
+      # currently, the ? is necessary but it could lead to malformed urls
+      url = request.original_url + "?"
+      %w(start_date end_date use_cache show_completed).each do |key|
+        next unless validated_params.key?(key)
+
+        camelized = key.camelize(:lower)
+        url += "?#{camelized}=#{validated_params[key]}"
+      end
 
       if page_number > 1
         prev_link = "#{url}&page[number]=#{[page_number - 1,
