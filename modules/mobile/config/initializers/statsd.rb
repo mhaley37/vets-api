@@ -119,4 +119,9 @@ Rails.application.reloader.to_prepare do
   # SM cache hit ratio
   StatsD.increment('mobile.sm.cache.hit', 0)
   StatsD.increment('mobile.sm.cache.miss', 0)
+
+  # Immunizations #------------------------------------------------------------
+
+  StatsD.increment('mobile.immunizations.cvx_code_missing', 0)
+
 end

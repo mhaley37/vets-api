@@ -471,6 +471,16 @@ RSpec.describe 'immunizations', type: :request do
           )
         end
       end
+
+      context 'when cvx_code is missing' do
+        it 'should increment statsd' do
+          expect do
+            VCR.use_cassette('lighthouse_health/get_immunizations_cvx_code_missing', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/health/immunizations', headers: iam_headers, params: nil
+            end
+          end.to trigger_statsd_increment('mobile.immunizations.cvx_code_missing', times: 1)
+        end
+      end
     end
   end
 end
