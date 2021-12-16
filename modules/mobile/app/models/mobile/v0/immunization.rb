@@ -4,7 +4,7 @@ require 'common/models/resource'
 
 module Mobile
   module V0
-    class Immunization < Common::Base
+    class Immunization < Common::Resource
       attribute :id, Types::String
       attribute :cvx_code, Types::Coercible::Integer
       attribute :date, Types::DateTime
