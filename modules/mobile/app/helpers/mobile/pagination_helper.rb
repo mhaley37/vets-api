@@ -2,7 +2,6 @@
 
 module Mobile
   class PaginationHelper
-
     attr_reader :list, :validated_params, :url, :errors, :page_number, :page_size
 
     def initialize(list:, validated_params:, url:, errors:)
