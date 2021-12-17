@@ -8,7 +8,10 @@ module Mobile
       def index
         immunizations = immunizations_adapter.parse(service.get_immunizations)
         url = request.base_url + request.path
-        paginated_immunizations, meta = Mobile::PaginationHelper.paginate(list: immunizations, validated_params: pagination_params, url: url)
+
+        paginated_immunizations, meta = Mobile::PaginationHelper.paginate(list: immunizations,
+                                                                          validated_params: pagination_params,
+                                                                          url: url)
 
         render json: Mobile::V1::ImmunizationSerializer.new(paginated_immunizations, meta)
       end

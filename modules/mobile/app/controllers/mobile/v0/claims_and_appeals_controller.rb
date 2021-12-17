@@ -72,7 +72,7 @@ module Mobile
         list, meta = paginate(list, validated_params)
 
         options = { meta: { errors: errors, pagination: meta.dig(:meta, :pagination) },
-                    links: meta[:links]}
+                    links: meta[:links] }
 
         [Mobile::V0::ClaimOverviewSerializer.new(list, options), status]
       end

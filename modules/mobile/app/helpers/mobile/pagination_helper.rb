@@ -1,18 +1,23 @@
+# frozen_string_literal: true
+
 module Mobile
   class PaginationHelper
+    DEFAULT_PAGE_NUMBER = 1
+    DEFAULT_PAGE_SIZE = 10
 
     attr_reader :list, :validated_params, :url, :errors, :page_number, :page_size
-    def initialize(list, validated_params, url, errors)
+
+    def initialize(list:, validated_params:, url:, errors:)
       @list = list
       @validated_params = validated_params
       @url = url
       @errors = errors
-      @page_number = validated_params[:page_number]
-      @page_size = validated_params[:page_size]
+      @page_number = validated_params[:page_number] || DEFAULT_PAGE_NUMBER
+      @page_size = validated_params[:page_size] || DEFAULT_PAGE_SIZE
     end
 
     def self.paginate(list:, validated_params:, url:, errors: nil)
-      new(list, validated_params, url, errors).paginate
+      new(list: list, validated_params: validated_params, url: url, errors: errors).paginate
     end
 
     def paginate
@@ -35,6 +40,8 @@ module Mobile
       [pages[page_number - 1], page_meta_data]
     end
 
+    private
+
     def links(number_of_pages)
       prev_link = page_number > 1 ? link_url([page_number - 1, number_of_pages].min) : nil
       next_link = page_number < number_of_pages ? link_url([page_number + 1, number_of_pages].min) : nil
@@ -55,7 +62,7 @@ module Mobile
     def url_without_page_number
       @url_without_page_number ||= begin
         query_strings = []
-        %w(start_date end_date use_cache show_completed).each do |key|
+        %w[start_date end_date use_cache show_completed].each do |key|
           next unless validated_params.key?(key)
 
           camelized = key.camelize(:lower)
@@ -64,7 +71,7 @@ module Mobile
 
         query_strings << "page[size]=#{page_size}"
 
-        url + '?' + query_strings.join('&')
+        "#{url}?#{query_strings.join('&')}"
       end
     end
   end

@@ -83,7 +83,9 @@ module Mobile
           appointment.start_date_utc.between? validated_params[:start_date], validated_params[:end_date]
         end
         url = request.base_url + request.path
-        page_appointments, page_meta_data = Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
+        page_appointments, page_meta_data = Mobile::PaginationHelper.paginate(list: appointments,
+                                                                              validated_params: validated_params,
+                                                                              url: url)
 
         Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
       end
