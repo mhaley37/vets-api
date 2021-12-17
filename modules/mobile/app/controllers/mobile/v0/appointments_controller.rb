@@ -27,7 +27,10 @@ module Mobile
 
         raise Mobile::V0::Exceptions::ValidationErrors, validated_params if validated_params.failure?
 
-        render json: fetch_cached_or_service(validated_params)
+        appointments = fetch_cached_or_service(validated_params)
+        page_appointments, page_meta_data = paginate(appointments, validated_params)
+
+        render json: Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
       end
 
       def cancel
@@ -77,17 +80,15 @@ module Mobile
         end
 
         appointments.reverse! if validated_params[:reverse_sort]
+        appointments
+      end
 
-        # filter by request start and end date params here
+      def paginate(appointments, validated_params)
         appointments = appointments.filter do |appointment|
           appointment.start_date_utc.between? validated_params[:start_date], validated_params[:end_date]
         end
         url = request.base_url + request.path
-        page_appointments, page_meta_data = Mobile::PaginationHelper.paginate(list: appointments,
-                                                                              validated_params: validated_params,
-                                                                              url: url)
-
-        Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
+        Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
       end
 
       def appointments_proxy
