@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require_relative '../support/iam_session_helper'
-require_relative '../support/matchers/json_schema_matcher'
+require_relative '../../support/iam_session_helper'
+require_relative '../../support/matchers/json_schema_matcher'
 
 RSpec.describe 'immunizations', type: :request do
   include JsonSchemaMatchers
