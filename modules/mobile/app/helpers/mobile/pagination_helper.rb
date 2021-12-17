@@ -9,10 +9,6 @@ module Mobile
       @errors = errors
       @page_number = validated_params[:page_number]
       @page_size = validated_params[:page_size]
-
-      # consider raising error if required params aren't present
-      # required params: page size, page number,
-      # optional params: start date, end date, use cache, show completed
     end
 
     def self.paginate(list:, validated_params:, url:, errors: nil)
@@ -40,31 +36,36 @@ module Mobile
     end
 
     def links(number_of_pages)
-      composed_url = url + "?" + query_strings.join("&")
-
-      prev_link = page_number > 1 ? "#{composed_url}&page[number]=#{[page_number - 1, number_of_pages].min}" : nil
-      next_link = page_number < number_of_pages ? "#{composed_url}&page[number]=#{[page_number + 1, number_of_pages].min}" : nil
+      prev_link = page_number > 1 ? link_url([page_number - 1, number_of_pages].min) : nil
+      next_link = page_number < number_of_pages ? link_url([page_number + 1, number_of_pages].min) : nil
 
       {
-        self: "#{composed_url}&page[number]=#{page_number}",
-        first: "#{composed_url}&page[number]=1",
+        self: link_url(page_number),
+        first: link_url('1'),
         prev: prev_link,
         next: next_link,
-        last: "#{composed_url}&page[number]=#{number_of_pages}"
+        last: link_url(number_of_pages)
       }
     end
 
-    def query_strings
-      query_strings = []
-      %w(start_date end_date use_cache show_completed).each do |key|
-        next unless validated_params.key?(key)
+    def link_url(display_page_number)
+      "#{url_without_page_number}&page[number]=#{display_page_number}"
+    end
 
-        camelized = key.camelize(:lower)
-        query_strings << "#{camelized}=#{validated_params[key]}"
+    def url_without_page_number
+      @url_without_page_number ||= begin
+        query_strings = []
+        %w(start_date end_date use_cache show_completed).each do |key|
+          next unless validated_params.key?(key)
+
+          camelized = key.camelize(:lower)
+          query_strings << "#{camelized}=#{validated_params[key]}"
+        end
+
+        query_strings << "page[size]=#{page_size}"
+
+        url + '?' + query_strings.join('&')
       end
-
-      query_strings << "page[size]=#{page_size}"
-      query_strings
     end
   end
 end
