@@ -92,7 +92,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-4KG3N5YUSPTWD3DAFMLMRL5V5U000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-4KG3N5YUSPTWD3DAFMLMRL5V5U000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-4KG3N5YUSPTWD3DAFMLMRL5V5U000000' } } } },
              { 'id' => 'I2-YYBTWDMLX6WLFV3GBSIGT5CZO4000000',
                'type' => 'immunization',
                'attributes' =>
@@ -113,7 +113,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-2FPCKUIXVR7RJLLG34XVWGZERM000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
              { 'id' => 'I2-LA34JJPECU7NQFSNCRULFSVQ3M000000',
                'type' => 'immunization',
                'attributes' =>
@@ -133,7 +133,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-2FPCKUIXVR7RJLLG34XVWGZERM000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
              { 'id' => 'I2-DOUHUYLFJLLPSJLACUDAJF5GF4000000',
                'type' => 'immunization',
                'attributes' =>
@@ -154,7 +154,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
              { 'id' => 'I2-VLMNAJAIAEAA3TR34PW5VHUFPM000000',
                'type' => 'immunization',
                'attributes' =>
@@ -175,7 +175,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
              { 'id' => 'I2-GY27FURWILSYXZTY2GQRNJH57U000000',
                'type' => 'immunization',
                'attributes' =>
@@ -196,7 +196,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-2FPCKUIXVR7RJLLG34XVWGZERM000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
              { 'id' => 'I2-F3CW7J5IRY6PVIEVDMRL4R4W6M000000',
                'type' => 'immunization',
                'attributes' =>
@@ -231,7 +231,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-2FPCKUIXVR7RJLLG34XVWGZERM000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-2FPCKUIXVR7RJLLG34XVWGZERM000000' } } } },
              { 'id' => 'I2-7PQYOMZCN4FG2Z545JOOLAVCBA000000',
                'type' => 'immunization',
                'attributes' =>
@@ -251,7 +251,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
              { 'id' => 'I2-2ZWOY2V6JJQLVARKAO25HI2V2M000000',
                'type' => 'immunization',
                'attributes' =>
@@ -287,7 +287,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
              { 'id' => 'I2-N7A6Q5AU6W5C6O4O7QEDZ3SJXM000000',
                'type' => 'immunization',
                'attributes' =>
@@ -307,7 +307,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } },
              { 'id' => 'I2-2BCP5BAI6N7NQSAPSVIJ6INQ4A000000',
                'type' => 'immunization',
                'attributes' =>
@@ -327,7 +327,7 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } }
+                         'www.example.com/mobile/v1/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } }
               ],
                 'meta' => {
                     'pagination' => {
@@ -405,7 +405,7 @@ RSpec.describe 'immunizations', type: :request do
                   'type' => 'location'
                 },
                 'links' => {
-                  'related' => 'www.example.com/mobile/v0/health/locations/I2-4KG3N5YUSPTWD3DAFMLMRL5V5U000000'
+                  'related' => 'www.example.com/mobile/v1/health/locations/I2-4KG3N5YUSPTWD3DAFMLMRL5V5U000000'
                 }
               }
             }
