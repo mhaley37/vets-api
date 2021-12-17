@@ -24,10 +24,10 @@ module Mobile
       end
 
       def pagination_params
-        Mobile::V0::Contracts::GetPaginatedList.new.call(
-          page_number: 1,
-          page_size: 100,
-          use_cache: true
+        @pagination_params ||= Mobile::V0::Contracts::GetPaginatedList.new.call(
+          page_number: params.dig(:page, :number) || 1,
+          page_size: params.dig(:page, :size) || 10,
+          # use_cache: params[:use_cache] || true
         )
       end
     end

@@ -29,7 +29,7 @@ RSpec.describe 'immunizations', type: :request do
     context 'when the expected fields have data' do
       before do
         VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
-          get '/mobile/v1/health/immunizations', headers: iam_headers, params: nil
+          get '/mobile/v1/health/immunizations', headers: iam_headers, params: {page: {size: 100}}
         end
       end
 
@@ -338,11 +338,11 @@ RSpec.describe 'immunizations', type: :request do
                     }
                   },
                   'links' => {
-                    'self' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1',
-                    'first' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1',
+                    'self' => 'http://www.example.com/mobile/v1/health/immunizations?page[size]=100&page[number]=1',
+                    'first' => 'http://www.example.com/mobile/v1/health/immunizations?page[size]=100&page[number]=1',
                     'prev' => nil,
                     'next' => nil,
-                    'last' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1'
+                    'last' => 'http://www.example.com/mobile/v1/health/immunizations?page[size]=100&page[number]=1'
                   }
              }
         )
@@ -486,6 +486,49 @@ RSpec.describe 'immunizations', type: :request do
               'shortDescription' => 'Influenza  seasonal  injectable  preservative free'
             }
           )
+        end
+      end
+    end
+
+    describe 'pagination' do
+      it 'defaults to the first page with ten results per page' do
+        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
+          get '/mobile/v1/health/immunizations', headers: iam_headers, params: nil
+        end
+
+        expect(response.parsed_body['data'].length).to eq(10)
+      end
+
+      it 'returns the requested number of records' do
+        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
+          get '/mobile/v1/health/immunizations', headers: iam_headers, params: {page: {size: 2}}
+        end
+
+        expect(response.parsed_body['data'].length).to eq(2)
+      end
+
+      it 'returns the correct page' do
+        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
+          get '/mobile/v1/health/immunizations', headers: iam_headers, params: {page: {size: 2, number: 3}}
+          ids = response.parsed_body['data'].map {|i| i['id'] }
+
+          # these are the fifth and sixth records in the vcr cassette
+          expect(ids).to eq(['I2-LA34JJPECU7NQFSNCRULFSVQ3M000000', 'I2-DOUHUYLFJLLPSJLACUDAJF5GF4000000'])
+        end
+      end
+
+      it 'creates navigation links for the client' do
+        VCR.use_cassette('lighthouse_health/get_immunizations', match_requests_on: %i[method uri]) do
+          size = 2
+          number = 3
+          get '/mobile/v1/health/immunizations', headers: iam_headers, params: {page: {size: size, number: number}}
+          expected_links = {"self"=>"http://www.example.com/mobile/v1/health/immunizations?page[size]=#{size}&page[number]=#{number}",
+            "first"=>"http://www.example.com/mobile/v1/health/immunizations?page[size]=#{size}&page[number]=1",
+            "prev"=>"http://www.example.com/mobile/v1/health/immunizations?page[size]=#{size}&page[number]=#{number - 1}",
+            "next"=>"http://www.example.com/mobile/v1/health/immunizations?page[size]=#{size}&page[number]=#{number + 1}",
+            "last"=>"http://www.example.com/mobile/v1/health/immunizations?page[size]=#{size}&page[number]=8"}
+
+          expect(response.parsed_body['links']).to eq(expected_links)
         end
       end
     end
