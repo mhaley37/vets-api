@@ -327,7 +327,24 @@ RSpec.describe 'immunizations', type: :request do
                      { 'id' => 'I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000', 'type' => 'location' },
                      'links' =>
                        { 'related' =>
-                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } }] }
+                         'www.example.com/mobile/v0/health/locations/I2-3JYDMXC6RXTU4H25KRVXATSEJQ000000' } } } }
+              ],
+                'meta' => {
+                    'pagination' => {
+                      'currentPage' => 1,
+                      'perPage' => 100,
+                      'totalPages' => 1,
+                      'totalEntries' => 15
+                    }
+                  },
+                  'links' => {
+                    'self' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1',
+                    'first' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1',
+                    'prev' => nil,
+                    'next' => nil,
+                    'last' => 'http://www.example.com/mobile/v1/health/immunizations?useCache=true&page[size]=100&page[number]=1'
+                  }
+             }
         )
       end
 
