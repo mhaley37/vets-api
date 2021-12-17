@@ -13,14 +13,13 @@ module Mobile
         use_cache = params[:useCache] || true
         start_date = params[:startDate] || one_year_ago.iso8601
         end_date = params[:endDate] || one_year_from_now.iso8601
-        page = params[:page] || { number: 1, size: 10 }
         reverse_sort = !(params[:sort] =~ /-startDateUtc/).nil?
 
         validated_params = Mobile::V0::Contracts::GetPaginatedList.new.call(
           start_date: start_date,
           end_date: end_date,
-          page_number: page[:number],
-          page_size: page[:size],
+          page_number: params.dig(:page, :number) || 1,
+          page_size: params.dig(:page, :size) || 10,
           use_cache: use_cache,
           reverse_sort: reverse_sort
         )
