@@ -2,6 +2,9 @@
 
 module Mobile
   class PaginationHelper
+    DEFAULT_PAGE_NUMBER = 1
+    DEFAULT_PAGE_SIZE = 10
+
     attr_reader :list, :validated_params, :url, :errors, :page_number, :page_size
 
     def initialize(list:, validated_params:, url:, errors:)
@@ -9,8 +12,8 @@ module Mobile
       @validated_params = validated_params
       @url = url
       @errors = errors
-      @page_number = validated_params[:page_number]
-      @page_size = validated_params[:page_size]
+      @page_number = validated_params[:page_number] || DEFAULT_PAGE_NUMBER
+      @page_size = validated_params[:page_size] || DEFAULT_PAGE_SIZE
     end
 
     def self.paginate(list:, validated_params:, url:, errors: nil)

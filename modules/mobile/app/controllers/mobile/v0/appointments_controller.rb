@@ -18,8 +18,8 @@ module Mobile
         validated_params = Mobile::V0::Contracts::GetPaginatedList.new.call(
           start_date: start_date,
           end_date: end_date,
-          page_number: params.dig(:page, :number) || 1,
-          page_size: params.dig(:page, :size) || 10,
+          page_number: params.dig(:page, :number),
+          page_size: params.dig(:page, :size),
           use_cache: use_cache,
           reverse_sort: reverse_sort
         )

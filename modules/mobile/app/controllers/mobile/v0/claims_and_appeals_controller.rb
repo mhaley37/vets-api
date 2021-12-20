@@ -100,8 +100,8 @@ module Mobile
         pagination_params = {
           start_date: params[:startDate] || DateTime.new(1700).iso8601,
           end_date: params[:endDate] || (DateTime.now.utc.beginning_of_day + 1.year).iso8601,
-          page_number: params.dig(:page, :number) || 1,
-          page_size: params.dig(:page, :size) || 10,
+          page_number: params.dig(:page, :number),
+          page_size: params.dig(:page, :size),
           use_cache: params[:useCache] || true
         }
         pagination_params[:show_completed] = params[:showCompleted] if params[:showCompleted].present?
