@@ -5,15 +5,9 @@ module Mobile
     DEFAULT_PAGE_NUMBER = 1
     DEFAULT_PAGE_SIZE = 10
 
-    class MobilePaginationHelperError < StandardError; end
-
     attr_reader :list, :validated_params, :url, :errors, :page_number, :page_size
 
     def initialize(list:, validated_params:, url:, errors:)
-      unless validated_params.is_a? Dry::Validation::Result
-        raise MobilePaginationHelperError, 'validated_params must be of type Dry::Validation::Result'
-      end
-
       @list = list
       @validated_params = validated_params
       @url = url

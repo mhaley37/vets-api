@@ -63,13 +63,5 @@ RSpec.describe Mobile::PaginationHelper, type: :model do
 
       expect(meta[:errors]).to eq(error_message)
     end
-
-    it 'raises an error if the validated_params are not an instance of the correct class' do
-      unvalidated_params = { page_number: 'trust me', page_size: 'we good' }
-      expect do
-        described_class.paginate(list: list, validated_params: unvalidated_params, url: url)
-      end.to raise_error(Mobile::PaginationHelper::MobilePaginationHelperError,
-                         'validated_params must be of type Dry::Validation::Result')
-    end
   end
 end
