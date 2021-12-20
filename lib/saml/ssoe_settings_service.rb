@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'uri'
+require 'json'
+
 module SAML
   # This class is responsible for putting together a complete ruby-saml
   # SETTINGS object, meaning, our static SP settings + the IDP settings
@@ -65,15 +69,27 @@ module SAML
       end
 
       def notify_slack(hash_diff)
-        client = SlackNotify::Client.new(
-          webhook_url: Settings.saml_ssoe.slack_webhook_url,
-          channel: '#vsp-identity',
-          username: "Identity - #{Settings.vsp_environment}"
-        )
-        hash_diff[:test] = 'test discrepancy'
-        message = 'Discrepancy detected between local and remote SAML IDP metadata settings. '
-        message += "Detected differences: `#{hash_diff}`"
-        client.notify(message)
+        data = {
+          text: 'SAML metadata differences detected',
+          blocks: [
+            {
+              "type": 'section',
+              "text": {
+                "type": 'mrkdwn',
+                "text": 'Additional information goes **here**'
+              }
+            }
+          ],
+          channel: '#meta_headers_alert_test'
+        }
+
+        uri = URI.parse(Settings.saml_ssoe.slack_webhook_url)
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+
+        request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
+        request.body = data.to_json
+        response = http.request(request)
       end
     end
   end
