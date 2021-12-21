@@ -14,17 +14,28 @@ module DebtManagementCenter
     def download_pdf
       id = @financial_status_report.filenet_id
 
+      puts "Filenet Id: #{id}"
+
       raise FilenetIdNotPresent if id.blank?
 
       uri = URI.parse(
         "#{Settings.dmc.url}financial-status-report/documentstream?objectId=#{id}"
       )
+
+      puts "URI: #{uri}"
+
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.request_uri)
       http.use_ssl = true
 
       request_headers.each { |header, value| request[header] = value }
+
+      puts "Request: #{request&.inspect}"
+
       response = http.request(request)
+
+      puts "Response: #{response&.inspect}"
+      
       response.body
     end
 

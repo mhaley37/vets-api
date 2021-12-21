@@ -49,6 +49,8 @@ module DebtManagementCenter
     def get_pdf
       financial_status_report = DebtManagementCenter::FinancialStatusReport.find(@user.uuid)
 
+      puts "Financial Status Report: #{financial_status_report&.inspect}"
+
       raise FSRNotFoundInRedis if financial_status_report.blank?
 
       downloader = DebtManagementCenter::FinancialStatusReportDownloader.new(financial_status_report)
