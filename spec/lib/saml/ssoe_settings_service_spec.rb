@@ -57,9 +57,9 @@ RSpec.describe SAML::SSOeSettingsService do
         VCR.use_cassette('saml/idp_int_metadata_isam.yml', match_requests_on: %i[path query]) do
           with_settings(Settings.saml_ssoe,
                         idp_metadata_url: 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp') do
-            # expect_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse)
             parsed_metadata = SAML::SSOeSettingsService.parse_idp_metadata
-            expect(parsed_metadata).to be_an_instance_of(OneLogin::RubySaml::Settings)
+            expect(parsed_metadata.name_identifier_format)
+              .to eq('urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress')
           end
         end
       end
@@ -69,12 +69,11 @@ RSpec.describe SAML::SSOeSettingsService do
       it 'returns parsed metadata from url and notifies the #vsp-identity Slack channel' do
         VCR.use_cassette('saml/updated_idp_int_metadata_isam.yml', match_requests_on: %i[path query]) do
           with_settings(Settings.saml_ssoe,
-                        slack_webhook_url: 'https://hooks.slack.com/workflows/exampleABC',
+                        identity_slack_webhook: 'https://hooks.slack.com/workflows/exampleABC',
                         idp_metadata_url: 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp') do
-            # expect_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse_remote)
             parsed_metadata = SAML::SSOeSettingsService.parse_idp_metadata
-            expect(parsed_metadata).to be_an_instance_of(OneLogin::RubySaml::Settings)
-            # expect_any_instance_of(SlackNotify::Client).to receive(:notify)
+            expect(parsed_metadata.name_identifier_format)
+              .to eq('urn:oasis:names:tc:SAML:1.1:nameid-format:va_eauth_uid')
           end
         end
       end

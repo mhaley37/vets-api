@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'net/http'
-require 'uri'
-require 'json'
+require 'slack/service'
 
 module SAML
   # This class is responsible for putting together a complete ruby-saml
@@ -53,7 +51,11 @@ module SAML
 
         hash_diff = generate_saml_hash_diff(url_hash, settings_hash)
         if !url_hash.nil? && !hash_diff.empty?
-          notify_slack(hash_diff) if %w[development staging production].include? Settings.vsp_environment
+          if %w[development staging production].include? Settings.vsp_environment
+            slack_text = build_saml_diff_slack_text(hash_diff)
+            slack_service = Slack::Service.new(slack_text)
+            slack_service.notify
+          end
           parser.parse_remote(settings_url)
         else
           parser.parse(settings_file)
@@ -68,28 +70,28 @@ module SAML
         hash_diff
       end
 
-      def notify_slack(hash_diff)
-        data = {
-          text: 'SAML metadata differences detected',
-          blocks: [
-            {
-              "type": 'section',
-              "text": {
-                "type": 'mrkdwn',
-                "text": 'Additional information goes **here**'
-              }
-            }
+      def build_saml_diff_slack_text(hash_diff)
+        diff_string = ''
+        hash_diff.each do |key, _value|
+          diff_string += "• `#{key}`\n"
+        end
+
+        {
+          header: 'ISAM SAML Metadata differences detected',
+          text: [
+            { block_type: 'section',
+              text: "*ISAM SAML Metadata differences detected*\n" \
+                    "Difference detected on: `#{Settings.vsp_environment}`\n" \
+                    "Use <#{Settings.saml_ssoe.idp_metadata_url}|IAM's current metadata file> to update `vets-api`",
+              text_type: 'mrkdwn' },
+            { block_type: 'divider' },
+            { block_type: 'section',
+              text: "The following SAML attributes have been changed:\n#{diff_string}",
+              text_type: 'mrkdwn' }
           ],
-          channel: '#meta_headers_alert_test'
+          channel: '#meta_headers_alert_test',
+          webhook: Settings.saml_ssoe.identity_slack_webhook
         }
-
-        uri = URI.parse(Settings.saml_ssoe.slack_webhook_url)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-
-        request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
-        request.body = data.to_json
-        response = http.request(request)
       end
     end
   end
