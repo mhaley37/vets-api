@@ -57,9 +57,10 @@ RSpec.describe SAML::SSOeSettingsService do
         VCR.use_cassette('saml/idp_int_metadata_isam.yml', match_requests_on: %i[path query]) do
           with_settings(Settings.saml_ssoe,
                         idp_metadata_url: 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp') do
-            parsed_metadata = SAML::SSOeSettingsService.parse_idp_metadata
-            expect(parsed_metadata.name_identifier_format)
-              .to eq('urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress')
+            allow_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse)
+              .with(File.read(Settings.saml_ssoe.idp_metadata_file))
+            expect_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse)
+            SAML::SSOeSettingsService.parse_idp_metadata
           end
         end
       end
@@ -71,9 +72,22 @@ RSpec.describe SAML::SSOeSettingsService do
           with_settings(Settings.saml_ssoe,
                         identity_slack_webhook: 'https://hooks.slack.com/workflows/exampleABC',
                         idp_metadata_url: 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp') do
-            parsed_metadata = SAML::SSOeSettingsService.parse_idp_metadata
-            expect(parsed_metadata.name_identifier_format)
-              .to eq('urn:oasis:names:tc:SAML:1.1:nameid-format:va_eauth_uid')
+            allow_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse_remote)
+              .with(Settings.saml_ssoe.idp_metadata_url)
+            expect_any_instance_of(OneLogin::RubySaml::IdpMetadataParser).to receive(:parse_remote)
+            SAML::SSOeSettingsService.parse_idp_metadata
+          end
+        end
+      end
+
+      it 'notifies the #vsp-identity channel on Slack' do
+        VCR.use_cassette('saml/updated_idp_int_metadata_isam.yml', match_requests_on: %i[path query]) do
+          with_settings(Settings.saml_ssoe,
+                        identity_slack_webhook: 'https://hooks.slack.com/workflows/exampleABC',
+                        idp_metadata_url: 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp') do
+            allow_any_instance_of(Slack::Service).to receive(:notify)
+            expect_any_instance_of(Slack::Service).to receive(:notify)
+            SAML::SSOeSettingsService.parse_idp_metadata
           end
         end
       end
