@@ -47,9 +47,10 @@ module DebtManagementCenter
     # @return [String]
     #
     def get_pdf
+      puts "User uuid: #{@user.uuid}"
       financial_status_report = DebtManagementCenter::FinancialStatusReport.find(@user.uuid)
 
-      puts "Financial Status Report: #{financial_status_report&.inspect}"
+      puts "Financial Status Report Missing: #{financial_status_report.blank?}"
 
       raise FSRNotFoundInRedis if financial_status_report.blank?
 
