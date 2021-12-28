@@ -77,8 +77,8 @@ review_instance_slug: ~
 
 sidekiq_admin_panel: false
 
-salesforce-gibft:
-  url: "https://va--rdtcddev.cs33.my.salesforce.com/"
+salesforce:
+  env: dev
 
 salesforce-carma:
   mock: true
@@ -87,8 +87,15 @@ salesforce-carma:
   signing_key_path: "spec/fixtures/carma/privatekey.pem" # A dummy private key used for test suite
   username: fake-user@va.gov.carmafake
 
-salesforce:
-  env: dev
+salesforce-gibft:
+  url: "https://va--rdtcddev.cs33.my.salesforce.com/"
+
+mulesoft-carma:
+  mock: true
+  url: "https://fake-mulesoft.vapi.va.gov"
+  client_id: BEEFCAFE1234
+  client_secret: C0FFEEFACE4321
+  timeout: 10 
 
 form_10_10cg:
   poa:

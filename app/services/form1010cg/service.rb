@@ -5,6 +5,7 @@
 require 'carma/models/submission'
 require 'carma/models/attachments'
 require 'mpi/service'
+require 'mulesoft/service'
 require 'emis/service'
 
 module Form1010cg
@@ -187,7 +188,7 @@ module Form1010cg
     end
 
     def carma_client
-      @carma_client ||= CARMA::Client::Client.new
+      @carma_client ||= Flipper.enabled?(:caregiver_mulesoft) ? MuleSoft::Service.new : CARMA::Client::Client.new
     end
 
     def emis_service
