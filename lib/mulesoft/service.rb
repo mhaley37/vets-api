@@ -5,6 +5,7 @@ module MuleSoft
     include Common::Client::Concerns::Monitoring
 
     HOST = Settings['mulesoft-carma'].url
+    STATSD_KEY_PREFIX = 'api.carma.mulesoft'
 
     # @param [payload] JSON string of payload to submit to MuleSoft
     # @return [HttpResponse]
