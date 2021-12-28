@@ -27,10 +27,9 @@ module FastTrack
         send_fast_track_engineer_email_for_testing(form526_submission_id)
 
         bp_readings = FastTrack::HypertensionObservationData.new(client.get_resource('observations')).transform
-        return if no_recent_bp_readings(bp_readings)
+        return if bp_readings.blank?
 
-        pdf = pdf(full_name, filtered_bp_readings(bp_readings),
-                  filtered_medications(client.get_resource('medications')))
+        pdf = pdf(full_name, bp_readings, filtered_medications(client.get_resource('medications')))
 
         upload_pdf_and_attach_special_issue(form526_submission, pdf)
       rescue => e
@@ -68,16 +67,6 @@ module FastTrack
       if Flipper.enabled?(:disability_hypertension_compensation_fast_track_add_rrd)
         FastTrack::HypertensionSpecialIssueManager.new(form526_submission).add_special_issue
       end
-    end
-
-    def filtered_bp_readings(bp_readings)
-      bp_readings = bp_readings.filter do |reading|
-        reading[:issued].to_date > 1.year.ago
-      end
-
-      bp_readings.sort_by do |reading|
-        reading[:issued].to_date
-      end.reverse!
     end
 
     def filtered_medications(medication_request_response)
