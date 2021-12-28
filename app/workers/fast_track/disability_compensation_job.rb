@@ -24,8 +24,6 @@ module FastTrack
       client = Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
 
       begin
-        send_fast_track_engineer_email_for_testing(form526_submission_id)
-
         bp_readings = FastTrack::HypertensionObservationData.new(client.get_resource('observations')).transform
         return if bp_readings.blank?
 
@@ -36,21 +34,23 @@ module FastTrack
         Rails.logger.error 'Disability Compensation Fast Track Job failing for form' \
                            "id:#{form526_submission.id}. With error message: #{e.message}" \
                            "with backtrace: #{e.backtrace}"
+        send_fast_track_engineer_email_for_testing(form526_submission_id, e.message, e.backtrace)
         raise
       end
     end
 
     private
 
-    def send_fast_track_engineer_email_for_testing(form526_submission_id)
+    def send_fast_track_engineer_email_for_testing(form526_submission_id, error_message, backtrace)
       # TODO: This should be removed once we have basic metrics
       # on this feature and the visibility is imporved.
-      body = "A claim was just submitted on the #{Rails.env} environment " \
-             "with submission id: #{form526_submission_id} and job_id #{jid}"
+      body = "A claim just errored on the #{Rails.env} environment " \
+             "with submission id: #{form526_submission_id} and job_id #{jid}." \
+             "The error was: #{error_message}. The backtrace was: #{backtrace}"
       ActionMailer::Base.mail(
         from: ApplicationMailer.default[:from],
         to: 'natasha.ibrahim@gsa.gov, emily.theis@gsa.gov, julia.l.allen@gsa.gov, tadhg.ohiggins@gsa.gov',
-        subject: 'Fast Track Hypertension Code Hit',
+        subject: 'Fast Track Hypertension Errored',
         body: body
       ).deliver_now
     end
