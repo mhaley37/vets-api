@@ -4,11 +4,10 @@ module FastTrack
   class HypertensionPdfGenerator
     attr_accessor :patient, :bp_data, :medications
 
-    def initialize(patient, bp_data, medications, date)
+    def initialize(patient, bp_data, medications)
       @patient = patient
       @bp_data = bp_data
       @medications = medications
-      @date = date
     end
 
     def generate
@@ -18,6 +17,8 @@ module FastTrack
       pdf = add_medications(pdf) if medications.length > 1
       add_about(pdf)
     end
+
+    private
 
     def stringify_patient
       names = patient.with_indifferent_access
@@ -57,8 +58,9 @@ module FastTrack
       header = bp_data.length.positive? ? 'One Year of Blood Pressure History' : 'No blood pressure records found'
       bp_note =
         bp_data.length.positive? ? "<font size='11'>Blood pressure is shown as systolic/diastolic.\n</font>" : ''
-      end_date = @date.strftime('%m/%d/%Y')
-      start_date = (@date - 1.year).strftime('%m/%d/%Y')
+      date = Time.zone.today
+      end_date = date.strftime('%m/%d/%Y')
+      start_date = (date - 1.year).strftime('%m/%d/%Y')
       search_window = "VHA records searched from #{start_date} to #{end_date}"
       bp_intro_lines = [
         "<font size='16'>#{header}</font>",
