@@ -39,9 +39,6 @@ RSpec.describe Form1010cg::DeliverAttachmentsJob do
         let(:auditor) { double('auditor') }
 
         before do
-          puts "\n-=-=> ##{__method__} -> claim_guid:\t\t\t#{claim_guid}"
-          puts "-=-=> ##{__method__} -> submission.claim_guid:\t#{submission.claim_guid}"
-          puts "-=-=> ##{__method__} -> pdf_file_path:\t\t#{pdf_file_path}\n"
           submission.claim = claim
           submission.save!
         end
