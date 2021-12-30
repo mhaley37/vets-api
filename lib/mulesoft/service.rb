@@ -7,13 +7,13 @@ module MuleSoft
     HOST = Settings['mulesoft-carma'].url
     STATSD_KEY_PREFIX = 'api.carma.mulesoft'
 
-    # @param [payload] JSON string of payload to submit to MuleSoft
+    # @param payload [String] JSON string of 10-10CG form data to submit to MuleSoft
     # @return [HttpResponse]
     def create_submission(payload)
       monitored_post('/submit', payload)
     end
 
-    # @param [payload] JSON string of payload to submit to MuleSoft
+    # @param payload [String] JSON string of payload to submit to MuleSoft
     # @return [HttpResponse]
     def upload_attachments(payload)
       monitored_post('/addDocument', payload)
@@ -37,13 +37,13 @@ module MuleSoft
     # @return [HttpResponse]
     def monitored_post(resource, payload)
       with_monitoring do
-        submit_payload(endpoint(resource: resource), payload)
+        submit_post(endpoint(resource: resource), payload)
       end
     end
 
-    # @param [payload] JSON string of payload to submit to MuleSoft
+    # @param payload [String] JSON string of payload to submit to MuleSoft
     # @return [HttpResponse]
-    def submit_payload(uri, payload)
+    def submit_post(uri, payload)
       Net::HTTP.start(uri.host, uri.port) do |http|
         http.open_timeout = timeout
         http.request(json_post(uri, payload))
