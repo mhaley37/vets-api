@@ -45,43 +45,44 @@ describe PdfFill::Filler, type: :model do
 
   describe '#fill_form', run_at: '2017-07-25 00:00:00 -0400' do
     [
-      {
-        form_id: '21P-530',
-        factory: :burial_claim
-      },
-      {
-        form_id: '21P-527EZ',
-        factory: :pension_claim
-      },
-      {
-        form_id: '10-10CG',
-        factory: :caregivers_assistance_claim,
-        input_data_fixture_dir: 'pdf_fill/10-10CG',
-        output_pdf_fixture_dir: 'pdf_fill/10-10CG/unsigned',
-        fill_options: {
-          sign: false
-        }
-      },
-      {
-        form_id: '10-10CG',
-        factory: :caregivers_assistance_claim,
-        input_data_fixture_dir: 'pdf_fill/10-10CG',
-        output_pdf_fixture_dir: 'pdf_fill/10-10CG/signed',
-        fill_options: {
-          sign: true
-        }
-      },
-      {
-        form_id: '686C-674',
-        factory: :dependency_claim
-      },
+      # {
+      #   form_id: '21P-530',
+      #   factory: :burial_claim
+      # },
+      # {
+      #   form_id: '21P-527EZ',
+      #   factory: :pension_claim
+      # },
+      # {
+      #   form_id: '10-10CG',
+      #   factory: :caregivers_assistance_claim,
+      #   input_data_fixture_dir: 'pdf_fill/10-10CG',
+      #   output_pdf_fixture_dir: 'pdf_fill/10-10CG/unsigned',
+      #   fill_options: {
+      #     sign: false
+      #   }
+      # },
+      # {
+      #   form_id: '10-10CG',
+      #   factory: :caregivers_assistance_claim,
+      #   input_data_fixture_dir: 'pdf_fill/10-10CG',
+      #   output_pdf_fixture_dir: 'pdf_fill/10-10CG/signed',
+      #   fill_options: {
+      #     sign: true
+      #   }
+      # },
+      # {
+      #   form_id: '686C-674',
+      #   factory: :dependency_claim
+      # },
       {
         form_id: '21-526EZ',
         factory: :disability_claim
       }
     ].each do |form_id:, factory:, **options|
       context "form #{form_id}" do
-        %w[simple kitchen_sink overflow].each do |type|
+        # %w[simple kitchen_sink overflow].each do |type|
+        %w[kitchen_sink].each do |type|
           context "with #{type} test data" do
             let(:input_data_fixture_dir) { options[:input_data_fixture_dir] || "pdf_fill/#{form_id}" }
             let(:output_pdf_fixture_dir) { options[:output_pdf_fixture_dir] || "pdf_fill/#{form_id}" }
