@@ -89,8 +89,8 @@ module SAML
               text: "The following SAML attributes have been changed:\n#{diff_string}",
               text_type: 'mrkdwn' }
           ],
-          channel: '#meta_headers_alert_test',
-          webhook: Settings.saml_ssoe.identity_slack_webhook
+          channel: '#va-identity-alerts',
+          webhook: Settings.saml_ssoe.va_identity_alerts_webhook
         }
       end
     end

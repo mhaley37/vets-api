@@ -23,7 +23,7 @@ saml_ssoe:
   relay: ~
   response_signing: false
   response_encryption: false
-  identity_slack_webhook: ~
+  va_identity_alerts_webhook: ~
   slack_webhook_url: ~
 
 ssoe_eauth_cookie:
