@@ -7,6 +7,7 @@ RSpec.describe MedicalCopays::ZeroBalanceStatements do
 
   let(:statements) { [{ 'foo' => 'bar' }] }
   let(:facility_hash) { { 'foo' => ['123'] } }
+  let(:today_date) { Time.zone.today.strftime('%m%d%Y') }
 
   let(:default_params) { { statements: statements, facility_hash: facility_hash } }
 
@@ -128,6 +129,7 @@ RSpec.describe MedicalCopays::ZeroBalanceStatements do
         [
           {
             'pH_AMT_DUE' => 0,
+            'pS_STATEMENT_DATE' => today_date,
             'station' => {
               'facilitY_NUM' => '358',
               'city' => 'PASAY CITY'
@@ -137,6 +139,44 @@ RSpec.describe MedicalCopays::ZeroBalanceStatements do
       end
 
       it 'lists the zero balance facility in VBS format' do
+        expect(subject.build(statements: statements, facility_hash: facility_hash).list).to eq(listed_zero_balances)
+      end
+    end
+
+    context 'there exists a duplicated facility with a zero balance' do
+      before do
+        allow_any_instance_of(Lighthouse::Facilities::Client).to receive(:get_facilities).and_return(
+          [
+            Lighthouse::Facilities::Facility.new(
+              {
+                'id' => 'vha_358',
+                'type' => 'facility',
+                'attributes' => vha_358_attributes
+              }
+            )
+          ]
+        )
+      end
+
+      let(:statements) { [] }
+      # rubocop:disable Lint/DuplicateHashKey
+      let(:facility_hash) { { '358' => ['123456'], '358' => ['654321'] } }
+      # rubocop:enable Lint/DuplicateHashKey
+
+      let(:listed_zero_balances) do
+        [
+          {
+            'pH_AMT_DUE' => 0,
+            'pS_STATEMENT_DATE' => today_date,
+            'station' => {
+              'facilitY_NUM' => '358',
+              'city' => 'PASAY CITY'
+            }
+          }
+        ]
+      end
+
+      it 'lists only the one facility for zero balances' do
         expect(subject.build(statements: statements, facility_hash: facility_hash).list).to eq(listed_zero_balances)
       end
     end
@@ -176,6 +216,7 @@ RSpec.describe MedicalCopays::ZeroBalanceStatements do
         [
           {
             'pH_AMT_DUE' => 0,
+            'pS_STATEMENT_DATE' => today_date,
             'station' => {
               'facilitY_NUM' => '358',
               'city' => 'PASAY CITY'
@@ -183,6 +224,7 @@ RSpec.describe MedicalCopays::ZeroBalanceStatements do
           },
           {
             'pH_AMT_DUE' => 0,
+            'pS_STATEMENT_DATE' => today_date,
             'station' => {
               'facilitY_NUM' => '359',
               'city' => 'DES MOINES'

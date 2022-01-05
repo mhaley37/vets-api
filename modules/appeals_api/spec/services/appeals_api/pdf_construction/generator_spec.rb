@@ -77,6 +77,7 @@ describe AppealsApi::PdfConstruction::Generator do
           it 'generates the expected pdf' do
             generated_pdf = described_class.new(higher_level_review_v2, version: 'V2').generate
             expected_pdf = fixture_filepath('expected_200996_v2.pdf')
+            # Manually test changes to radio buttons
             expect(generated_pdf).to match_pdf(expected_pdf)
             File.delete(generated_pdf) if File.exist?(generated_pdf)
           end
@@ -88,6 +89,7 @@ describe AppealsApi::PdfConstruction::Generator do
           it 'generates the expected pdf' do
             generated_pdf = described_class.new(extra_hlr_v2, version: 'V2').generate
             expected_pdf = fixture_filepath('expected_200996_v2_extra.pdf')
+            # Manually test changes to radio buttons
             expect(generated_pdf).to match_pdf(expected_pdf)
             File.delete(generated_pdf) if File.exist?(generated_pdf)
           end
@@ -96,9 +98,10 @@ describe AppealsApi::PdfConstruction::Generator do
         context 'pdf minimum content verification' do
           let(:minimal_hlr_v2) { create(:minimal_higher_level_review_v2, created_at: '2021-02-03T14:15:16Z') }
 
-          it "generates a pdf and prints 'USE ADDRESS ON FILE'" do
+          it 'generates the expected pdf' do
             generated_pdf = described_class.new(minimal_hlr_v2, version: 'V2').generate
             expected_pdf = fixture_filepath('expected_200996_minimum_v2.pdf')
+            # Manually test changes to radio buttons
             expect(generated_pdf).to match_pdf(expected_pdf)
             File.delete(generated_pdf) if File.exist?(generated_pdf)
           end

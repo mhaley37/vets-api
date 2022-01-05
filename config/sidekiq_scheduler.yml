@@ -26,6 +26,7 @@ EducationForm::Create10203SpoolSubmissionsReport:
 EducationForm::Create10203ApplicantDecisionLetters:
   cron: "45 4 * * MON-FRI America/New_York"
   description: "Send 10203 applicant decision letters to applicants"
+  enabled: false
 
 Preneeds::DeleteOldUploads:
   cron: "15 2 * * * America/New_York"
@@ -168,6 +169,11 @@ AppealsApi::NoticeOfDisagreementUploadStatusBatch:
   every: "60m"
   class: AppealsApi::NoticeOfDisagreementUploadStatusBatch
   description: "Update NoticeOfDisagreement statuses with their Central Mail status"
+
+AppealsApi::SupplementalClaimCleanUpPii:
+  every: ['24h', first_in: '45m']
+  class: AppealsApi::SupplementalClaimCleanUpPii
+  description: "Remove PII of SupplementalClaims that have 1) reached one of the 'completed' statuses and 2) are a week old"
 
 TransactionalEmailAnalyticsJob:
   cron: "0 1 * * * America/New_York"

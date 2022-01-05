@@ -17,9 +17,13 @@ describe Identity::Parsers::GCIds do
           icn: nil,
           sec_id: nil,
           mhv_ids: nil,
+          mhv_ien: nil,
+          mhv_iens: nil,
           active_mhv_ids: nil,
           edipi: nil,
+          edipis: nil,
           vba_corp_id: nil,
+          vba_corp_ids: nil,
           idme_id: nil,
           logingov_id: nil,
           vha_facility_ids: nil,
@@ -109,6 +113,18 @@ describe Identity::Parsers::GCIds do
 
         it 'returns a parsed mhv ids array from the input xml object' do
           expect(subject[:mhv_ids]).to eq [id]
+        end
+      end
+
+      context 'and the format of the ids matches the mhv ien regex' do
+        let(:id_object) { "#{id}^PI^200MHS^USVHA^A" }
+
+        it 'returns a parsed mhv iens array from the input xml object' do
+          expect(subject[:mhv_iens]).to eq [id]
+        end
+
+        it 'returns a parsed mhv ien from the input xml object' do
+          expect(subject[:mhv_ien]).to eq id
         end
       end
 

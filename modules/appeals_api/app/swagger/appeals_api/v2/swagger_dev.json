@@ -2978,6 +2978,7 @@
                 "properties": {
                   "benefitType": {
                     "type": "string",
+                    "description": "If the contested issue is a Disability Compensation issue, acknowledgement of form 5103 is required - see form5103Acknowledged.",
                     "enum": [
                       "compensation",
                       "pensionSurvivorsBenefits",
@@ -3880,15 +3881,19 @@
                     },
                     "additionalProperties": false,
                     "required": [
-
+                      "address",
+                      "phone",
+                      "email"
                     ]
                   },
                   "evidenceSubmission": {
+                    "description": "Evidence may be uploaded up to 7 days from the 'created_at' date of the associated Supplemental Claim via 'supplemental_claims/evidence_submissions'.",
                     "type": "object",
                     "properties": {
                       "evidenceType": {
                         "type": "array",
                         "items": {
+                          "type": "string",
                           "enum": [
                             "upload",
                             "retrieval"
@@ -3917,10 +3922,10 @@
                                 "evidenceDates": {
                                   "type": "array",
                                   "items": {
-                                    "$ref": "#/components/schemas/date"
+                                    "$ref": "#/components/schemas/dateRange"
                                   },
                                   "minItems": 1,
-                                  "maxItems": 8
+                                  "maxItems": 4
                                 }
                               },
                               "additionalProperties": false,
@@ -3943,32 +3948,22 @@
                     "required": [
                       "evidenceType"
                     ],
-                    "anyOf": [
-                      {
-                        "not": {
-                          "properties": {
-                            "evidenceType": {
-                              "contains": {
-                                "enum": [
-                                  "retrieval"
-                                ]
-                              }
-                            }
-                          }
+                    "if": {
+                      "properties": {
+                        "evidenceType": {
+                          "const": "retrieval"
                         }
-                      },
-                      {
-                        "required": [
-                          "retrieveFrom"
-                        ]
                       }
-                    ]
+                    },
+                    "then": {
+                      "required": [
+                        "retrieveFrom"
+                      ]
+                    }
                   },
-                  "noticeAcknowledgement": {
-                    "enum": [
-                      true,
-                      false
-                    ]
+                  "form5103Acknowledged": {
+                    "type": "boolean",
+                    "description": "The 5103 Notice regarding new & relevant evidence must be acknowledged when the issue being contested is a Disability Compensation issue. The notice can be found here: http://www.va.gov/disability/how-to-file-claim/evidence-needed."
                   },
                   "socOptIn": {
                     "type": "boolean"
@@ -3976,9 +3971,9 @@
                 },
                 "required": [
                   "veteran",
+                  "benefitType",
                   "evidenceSubmission",
-                  "socOptIn",
-                  "noticeAcknowledgement"
+                  "socOptIn"
                 ],
                 "if": {
                   "properties": {
@@ -3988,9 +3983,14 @@
                   }
                 },
                 "then": {
+                  "required": [
+                    "form5103Acknowledged"
+                  ],
                   "properties": {
-                    "noticeAcknowledgement": {
-                      "const": true
+                    "form5103Acknowledged": {
+                      "enum": [
+                        true
+                      ]
                     }
                   }
                 }
@@ -4338,26 +4338,31 @@
             "required": true,
             "description": "Scoping of appeal type for associated issues",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "higher_level_reviews",
+                "notice_of_disagreements",
+                "supplemental_claims"
+              ]
             }
           },
           {
             "name": "benefit_type",
             "in": "query",
-            "description": "Benefit Type for the appeal. Required if Decision Review is a Higher Level Review.",
-            "enum": [
-              "compensation",
-              "pensionSurvivorsBenefits",
-              "fiduciary",
-              "lifeInsurance",
-              "veteransHealthAdministration",
-              "veteranReadinessAndEmployment",
-              "loanGuaranty",
-              "education",
-              "nationalCemeteryAdministration"
-            ],
+            "description": "Required if decision review type is Higher Level Review or Supplemental Claim.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "compensation",
+                "pensionSurvivorsBenefits",
+                "fiduciary",
+                "lifeInsurance",
+                "veteransHealthAdministration",
+                "veteranReadinessAndEmployment",
+                "loanGuaranty",
+                "education",
+                "nationalCemeteryAdministration"
+              ]
             }
           },
           {
@@ -9420,29 +9425,7 @@
                   ]
                 },
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "enum": [
-                        "unprocessable_entity"
-                      ],
-                      "example": "unprocessable_entity"
-                    },
-                    "detail": {
-                      "type": "string",
-                      "enum": [
-                        "Request header 'X-VA-SSN' does not match the associated Notice of Disagreement's SSN",
-                        "Corresponding Notice of Disagreement 'boardReviewOption' must be 'evidence_submission'"
-                      ],
-                      "example": "Corresponding Notice of Disagreement 'boardReviewOption' must be 'evidence_submission'"
-                    },
-                    "status": {
-                      "type": "integer",
-                      "description": "Standard HTTP error response code.",
-                      "example": 422
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorModel"
                 }
               }
             }
@@ -9754,7 +9737,7 @@
                             "data": {
                               "type": "supplementalClaim",
                               "attributes": {
-                                "benefitType": "compensation",
+                                "benefitType": "fiduciary",
                                 "veteran": {
                                   "address": {
                                     "addressLine1": "123 Main St",
@@ -9770,7 +9753,6 @@
                                   "timezone": "America/Chicago"
                                 },
                                 "socOptIn": false,
-                                "noticeAcknowledgement": true,
                                 "evidenceSubmission": {
                                   "evidenceType": [
                                     "upload"
@@ -9805,7 +9787,7 @@
                             "data": {
                               "type": "supplementalClaim",
                               "attributes": {
-                                "benefitType": "fiduciary",
+                                "benefitType": "compensation",
                                 "veteran": {
                                   "address": {
                                     "addressLine1": "123 Main St",
@@ -9825,7 +9807,7 @@
                                   "timezone": "America/Chicago"
                                 },
                                 "socOptIn": true,
-                                "noticeAcknowledgement": true,
+                                "form5103Acknowledged": true,
                                 "evidenceSubmission": {
                                   "evidenceType": [
                                     "upload",
@@ -9995,7 +9977,7 @@
                       "status": "422",
                       "meta": {
                         "missing_fields": [
-                          "noticeAcknowledgement"
+                          "form5103Acknowledged"
                         ]
                       }
                     }
@@ -10036,7 +10018,7 @@
                           "timezone": "America/Chicago"
                         },
                         "socOptIn": false,
-                        "noticeAcknowledgement": true,
+                        "form5103Acknowledged": true,
                         "evidenceSubmission": {
                           "evidenceType": [
                             "upload"
@@ -10080,7 +10062,7 @@
                           "timezone": "America/Chicago"
                         },
                         "socOptIn": true,
-                        "noticeAcknowledgement": true,
+                        "form5103Acknowledged": true,
                         "evidenceSubmission": {
                           "evidenceType": [
                             "upload",
@@ -10289,7 +10271,7 @@
                               "timezone": "America/Chicago"
                             },
                             "socOptIn": false,
-                            "noticeAcknowledgement": true,
+                            "form5103Acknowledged": true,
                             "evidenceSubmission": {
                               "evidenceType": [
                                 "upload"
@@ -10365,7 +10347,7 @@
           "Supplemental Claims"
         ],
         "operationId": "postSupplementalClaimEvidenceSubmission",
-        "description": "This is the first step to submitting supporting evidence for an SC.  (See the Evidence Uploads section above for additional information.)\nThe Supplemental Claim GUID that is returned when the SC is submitted, is supplied to this endpoint to ensure the SC is in a valid state for sending supporting evidence documents.\n",
+        "description": "This is the first step to submitting supporting evidence for an SC.  (See the Evidence Uploads section above for additional information.)\nThe Supplemental Claim GUID that is returned when the SC is submitted, is supplied to this endpoint to ensure the SC is in a valid state for sending supporting evidence documents.\n\nOnce a Supplemental Claim has been submitted, evidence may be uploaded up to 7 days from the Supplemental Claim's created_at date via 'supplemental_claims/evidence_submissions'.\n",
         "parameters": [
           {
             "name": "sc_uuid",
@@ -10507,28 +10489,7 @@
                   ]
                 },
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string",
-                      "enum": [
-                        "unprocessable_entity"
-                      ],
-                      "example": "unprocessable_entity"
-                    },
-                    "detail": {
-                      "type": "string",
-                      "enum": [
-                        "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                      ],
-                      "example": "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                    },
-                    "status": {
-                      "type": "integer",
-                      "description": "Standard HTTP error response code.",
-                      "example": 422
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorModel"
                 }
               }
             }

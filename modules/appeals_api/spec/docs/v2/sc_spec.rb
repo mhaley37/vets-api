@@ -27,7 +27,7 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
 
       parameter in: :body, examples: {
         'minimum fields used' => {
-          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995.json')))
+          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995_minimum.json')))
         },
         'all fields used' => {
           value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995_extra.json')))
@@ -114,8 +114,8 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
         schema '$ref' => '#/components/schemas/errorModel'
 
         let(:sc_body) do
-          request_body = JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995.json')))
-          request_body['data']['attributes'].delete('noticeAcknowledgement')
+          request_body = JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'valid_200995_extra.json')))
+          request_body['data']['attributes'].delete('form5103Acknowledged')
           request_body
         end
 
@@ -200,8 +200,10 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
       tags 'Supplemental Claims'
       operationId 'postSupplementalClaimEvidenceSubmission'
       description <<~DESC
-        This is the first step to submitting supporting evidence for an SC.  (See the Evidence Uploads section above for additional information.)
+        This is the first step to submitting supporting evidence for a Supplemental Claim.  (See the Evidence Uploads section above for additional information.)
         The Supplemental Claim GUID that is returned when the SC is submitted, is supplied to this endpoint to ensure the SC is in a valid state for sending supporting evidence documents.
+
+        Evidence may be uploaded up to 7 days from the 'created_at' date of the associated Supplemental Claim via 'supplemental_claims/evidence_submissions'.
       DESC
 
       parameter name: :sc_uuid, in: :query, type: :string, required: true, description: 'Associated Supplemental Claim UUID'
@@ -299,28 +301,8 @@ describe 'Supplemental Claims', swagger_doc: 'modules/appeals_api/app/swagger/ap
         let(:sc_uuid) { FactoryBot.create(:supplemental_claim).id }
         let(:'X-VA-SSN') { '000000000' }
 
-        schema type: :object,
-               properties: {
-                 title: {
-                   type: 'string',
-                   enum: [
-                     'unprocessable_entity'
-                   ],
-                   example: 'unprocessable_entity'
-                 },
-                 detail: {
-                   type: 'string',
-                   enum: [
-                     "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                   ],
-                   example: "Request header 'X-VA-SSN' does not match the associated Supplemental Claim's SSN"
-                 },
-                 status: {
-                   type: 'integer',
-                   description: 'Standard HTTP error response code.',
-                   example: 422
-                 }
-               }
+        schema '$ref' => '#/components/schemas/errorModel'
+
         before do |example|
           submit_request(example.metadata)
         end

@@ -2,6 +2,8 @@
 
 require 'dgi/eligibility/service'
 require 'dgi/automation/service'
+require 'dgi/status/service'
+require 'dgi/submission/service'
 
 module MebApi
   module V0
@@ -13,24 +15,6 @@ module MebApi
         render json: response, serializer: AutomationSerializer
       end
 
-      def service_history
-        render json:
-        { data: {
-          'beginDate': '2010-10-26T18:00:54.302Z',
-          'endDate': '2021-10-26T18:00:54.302Z',
-          'branchOfService': 'ArmyActiveDuty',
-          'trainingPeriods': [
-            {
-              'beginDate': '2018-10-26T18:00:54.302Z',
-              'endDate': '2019-10-26T18:00:54.302Z'
-            }
-          ],
-          'exclusionPeriods': [{ 'beginDate': '2012-10-26T18:00:54.302Z', 'endDate': '2013-10-26T18:00:54.302Z' }],
-          'characterOfService': 'Honorable',
-          'reasonForSeparation': 'ExpirationTimeOfService'
-        } }
-      end
-
       def eligibility
         response = eligibility_service.get_eligibility
 
@@ -38,18 +22,20 @@ module MebApi
       end
 
       def claim_status
-        render json:
-        { data: {
-          'claimId': 0,
-          'status': 'InProgress'
-        } }
+        response = claim_status_service.get_claim_status(params[:claimant_id])
+        render json: response, serializer: ClaimStatusSerializer
       end
 
       def submit_claim
-        render json:
-               { data: {
-                 'status': 'received'
-               } }
+        response = submission_service.submit_claim(params)
+
+        # @NOTE: Need front end to send in_progress_form_id as well as claimant_id to clear form for front end
+        # Add serializer for response to the front end when the sending data back
+        render json: {
+          data: {
+            'status': response.status
+          }
+        }
       end
 
       private
@@ -60,6 +46,14 @@ module MebApi
 
       def automation_service
         MebApi::DGI::Automation::Service.new(@current_user)
+      end
+
+      def claim_status_service
+        MebApi::DGI::Status::Service.new(@current_user)
+      end
+
+      def submission_service
+        MebApi::DGI::Submission::Service.new(@current_user)
       end
     end
   end

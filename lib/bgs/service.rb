@@ -16,6 +16,10 @@ module BGS
     # (I = Input, U = Update, D = Delete)
     JOURNAL_STATUS_TYPE_CODE = 'U'
 
+    # It appears that a find_ch33_dd_eft that returns empty bank account information
+    # will set the routing number field to '0' instead of 'nil', at least in certain cases
+    EMPTY_ROUTING_NUMBER = '0'
+
     def initialize(user)
       @user = user
     end
@@ -192,33 +196,39 @@ module BGS
     end
 
     def find_bank_name_by_routng_trnsit_nbr(routing_number)
-      return if routing_number.blank?
+      return if routing_number.blank? || routing_number == EMPTY_ROUTING_NUMBER
 
       with_monitoring do
-        res = service.ddeft.find_bank_name_by_routng_trnsit_nbr(routing_number)
+        res = StatsD.measure("#{self.class::STATSD_KEY_PREFIX}.find_bank_name_by_routng_trnsit_nbr.duration") do
+          service.ddeft.find_bank_name_by_routng_trnsit_nbr(routing_number)
+        end
         res[:find_bank_name_by_routng_trnsit_nbr_response][:return][:bank_name]
       end
     end
 
     def find_ch33_dd_eft
       with_monitoring do
-        service.claims.send(:request, :find_ch33_dd_eft, fileNumber: @user.ssn)
+        StatsD.measure("#{self.class::STATSD_KEY_PREFIX}.find_ch33_dd_eft.duration") do
+          service.claims.send(:request, :find_ch33_dd_eft, fileNumber: @user.ssn)
+        end
       end
     end
 
     def update_ch33_dd_eft(routing_number, acct_number, checking_acct)
       with_monitoring do
-        service.claims.send(
-          :request,
-          :update_ch33_dd_eft,
-          ch33DdEftInput: {
-            dpositAcntNbr: acct_number,
-            dpositAcntTypeNm: checking_acct ? 'C' : 'S',
-            fileNumber: @user.ssn,
-            routngTrnsitNbr: routing_number,
-            tranCode: '2'
-          }
-        )
+        StatsD.measure("#{self.class::STATSD_KEY_PREFIX}.update_ch33_dd_eft.duration") do
+          service.claims.send(
+            :request,
+            :update_ch33_dd_eft,
+            ch33DdEftInput: {
+              dpositAcntNbr: acct_number,
+              dpositAcntTypeNm: checking_acct ? 'C' : 'S',
+              fileNumber: @user.ssn,
+              routngTrnsitNbr: routing_number,
+              tranCode: '2'
+            }
+          )
+        end
       end
     end
 

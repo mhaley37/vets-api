@@ -21,6 +21,7 @@ saml_ssoe:
   relay: ~
   response_signing: false
   response_encryption: false
+  identity_slack_webhook: ~
 
 ssoe_eauth_cookie:
   name: vagov_saml_request_localhost
@@ -202,6 +203,7 @@ modules_appeals_api:
   higher_level_review_updater_enabled: true
   legacy_appeals_enabled: false
   supplemental_claims_enabled: true
+  supplemental_claim_pii_expunge_enabled: true
   notice_of_disagreement_pii_expunge_enabled: true
   notice_of_disagreement_updater_enabled: true
   supplemental_claim_updater_enabled: true
@@ -369,7 +371,8 @@ ppms:
   apim_url: https://some.other.fakesite.com
   open_timeout: 15
   read_timeout: 55
-  api_keys: fakekey
+  api_keys:
+    fakekey: fakevalue
 
 # Settings for MyHealthEVet
 mhv:
@@ -768,13 +771,17 @@ search_click_tracking:
 flipper:
   admin_user_emails:
     - adewitt@thoughtworks.com
+    - adrian.rollett@agile6.com # Adrian Rollett (Agile6), Engineer/Product Manager Health Care Experience/Check-In
     - agarcia@clarityinnovates.com
     - alastair@adhocteam.us
     - bill.ryan@adhocteam.us
+    - brian.seek@civicactions.com # Brian Seek (Civic Actions), FE Engineer Health Care Experience/Check-In
     - clark@governmentcio.com # Designer on GCIO
     - cameron@oddball.io
+    - corey.parker@gcio.com # Corey Parker (GCIO), Product Manager Health Care Experience/Check-In
     - cory.trimm@va.gov
     - craig.wheeler@gcio.com
+    - dan.goodwin@civicactions.com # Dan Goodwin (Civic Actions), FE Engineer Health Care Experience/Check-In
     - dan.hinze@adhocteam.us
     - dat.tran@gcio.com
     - devinmccurdy@gmail.com
@@ -785,6 +792,7 @@ flipper:
     - erik@adhocteam.us
     - filip.fafara@gmail.com
     - fahmed@governmentcio.com
+    - ggupta@kindsys.us # Gaurav Gupta (Kindsys), BE Engineer Health Care Experience/Check-In
     - gescobar@governmentcio.com
     - grodriguez@governmentcio.com
     - hshin@thoughtworks.com
@@ -798,6 +806,7 @@ flipper:
     - jlinn@governmentcio.com
     - joeyn414@gmail.com # Joe Niquette Oddball VSP Identity Team Sr Security Engineer
     - john.bramley@adhocteam.us
+    - julie.adair@agile6.com # Julie Adair (Agile6), Product Manager Health Care Experience/Check-In
     - jwolf@governmentcio.com # Jason Wolf Product Manager for GCIO
     - kabrown@thoughtworks.com
     - kadams@governmentcio.com
@@ -807,6 +816,7 @@ flipper:
     - kevin.musiorski@gcio.com # Kevin Musiorski (GCIO), Engineer
     - kmircovich@governmentcio.com
     - kyle.woolley@oddball.io # VSP Identity Engineer
+    - ksuriyamoorthy@kindsys.us # Kanchana Suriyamoorthy (Kindsys), BE Engineer Health Care Experience/Check-In
     - lauren.alexanderson@va.gov
     - lauren.ernest@adhocteam.us
     - lihan@adhocteam.us
@@ -825,6 +835,7 @@ flipper:
     - mnunemak@thoughtworks.com
     - n.ratana@gmail.com
     - narin@adhocteam.us
+    - natasha.ibrahim@gsa.gov
     - patrick.bateman@va.gov
     - patrick@adhocteam.us
     - patrickryll@yahoo.com
@@ -836,6 +847,7 @@ flipper:
     - ryan.thurlwell@va.gov
     - saman.moshafi@thoughtworks.com
     - samara.strauss@va.gov
+    - sarah.knopp@agile6.com # Sarah Knopp (Agile 6), Scrum Master
     - scy0846@gmail.com # Taylor Mitchell - GCIO
     - shefai.nayak@thoughtworks.com
     - ssuddath@governmentcio.com
@@ -850,6 +862,7 @@ flipper:
     - abelardo.blanco@va.gov
     - eugenia.gina.ronat@accenturefederal.com
     - m.c.shah@accenturefederal.com
+    - mrmanishs@gmail.com
     - patrick.arthur@accenturefederal.com
     - adam.freemer@accenturefederal.com
     - dan.brooking@accenturefederal.com
@@ -907,6 +920,7 @@ hqva_mobile:
     host: "sandbox-api.va.gov"
     pgd_aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8x27nv4g4BS01v2p7"
     health_aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8nm1q0f7VQ0a482p7"
+    condition_aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8nm1q0f7VQ0a482p7/v1/token"
     claim_common_id: "0oabja2lpllERXWxo2p7"
     grant_type: "client_credentials"
     client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
@@ -929,10 +943,30 @@ hqva_mobile:
       - "patient/Location.read"
       - "patient/Organization.read"
       - "patient/Patient.read"
+      - "patient/Condition.read"
+      - "patient/Observation.read"
+      - "patient/Practitioner.read"
+      - "patient/Medication.read"
+      - "system/Endpoint.read"
 
 # settings va.gov uses related to lighthouse api's
 lighthouse:
   api_key: fake_key
+  veterans_health:
+    url: https://sandbox-api.va.gov
+    fast_tracker:
+      client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+      api_scope:
+        - "launch"
+        - "patient/Patient.read"
+        - "system/Patient.read"
+        - "patient/Observation.read"
+        - "patient/Practitioner.read"
+        - "patient/MedicationRequest.read"
+      aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8nm1q0f7VQ0a482p7/v1/token"
+      client_id: "0oaaxkp0aeXEJkMFw2p7"
+      grant_type: "client_credentials"
+      api_key: /srv/vets-api/secret/lighthouse_fast_track_api.key
   facilities:
     url: https://sandbox-api.va.gov
     api_key: fake_key
@@ -1133,10 +1167,6 @@ github_cvu:
   integration_id: ~
   private_pem: ~
 
-pg_hero:
-  username: ~
-  password: ~
-
 check_in:
   chip_api:
     url: https://vpce-06399548ef94bdb41-lk4qp2nd.execute-api.us-gov-west-1.vpce.amazonaws.com
@@ -1214,3 +1244,9 @@ sidekiq:
   github_oauth_key: ~
   github_oauth_secret: ~
   github_api_key: ~
+
+lgy:
+  base_url: ~
+  app_id: ~
+  api_key: ~
+  mock_coe: false

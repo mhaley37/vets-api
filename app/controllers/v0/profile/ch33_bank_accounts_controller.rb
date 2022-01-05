@@ -28,7 +28,7 @@ module V0
           DirectDepositEmailJob.send_to_emails(current_user.all_emails, params[:ga_client_id], :ch33)
         end
 
-        Rails.logger.info('Ch33BankAccountsController#update request completed', sso_logging_info)
+        Rails.logger.warn('Ch33BankAccountsController#update request completed', sso_logging_info)
 
         render_find_ch33_dd_eft
       end
@@ -36,8 +36,9 @@ module V0
       private
 
       def render_find_ch33_dd_eft
+        get_ch33_dd_eft_info = service.get_ch33_dd_eft_info
         render(
-          json: service.get_ch33_dd_eft_info,
+          json: get_ch33_dd_eft_info,
           serializer: Ch33BankAccountSerializer
         )
       end

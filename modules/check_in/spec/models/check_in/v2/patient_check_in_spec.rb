@@ -10,8 +10,6 @@ RSpec.describe CheckIn::V2::PatientCheckIn do
 
   before do
     allow(Rails).to receive(:cache).and_return(memory_store)
-    allow(Flipper).to receive(:enabled?)
-      .with('check_in_experience_multiple_appointment_support').and_return(true)
 
     Rails.cache.clear
   end
@@ -41,6 +39,17 @@ RSpec.describe CheckIn::V2::PatientCheckIn do
 
     it 'gets redis_token_expiry from settings' do
       expect(patient_check_in.redis_token_expiry).to eq(43_200)
+    end
+  end
+
+  describe 'check_in_type' do
+    let(:uuid) { Faker::Internet.uuid }
+    let(:check_in) { double('Session', uuid: uuid, check_in_type: 'preCheckIn') }
+
+    it 'delegates check_in_type to check_in' do
+      patient_check_in = subject.build(check_in: check_in)
+
+      expect(patient_check_in.check_in_type).to eq('preCheckIn')
     end
   end
 

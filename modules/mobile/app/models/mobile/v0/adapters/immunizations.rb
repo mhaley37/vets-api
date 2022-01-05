@@ -5,20 +5,23 @@ module Mobile
     module Adapters
       class Immunizations
         def parse(immunizations)
+          vaccines = vaccines(immunizations)
+
           immunizations[:entry].map do |i|
             immunization = i[:resource]
             vaccine_code = immunization[:vaccine_code]
-            cvx_code = vaccine_code[:coding].first[:code].to_i
+            cvx_code = cvx_code(vaccine_code)
+            vaccine = vaccines&.find_by(cvx_code: cvx_code)
 
             Mobile::V0::Immunization.new(
               id: immunization[:id],
               cvx_code: cvx_code,
-              date: immunization[:occurrence_date_time],
+              date: date(immunization),
               dose_number: dose_number(immunization[:protocol_applied]),
               dose_series: dose_series(immunization[:protocol_applied]),
-              group_name: Mobile::CDC_CVX_CODE_MAP[cvx_code],
+              group_name: vaccine&.group_name,
               location_id: location_id(immunization.dig(:location, :reference)),
-              manufacturer: nil,
+              manufacturer: vaccine&.manufacturer,
               note: note(immunization[:note]),
               reaction: reaction(immunization[:reaction]),
               short_description: vaccine_code[:text]
@@ -27,6 +30,20 @@ module Mobile
         end
 
         private
+
+        def date(immunization)
+          date = immunization[:occurrence_date_time]
+          StatsD.increment('mobile.immunizations.date_missing') if date.blank?
+
+          date.presence
+        end
+
+        def cvx_code(vaccine_code)
+          code = vaccine_code[:coding].first[:code]
+          StatsD.increment('mobile.immunizations.cvx_code_missing') if code.blank?
+
+          code.presence&.to_i
+        end
 
         def location_id(reference)
           return nil unless reference
@@ -60,6 +77,11 @@ module Mobile
           return nil unless reaction
 
           reaction.map { |r| r[:detail][:display] }.join(',')
+        end
+
+        def vaccines(immunizations)
+          cvx_codes = immunizations[:entry].collect { |i| i.dig(:resource, :vaccine_code, :coding, 0, :code) }.uniq
+          Mobile::V0::Vaccine.where(cvx_code: cvx_codes)
         end
       end
     end

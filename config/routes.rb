@@ -334,6 +334,10 @@ Rails.application.routes.draw do
     namespace :contact_us do
       resources :inquiries, only: %i[index create]
     end
+
+    namespace :coe do
+      get 'status'
+    end
   end
 
   namespace :v1, defaults: { format: 'json' } do
@@ -348,12 +352,6 @@ Rails.application.routes.draw do
 
     namespace :facilities, module: 'facilities' do
       resources :va, only: %i[index show]
-      resources :ccp, only: %i[index show] do
-        get 'specialties', on: :collection, to: 'ccp#specialties'
-      end
-      resources :va_ccp, only: [] do
-        get 'urgent_care', on: :collection
-      end
     end
 
     namespace :gi, module: 'gids' do
@@ -419,8 +417,6 @@ Rails.application.routes.draw do
   mount Sidekiq::Web, at: '/sidekiq'
 
   Sidekiq::Web.register GithubAuthentication::SidekiqWeb unless Rails.env.development? || Settings.sidekiq_admin_panel
-
-  mount PgHero::Engine, at: 'pghero'
 
   mount TestUserDashboard::Engine, at: '/test_user_dashboard' if Settings.test_user_dashboard.env == 'staging'
 

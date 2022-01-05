@@ -148,11 +148,20 @@ module AppealsApi
     end
 
     def evidence_submission_days_window
-      10
+      7
     end
 
     def accepts_evidence?
       true
+    end
+
+    def outside_submission_window_error
+      {
+        title: 'unprocessable_entity',
+        detail: I18n.t('appeals_api.errors.sc_outside_submission_window'),
+        code: 'OutsideSubmissionWindow',
+        status: '422'
+      }
     end
 
     def soc_opt_in
@@ -167,8 +176,8 @@ module AppealsApi
       end
     end
 
-    def notice_acknowledgement
-      data_attributes['noticeAcknowledgement']
+    def form_5103_notice_acknowledged
+      data_attributes['form5103Acknowledged']
     end
 
     def date_signed
