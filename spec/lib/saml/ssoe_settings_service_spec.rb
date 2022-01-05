@@ -6,11 +6,24 @@ require 'lib/sentry_logging_spec_helper'
 
 RSpec.describe SAML::SSOeSettingsService do
   before do
-    Settings.saml_ssoe.idp_metadata_file = Rails.root.join('spec', 'support', 'saml', 'test_idp_metadata.xml')
-    Settings.saml_ssoe.idp_metadata_url = 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp'
-    Settings.saml_ssoe.va_identity_alerts_webhook = 'https://hooks.slack.com/services/asdf1234'
-    Settings.vsp_environment = 'development'
+    allow(Settings).to receive(:vsp_environment).and_return(vsp_environment)
+    allow(Settings.saml_ssoe).to receive(:idp_metadata_file).and_return(idp_metadata_file)
+    allow(Settings.saml_ssoe).to receive(:idp_metadata_url).and_return(idp_metadata_url)
+    allow(Settings.saml_ssoe).to receive(:va_identity_alerts_webhook).and_return(va_identity_alerts_webhook)
+    allow(Settings.saml_ssoe).to receive(:request_signing).and_return(request_signing)
+    allow(Settings.saml_ssoe).to receive(:response_signing).and_return(response_signing)
+    allow(Settings.saml_ssoe).to receive(:response_encryption).and_return(response_encryption)
+    allow(Settings.saml_ssoe).to receive(:certificate).and_return(certificate)
   end
+
+  let(:vsp_environment) { 'staging' }
+  let(:idp_metadata_file) { Rails.root.join('spec', 'support', 'saml', 'test_idp_metadata.xml') }
+  let(:idp_metadata_url) { 'https://int.eauth.va.gov/isam/saml/metadata/saml20idp' }
+  let(:va_identity_alerts_webhook) { 'https://hooks.slack.com/services/asdf1234' }
+  let(:request_signing) { false }
+  let(:response_signing) { false }
+  let(:response_encryption) { false }
+  let(:certificate) { 'foobar' }
 
   describe '.saml_settings' do
     it 'returns a settings instance' do
@@ -23,31 +36,28 @@ RSpec.describe SAML::SSOeSettingsService do
     end
 
     context 'with no signing or encryption configured' do
+      let(:expected_certificate) { nil }
+
       it 'omits certificate from settings' do
-        with_settings(Settings.saml_ssoe, certificate: 'foobar',
-                      request_signing: false, response_signing: false, response_encryption: false) do
-          expect(SAML::SSOeSettingsService.saml_settings.certificate).to be_nil
-        end
+        expect(SAML::SSOeSettingsService.saml_settings.certificate).to eq(expected_certificate)
       end
     end
 
     context 'with signing configured' do
+      let(:request_signing) { true }
+      let(:expected_certificate) { 'foobar' }
+
       it 'includes certificate in settings' do
-        with_settings(Settings.saml_ssoe, certificate: 'foobar',
-                                          request_signing: true, response_signing: false,
-                                          response_encryption: false) do
-          expect(SAML::SSOeSettingsService.saml_settings.certificate).to eq('foobar')
-        end
+        expect(SAML::SSOeSettingsService.saml_settings.certificate).to eq(expected_certificate)
       end
     end
 
     context 'with encryption configured' do
+      let(:response_encryption) { true }
+      let(:expected_certificate) { 'foobar' }
+
       it 'includes certificate in settings' do
-        with_settings(Settings.saml_ssoe, certificate: 'foobar',
-                                          request_signing: false, response_signing: false,
-                                          response_encryption: true) do
-          expect(SAML::SSOeSettingsService.saml_settings.certificate).to eq('foobar')
-        end
+        expect(SAML::SSOeSettingsService.saml_settings.certificate).to eq(expected_certificate)
       end
     end
   end

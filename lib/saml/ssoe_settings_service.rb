@@ -19,23 +19,23 @@ module SAML
       end
 
       def base_settings
-        settings = Settings.saml_ssoe.idp_metadata
+        base_settings = Settings.saml_ssoe.idp_metadata.dup
 
         if pki_needed?
-          settings.certificate = Settings.saml_ssoe.certificate
-          settings.private_key = Settings.saml_ssoe.key
-          settings.certificate_new = Settings.saml_ssoe.certificate_new
+          base_settings.certificate = Settings.saml_ssoe.certificate
+          base_settings.private_key = Settings.saml_ssoe.key
+          base_settings.certificate_new = Settings.saml_ssoe.certificate_new
         end
-        settings.sp_entity_id = Settings.saml_ssoe.issuer
-        settings.assertion_consumer_service_url = Settings.saml_ssoe.callback_url
-        settings.compress_request = false
+        base_settings.sp_entity_id = Settings.saml_ssoe.issuer
+        base_settings.assertion_consumer_service_url = Settings.saml_ssoe.callback_url
+        base_settings.compress_request = false
 
-        settings.security[:authn_requests_signed] = Settings.saml_ssoe.request_signing
-        settings.security[:want_assertions_signed] = Settings.saml_ssoe.response_signing
-        settings.security[:want_assertions_encrypted] = Settings.saml_ssoe.response_encryption
-        settings.security[:embed_sign] = false
-        settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
-        settings
+        base_settings.security[:authn_requests_signed] = Settings.saml_ssoe.request_signing
+        base_settings.security[:want_assertions_signed] = Settings.saml_ssoe.response_signing
+        base_settings.security[:want_assertions_encrypted] = Settings.saml_ssoe.response_encryption
+        base_settings.security[:embed_sign] = false
+        base_settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
+        base_settings
       end
 
       def pki_needed?
@@ -51,7 +51,7 @@ module SAML
 
         hash_diff = generate_saml_hash_diff(url_hash, settings_hash)
         if !url_hash.nil? && !hash_diff.empty?
-          if %w[development staging production].include? Settings.vsp_environment
+          if %w[staging production].include? Settings.vsp_environment
             slack_text = build_saml_diff_slack_text(hash_diff)
             slack_service = Slack::Service.new(slack_text)
             slack_service.notify
