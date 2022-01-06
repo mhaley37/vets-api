@@ -27,6 +27,7 @@ module Lighthouse
       # @return [Lighthouse::VeteransHealth::Client]
       def initialize(icn)
         @icn = icn
+        raise ArgumentError, 'no ICN passed in for LH API request.' if icn.blank?
       end
 
       # Handles the Lighthouse request for the passed-in resource.
@@ -78,7 +79,7 @@ module Lighthouse
       end
 
       def base64_icn
-        @base64_icn ||= Base64.encode64 JSON.generate({ patient: @icn }, space: ' ')
+        @base64_icn ||= Base64.encode64 JSON.generate({ patient: @icn.to_s }, space: ' ')
       end
 
       def bearer_token

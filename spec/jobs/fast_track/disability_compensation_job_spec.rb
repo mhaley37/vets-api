@@ -61,8 +61,18 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
             .to receive(:transform).and_return(mocked_observation_data)
         end
 
+        it 'emails the stakeholders' do
+          expect { FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name) }
+            .to change { ActionMailer::Base.deliveries.count }.by(1)
+          expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Code Hit'
+          expect(ActionMailer::Base.deliveries.last.body.raw_source)
+            .to match 'A claim was just submitted'
+        end
+
         it 'finishes successfully' do
-          expect(FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)).to eq true
+          expect do
+            FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
+          end.not_to raise_error
         end
 
         context 'failure' do

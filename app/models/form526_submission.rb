@@ -52,19 +52,19 @@ class Form526Submission < ApplicationRecord
       workflow_batch.on(
         :success,
         'Form526Submission#start_evss_submission',
-        { submission_id: id }
+        'submission_id' => id
       )
       jids = workflow_batch.jobs do
         FastTrack::DisabilityCompensationJob.perform_async(id, full_name)
       end
       jids.first
     else
-      start_evss_submission(nil, { submission_id: id })
+      start_evss_submission(nil, { 'submission_id' => id })
     end
   rescue => e
     Rails.logger.error 'The fast track was skipped due to the following error ' \
                        " and start_evss_submission wass called: #{e}"
-    start_evss_submission(nil, { submission_id: id })
+    start_evss_submission(nil, { 'submission_id' => id })
   end
 
   # Kicks off a 526 submit workflow batch. The first step in a submission workflow is to submit
@@ -75,7 +75,7 @@ class Form526Submission < ApplicationRecord
   #
 
   def start_evss_submission(_status, options)
-    submission = Form526Submission.find(options[:submission_id])
+    submission = Form526Submission.find(options['submission_id'])
     id = submission.id
     workflow_batch = Sidekiq::Batch.new
     workflow_batch.on(
@@ -126,11 +126,21 @@ class Form526Submission < ApplicationRecord
     user&.first_name&.upcase
   end
 
+  # Checks against the User record first, and then resorts to checking the auth_headers
+  # for the name attributes if the User record doesn't exist or contain the full name
+  #
   # @return [Hash] of the user's full name (first, middle, last, suffix)
   #
   def full_name
-    user = User.find(user_uuid)
-    user&.full_name_normalized
+    name_hash = User.find(user_uuid)&.full_name_normalized
+    return name_hash if name_hash&.[](:first).present?
+
+    {
+      first: auth_headers&.dig('va_eauth_firstName')&.capitalize,
+      middle: nil,
+      last: auth_headers&.dig('va_eauth_lastName')&.capitalize,
+      suffix: nil
+    }
   end
 
   # @return [Hash] parsed version of the form json

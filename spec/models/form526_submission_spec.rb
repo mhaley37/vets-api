@@ -33,8 +33,7 @@ RSpec.describe Form526Submission do
     context 'when it is all claims' do
       it 'queues an all claims job' do
         expect do
-          subject.start_evss_submission(nil,
-                                        { submission_id: subject.id })
+          subject.start_evss_submission(nil, 'submission_id' => subject.id)
         end.to change(EVSS::DisabilityCompensationForm::SubmitForm526AllClaim.jobs, :size).by(1)
       end
     end
@@ -615,8 +614,47 @@ RSpec.describe Form526Submission do
       }
     end
 
-    it 'returns the full name of the user' do
-      expect(subject.full_name).to eql(full_name_hash)
+    context 'when the full name exists on the User' do
+      it 'returns the full name of the user' do
+        expect(subject.full_name).to eql(full_name_hash)
+      end
+    end
+
+    context 'when the full name is NOT populated on the User but name attributes exist in the auth_headers' do
+      let(:nil_full_name_hash) do
+        {
+          first: nil,
+          middle: nil,
+          last: nil,
+          suffix: nil
+        }
+      end
+
+      before do
+        allow_any_instance_of(User).to receive(:full_name_normalized).and_return nil_full_name_hash
+      end
+
+      context 'when name attributes exist in the auth headers' do
+        it 'returns the first and last name of the user from the auth headers' do
+          expect(subject.full_name).to eql(full_name_hash.merge(middle: nil, suffix: nil))
+        end
+      end
+
+      context 'when name attributes do NOT exist in the auth headers' do
+        subject { build(:form526_submission, :with_empty_auth_headers) }
+
+        it 'returns the hash with all nil values' do
+          expect(subject.full_name).to eql nil_full_name_hash
+        end
+      end
+    end
+
+    context 'when the User is NOT found' do
+      before { allow(User).to receive(:find).and_return nil }
+
+      it 'returns the first and last name of the user from the auth headers' do
+        expect(subject.full_name).to eql(full_name_hash.merge(middle: nil, suffix: nil))
+      end
     end
   end
 

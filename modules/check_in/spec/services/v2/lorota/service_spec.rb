@@ -148,6 +148,7 @@ describe V2::Lorota::Service do
             county: 'SAN BERNARDINO',
             state: 'Tennessee',
             zip: '101010',
+            zip4: nil,
             country: 'USA'
           },
           homeAddress: {
@@ -158,12 +159,30 @@ describe V2::Lorota::Service do
             county: 'FOO',
             state: 'Florida',
             zip: '445545',
+            zip4: nil,
             country: 'USA'
           },
           homePhone: '5552223333',
           mobilePhone: '5553334444',
           workPhone: '5554445555',
-          emailAddress: 'kermit.frog@sesameenterprises.us'
+          emailAddress: 'kermit.frog@sesameenterprises.us',
+          nextOfKin1: {
+            name: 'VETERAN,JONAH',
+            relationship: 'BROTHER',
+            phone: '1112223333',
+            workPhone: '4445556666',
+            address: {
+              street1: '123 Main St',
+              street2: 'Ste 234',
+              street3: '',
+              city: 'Los Angeles',
+              county: 'Los Angeles',
+              state: 'CA',
+              zip: '90089',
+              zip4: nil,
+              country: 'USA'
+            }
+          }
         },
         appointments: [
           {
@@ -201,7 +220,6 @@ describe V2::Lorota::Service do
   end
 
   before do
-    allow(Flipper).to receive(:enabled?).with(:check_in_experience_demographics_page_enabled).and_return(true)
     allow(Rails).to receive(:cache).and_return(memory_store)
 
     Rails.cache.clear
@@ -237,31 +255,6 @@ describe V2::Lorota::Service do
   end
 
   describe '#check_in_data' do
-    let(:next_of_kin_data) do
-      {
-        payload: {
-          demographics: {
-            nextOfKin1: {
-              name: 'VETERAN,JONAH',
-              relationship: 'BROTHER',
-              phone: '1112223333',
-              workPhone: '4445556666',
-              address: {
-                street1: '123 Main St',
-                street2: 'Ste 234',
-                street3: '',
-                city: 'Los Angeles',
-                county: 'Los Angeles',
-                state: 'CA',
-                zip: '90089',
-                zip4: nil,
-                country: 'USA'
-              }
-            }
-          }
-        }
-      }
-    end
     let(:emergency_contact_data) do
       {
         payload: {
@@ -287,14 +280,8 @@ describe V2::Lorota::Service do
         }
       }
     end
-    let(:response_with_next_of_kin) do
-      approved_response.deep_merge(next_of_kin_data)
-    end
     let(:response_with_emergency_contact) do
       approved_response.deep_merge(emergency_contact_data)
-    end
-    let(:response_with_emergency_contact_and_next_of_kin) do
-      approved_response.deep_merge(emergency_contact_data).deep_merge(next_of_kin_data)
     end
 
     before do
@@ -309,9 +296,9 @@ describe V2::Lorota::Service do
 
       before do
         allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(true)
-        allow(Flipper).to receive(:enabled?)
           .with(:check_in_experience_emergency_contact_enabled).and_return(true)
+        allow(Flipper).to receive(:enabled?)
+          .with(:check_in_experience_demographics_confirmation_enabled).and_return(false)
       end
 
       it 'does not save appointment identifiers' do
@@ -327,41 +314,15 @@ describe V2::Lorota::Service do
 
       before do
         allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(true)
-        allow(Flipper).to receive(:enabled?)
           .with(:check_in_experience_emergency_contact_enabled).and_return(true)
+        allow(Flipper).to receive(:enabled?)
+          .with(:check_in_experience_demographics_confirmation_enabled).and_return(false)
       end
 
-      it 'does not save appointment identifiers' do
+      it 'saves appointment identifiers' do
         expect_any_instance_of(CheckIn::V2::PatientCheckIn).to receive(:save).once
 
         subject.build(check_in: check_in).check_in_data
-      end
-    end
-
-    context 'with next of kin flag turned off' do
-      before do
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_emergency_contact_enabled).and_return(false)
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(false)
-      end
-
-      it 'returns approved data without next of kin' do
-        expect(subject.build(check_in: valid_check_in).check_in_data).to eq(approved_response)
-      end
-    end
-
-    context 'with next of kin flag turned on' do
-      before do
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_emergency_contact_enabled).and_return(false)
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(true)
-      end
-
-      it 'returns approved data with next of kin' do
-        expect(subject.build(check_in: valid_check_in).check_in_data).to eq(response_with_next_of_kin)
       end
     end
 
@@ -370,7 +331,7 @@ describe V2::Lorota::Service do
         allow(Flipper).to receive(:enabled?)
           .with(:check_in_experience_emergency_contact_enabled).and_return(false)
         allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(false)
+          .with(:check_in_experience_demographics_confirmation_enabled).and_return(false)
       end
 
       it 'returns approved data without emergency contact' do
@@ -383,25 +344,11 @@ describe V2::Lorota::Service do
         allow(Flipper).to receive(:enabled?)
           .with(:check_in_experience_emergency_contact_enabled).and_return(true)
         allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(false)
+          .with(:check_in_experience_demographics_confirmation_enabled).and_return(false)
       end
 
       it 'returns approved data with emergency contact' do
         expect(subject.build(check_in: valid_check_in).check_in_data).to eq(response_with_emergency_contact)
-      end
-    end
-
-    context 'with emergency contact and next of kin flags turned on' do
-      before do
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_emergency_contact_enabled).and_return(true)
-        allow(Flipper).to receive(:enabled?)
-          .with(:check_in_experience_next_of_kin_enabled).and_return(true)
-      end
-
-      it 'returns approved data with emergency contact and next of kin' do
-        expect(subject.build(check_in: valid_check_in).check_in_data)
-          .to eq(response_with_emergency_contact_and_next_of_kin)
       end
     end
   end

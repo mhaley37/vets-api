@@ -36,8 +36,9 @@ module V0
       private
 
       def render_find_ch33_dd_eft
+        get_ch33_dd_eft_info = service.get_ch33_dd_eft_info
         render(
-          json: service.get_ch33_dd_eft_info,
+          json: get_ch33_dd_eft_info,
           serializer: Ch33BankAccountSerializer
         )
       end

@@ -16,41 +16,81 @@ module FastTrack
     sidekiq_retries_exhausted do |msg, _ex|
       submission_id = msg['args'].first
       submission = Form526Submission.new
-      submission.start_evss_submission(_status, { submission_id: submission_id })
+      submission.start_evss_submission(nil, { 'submission_id' => submission_id })
     end
 
     def perform(form526_submission_id, full_name)
       form526_submission = Form526Submission.find(form526_submission_id)
-      icn = Account.where(idme_uuid: form526_submission.user_uuid).first.icn
-
-      client = Lighthouse::VeteransHealth::Client.new(icn)
-      observations_response = client.get_resource('observations')
-      medicationrequest_response = client.get_resource('medications')
+      client = Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
 
       begin
-        bpreadings = FastTrack::HypertensionObservationData.new(observations_response).transform
-        return if no_recent_bp_readings(bpreadings)
+        send_fast_track_engineer_email_for_testing(form526_submission_id)
 
-        medications = FastTrack::HypertensionMedicationRequestData.new(medicationrequest_response).transform
+        bp_readings = FastTrack::HypertensionObservationData.new(client.get_resource('observations')).transform
+        return if no_recent_bp_readings(bp_readings)
 
-        bpreadings = bpreadings.filter { |reading| reading[:issued].to_date > 1.year.ago }
+        pdf = pdf(full_name, filtered_bp_readings(bp_readings),
+                  filtered_medications(client.get_resource('medications')))
 
-        bpreadings = bpreadings.sort_by { |reading| reading[:issued].to_date }.reverse!
-        medications = medications.sort_by { |med| med[:authoredOn].to_date }.reverse!
-
-        pdf = FastTrack::HypertensionPdfGenerator.new(full_name, bpreadings, medications, Time.zone.today).generate
-
-        FastTrack::HypertensionUploadManager.new(form526_submission).handle_attachment(pdf.render)
-
-        FastTrack::HypertensionSpecialIssueManager.new(form526_submission).add_special_issue
+        upload_pdf_and_attach_special_issue(form526_submission, pdf)
       rescue => e
         Rails.logger.error 'Disability Compensation Fast Track Job failing for form' \
-                           "id:#{form526_submission.id}. With error: #{e}"
+                           "id:#{form526_submission.id}. With error message: #{e.message}" \
+                           "with backtrace: #{e.backtrace}"
         raise
       end
     end
 
     private
+
+    def send_fast_track_engineer_email_for_testing(form526_submission_id)
+      # TODO: This should be removed once we have basic metrics
+      # on this feature and the visibility is imporved.
+      body = "A claim was just submitted on the #{Rails.env} environment " \
+             "with submission id: #{form526_submission_id} and job_id #{jid}"
+      ActionMailer::Base.mail(
+        from: ApplicationMailer.default[:from],
+        to: 'natasha.ibrahim@gsa.gov, emily.theis@gsa.gov, julia.l.allen@gsa.gov, tadhg.ohiggins@gsa.gov',
+        subject: 'Fast Track Hypertension Code Hit',
+        body: body
+      ).deliver_now
+    end
+
+    def get_icn(form526_submission)
+      account = Account.where(idme_uuid: form526_submission.user_uuid).first
+      account = Account.where(logingov_uuid: form526_submission.user_uuid).first if account.blank?
+      account = Account.where(edipi: form526_submission.auth_headers['va_eauth_dodedipnid']).first if account.blank?
+      account.icn if account.present? && account.icn.present?
+    end
+
+    def upload_pdf_and_attach_special_issue(form526_submission, pdf)
+      FastTrack::HypertensionUploadManager.new(form526_submission).handle_attachment(pdf.render)
+      if Flipper.enabled?(:disability_hypertension_compensation_fast_track_add_rrd)
+        FastTrack::HypertensionSpecialIssueManager.new(form526_submission).add_special_issue
+      end
+    end
+
+    def filtered_bp_readings(bp_readings)
+      bp_readings = bp_readings.filter do |reading|
+        reading[:issued].to_date > 1.year.ago
+      end
+
+      bp_readings.sort_by do |reading|
+        reading[:issued].to_date
+      end.reverse!
+    end
+
+    def filtered_medications(medication_request_response)
+      medications = FastTrack::HypertensionMedicationRequestData.new(medication_request_response).transform
+
+      medications.sort_by do |med|
+        med[:authoredOn].to_date
+      end.reverse!
+    end
+
+    def pdf(full_name, bpreadings, medications)
+      FastTrack::HypertensionPdfGenerator.new(full_name, bpreadings, medications, Time.zone.today).generate
+    end
 
     def no_recent_bp_readings(bp_readings)
       return true if bp_readings.blank?

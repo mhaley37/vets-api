@@ -29,6 +29,7 @@ module ClaimsApi
         #
         # @return [JSON] Record in pending state
         def submit_form_526 # rubocop:disable Metrics/MethodLength
+          sanitize_account_type if form_attributes.dig('directDeposit', 'accountType')
           validate_json_schema
           validate_form_526_submission_values!
           validate_veteran_identifiers(require_birls: true)
@@ -113,6 +114,7 @@ module ClaimsApi
         # rubocop:disable Metrics/MethodLength
         def validate_form_526
           add_deprecation_headers_to_response(response: response, link: ClaimsApi::EndpointDeprecation::V1_DEV_DOCS)
+          sanitize_account_type if form_attributes.dig('directDeposit', 'accountType')
           validate_json_schema
           validate_veteran_identifiers(require_birls: true)
           validate_initial_claim
@@ -142,6 +144,10 @@ module ClaimsApi
         # rubocop:enable Metrics/MethodLength
 
         private
+
+        def sanitize_account_type
+          form_attributes['directDeposit']['accountType'] = form_attributes['directDeposit']['accountType'].upcase
+        end
 
         #
         # Any custom 526 submission validations above and beyond json schema validation

@@ -54,14 +54,6 @@ features:
     actor_type: user
     description: Enables the health care check-in experiences
     enable_in_development: true
-  check_in_experience_demographics_page_enabled:
-    actor_type: user
-    description: Enables the health care check-in experiences to show demographics page.
-    enable_in_development: true
-  check_in_experience_next_of_kin_enabled:
-    actor_type: user
-    description: Enables the health care check-in experiences to show the next of kin page.
-    enable_in_development: true
   check_in_experience_emergency_contact_enabled:
     actor_type: user
     description: Enables the health care check-in experiences to show the emergency contact page.
@@ -70,18 +62,18 @@ features:
     actor_type: user
     description: Enables the health care check-in experiences to show the pre-check-in experience.
     enable_in_development: true
+  check_in_experience_chip_service_nok_confirmation_update_enabled:
+    actor_type: user
+    description: This updates a key name in the demographics confirmation hash in the CHIP service.
+    enable_in_development: true
+  check_in_experience_demographics_confirmation_enabled:
+    actor_type: user
+    description: Enables the health care pre-check-in experiences to send demographics confirmation.
+    enable_in_development: true
   check_in_experience_update_information_page_enabled:
     actor_type: user
     description: Enables the Update Information question in the health care check-in experience application
     enable_in_development: false
-  check_in_experience_multiple_appointment_support:
-    actor_type: user
-    description: Enables the health care check-in experiences to show multiple appointments
-    enable_in_development: true
-  check_in_experience_chip_service_refactor:
-    actor_type: user
-    description: Refactor CHIP service objects and use clients
-    enable_in_development: true
   coe_access:
     actor_type: user
     description: Feature gates the certificate of eligibility application
@@ -155,6 +147,10 @@ features:
   disability_hypertension_compensation_fast_track:
     actor_type: user
     description: Fast tracks 526 disability compensation claims by submitting additional health data
+    enable_in_development: true
+  disability_hypertension_compensation_fast_track_add_rrd:
+    actor_type: user
+    description: Fast tracks 526 disability compensation claims by submitting additional health data and adding the RRD special issue to the claim.
     enable_in_development: true
   disability_compensation_flashes:
     actor_type: user
@@ -312,6 +308,10 @@ features:
     actor_type: user
     description: Enable new list loop pattern
     enable_in_development: true
+  medical_copays_six_mo_window:
+    actor_type: user
+    description: This will filter to only show medical copays within the last 6 months
+    enable_in_development: true
   mega_menu_mobile_v2:
     actor_type: user
     description: Separates mobile mega menu from desktop mega menu
@@ -422,6 +422,10 @@ features:
     actor_type: user
     description: Enables the medical copays application on route /manage-va-debt/medical-copays/
     enable_in_development: true
+  medical_copays_zero_debt:
+    actor_type: user
+    description: Enables zero debt balances feature on the medical copays application
+    enable_in_development: false
   show_healthcare_experience_questionnaire:
     actor_type: cookie_id
     description: Enables showing the pre-appointment questionnaire feature.
@@ -528,7 +532,7 @@ features:
   va_online_scheduling_poc_health_apt:
     actor_type: user
     enable_in_development: true
-    description: Toggle for health apartment proof of concept   
+    description: Toggle for health apartment proof of concept
   va_view_dependents_access:
     actor_type: user
     description: Allows us to gate the View/ Modify dependents content in a progressive rollout
@@ -539,6 +543,10 @@ features:
   virtual_agent_token:
     actor_type: user
     description: Enables connection to webchat
+    enable_in_development: true
+  virtual_agent_auth:
+    actor_type: user
+    description: Enables auth lock in order to access bot
     enable_in_development: true
   yellow_ribbon_mvp_enhancement:
     actor_type: user

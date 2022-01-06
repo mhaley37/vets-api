@@ -18,7 +18,7 @@ FactoryBot.define do
           'telecom' => [
             {
               'type': 'phone',
-              'value': '2125688889'
+              'value': '2125688887'
             },
             {
               'type': 'email',
@@ -87,11 +87,16 @@ FactoryBot.define do
     end
 
     trait :va_proposed do # this has an error, bring up in SOS
-      kind { 'clinic' }
       status { 'proposed' }
       location_id { '983' }
-      service_type { 'primaryCare' }
-      comment { 'test' }
+      service_type { 'audiology' }
+      comment { 'Follow-up/Routine: testing' }
+      reason_code do
+        { 'codeing' => [
+          'code': 'Routine Follow-up'
+        ],
+          'text': 'text' }
+      end
       contact do
         {
           'telecom' => [
@@ -106,11 +111,22 @@ FactoryBot.define do
           ]
         }
       end
-      extension do
+      requested_periods do
         {
-          'desired_date': DateTime.new(2021, 0o6, 15, 23, 59, 0).iso8601(3)
+          'end': '2022-01-04T11:59:00Z',
+          'start': '2022-01-04T00:00:00Z'
         }
       end
+    end
+
+    trait :va_proposed_clinic do
+      va_proposed
+      kind { 'clinic' }
+    end
+
+    trait :va_proposed_phone do
+      va_proposed
+      kind { 'phone' }
     end
 
     trait :with_direct_scheduling do
