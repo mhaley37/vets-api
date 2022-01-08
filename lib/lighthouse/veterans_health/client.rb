@@ -31,41 +31,60 @@ module Lighthouse
       end
 
       # Handles the Lighthouse request for the passed-in resource.
+      # Returns the entire collection of paged data, without the page headers.
       #
       # @example
       #
-      # get_resource('observations')
+      # list_resource('observations')
       #
       # @param [String] resource The Lighthouse resource being requested
       #
       # @return Faraday::Env response
-      def get_resource(resource)
+      def list_resource(resource)
         resource = resource.downcase
         raise ArgumentError, 'unsupported resource type' unless %w[medications observations].include?(resource)
 
-        send("get_#{resource}")
+        send("list_#{resource}")
       end
 
       private
 
-      def get_observations
+      def list_observations
         params = {
           patient: @icn,
           category: 'vital-signs',
-          code: '85354-9'
+          code: '85354-9',
+          _count: 100
         }
 
-        perform_get('services/fhir/v0/r4/Observation', params)
+        first_response = perform_get('services/fhir/v0/r4/Observation', params)
+        get_list(first_response)
       end
 
-      def get_medications
+      def list_medications
         params = {
-          patient: @icn
+          patient: @icn,
+          _count: 100
         }
-        perform_get('services/fhir/v0/r4/MedicationRequest', params)
+
+        first_response = perform_get('services/fhir/v0/r4/MedicationRequest', params)
+        get_list(first_response)
       end
 
-      def perform_get(uri_path, params)
+      def get_list(first_response)
+        final_collection = first_response.body['entry']
+        next_page = first_response.body['link'].find { |link| link['relation'] == 'next' }&.[]('url')
+        while next_page.present?
+          next_response = perform_get(URI(next_page).path + "?#{URI(next_page).query}")
+          final_collection.concat(next_response.body['entry'])
+          next_page = next_response.body['link'].find { |link| link['relation'] == 'next' }&.[]('url')
+        end
+
+        first_response.body['entry'] = final_collection
+        first_response
+      end
+
+      def perform_get(uri_path, **params)
         perform(:get, uri_path, params, headers_hash)
       end
 
