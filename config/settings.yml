@@ -602,6 +602,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
   spool_submission:
     emails:
       - Brian.Grubb@va.gov
@@ -631,6 +632,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
   year_to_date_report:
     emails:
       - 222A.VBAVACO@va.gov
@@ -671,6 +673,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
 
 oidc:
   auth_server_metadata_url: ~
@@ -811,10 +814,12 @@ flipper:
     - jennie.mcgibney@va.gov
     - jesse.cohn@adhocteam.us
     - jlinn@governmentcio.com
+    - joe.hall@thoughtworks.com
     - joeyn414@gmail.com # Joe Niquette Oddball VSP Identity Team Sr Security Engineer
     - john.bramley@adhocteam.us
     - julie.adair@agile6.com # Julie Adair (Agile6), Product Manager Health Care Experience/Check-In
     - jwolf@governmentcio.com # Jason Wolf Product Manager for GCIO
+    - justin.trieu@thoughtworks.com
     - kabrown@thoughtworks.com
     - kadams@governmentcio.com
     - kathleen.crawford@gcio.com
@@ -1152,8 +1157,7 @@ veteran_readiness_and_employment:
       - Jason.Wolf@va.gov
       - Kathleen.Crawford@va.gov
       - Kevin.Musiorski@va.gov
-    staging_emails:
-      - kcrawford@governmentcio.com
+      - Amanda.Leaders@va.gov
 
 # Settings for connecting to the va.gov Google Analytics for the Cypress Viewport Updater
 google_analytics_cvu:
