@@ -45,7 +45,8 @@ RSpec.describe FastTrack::HypertensionPdfGenerator, :vcr do
 
     it 'includes the veterans medications' do
       dosages = parsed_medications_data.map do |per|
-        next unless per['dosageInstructions'].present?
+        next if per['dosageInstructions'].blank?
+
         "Dosage instructions: #{per['dosageInstructions'].join('; ')}"
       end.compact
 
