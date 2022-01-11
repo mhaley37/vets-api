@@ -66,22 +66,26 @@ module Lighthouse
           patient: @icn,
           _count: 100
         }
-
         first_response = perform_get('services/fhir/v0/r4/MedicationRequest', params)
         get_list(first_response)
       end
 
       def get_list(first_response)
-        final_collection = first_response.body['entry']
         next_page = first_response.body['link'].find { |link| link['relation'] == 'next' }&.[]('url')
+        return first_response unless next_page
+
+        first_response.body['entry'] = collect_all_entries(next_page, first_response.body['entry'])
+        first_response
+      end
+
+      def collect_all_entries(next_page, collection)
         while next_page.present?
           next_response = perform_get(URI(next_page).path + "?#{URI(next_page).query}")
-          final_collection.concat(next_response.body['entry'])
+          collection.concat(next_response.body['entry'])
           next_page = next_response.body['link'].find { |link| link['relation'] == 'next' }&.[]('url')
         end
 
-        first_response.body['entry'] = final_collection
-        first_response
+        collection
       end
 
       def perform_get(uri_path, **params)
