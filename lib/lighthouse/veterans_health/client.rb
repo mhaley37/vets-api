@@ -31,7 +31,7 @@ module Lighthouse
       end
 
       # Handles the Lighthouse request for the passed-in resource.
-      # Returns the entire collection of paged data, without the page headers.
+      # Returns the entire collection of paged data in a single response.
       #
       # @example
       #
