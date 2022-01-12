@@ -4,11 +4,11 @@ module FastTrack
   class HypertensionPdfGenerator
     attr_accessor :patient, :bp_data, :medications
 
-    def initialize(patient, bp_data, medications, date)
+    def initialize(patient, bp_data, medications)
       @patient = patient
       @bp_data = bp_data
       @medications = medications
-      @date = date
+      @date = Time.zone.today
     end
 
     def generate
@@ -83,7 +83,9 @@ module FastTrack
       @bp_data.each do |bp|
         pdf.text "<b>Blood pressure: #{bp[:systolic]['value']}/#{bp[:diastolic]['value']} #{bp[:systolic]['unit']}",
                  inline_format: true, size: 11
-        pdf.text "Taken on: #{bp[:issued][0, 10].to_date.strftime('%m/%d/%Y')}", size: 11
+        pdf.text "Taken on: #{bp[:issued].to_date.strftime('%m/%d/%Y')} " \
+                 "at #{Time.iso8601(bp[:issued]).strftime('%H:%M %Z')}",
+                 size: 11
         pdf.text "Location: #{bp[:organization] || 'Unknown'}", size: 11
         pdf.text "\n", size: 8
       end

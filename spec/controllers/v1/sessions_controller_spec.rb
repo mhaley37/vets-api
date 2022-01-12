@@ -166,17 +166,6 @@ RSpec.describe V1::SessionsController, type: :controller do
           end
         end
 
-        context 'routes /sessions/signup/new to SessionsController#new' do
-          it 'redirects' do
-            expect { get(:new, params: { type: :signup, client_id: '123123' }) }
-              .to trigger_statsd_increment(described_class::STATSD_SSO_NEW_KEY,
-                                           tags: ['context:signup', 'version:v1'], **once)
-            expect(response).to have_http_status(:ok)
-            expect_saml_post_form(response.body, 'https://pint.eauth.va.gov/isam/sps/saml20idp/saml20/login',
-                                  'originating_request_id' => nil, 'type' => 'signup')
-          end
-        end
-
         context 'routes /sessions/idme_signup/new to SessionsController#new' do
           it 'redirects' do
             expect { get(:new, params: { type: :idme_signup, client_id: '123123' }) }
@@ -253,7 +242,7 @@ RSpec.describe V1::SessionsController, type: :controller do
 
       context 'for a user with semantically invalid SAML attributes' do
         let(:invalid_attributes) do
-          build(:ssoe_idme_mhv_loa3, va_eauth_dodedipnid: ['999888, 888777'])
+          build(:ssoe_idme_mhv_loa3, va_eauth_gcIds: ['0123456789^NI^200DOD^USDOD^A|0000000054^NI^200DOD^USDOD^A|'])
         end
         let(:valid_saml_response) do
           build_saml_response(
@@ -289,27 +278,6 @@ RSpec.describe V1::SessionsController, type: :controller do
 
           expect(response).to have_http_status(:found)
         end
-      end
-    end
-
-    describe 'track' do
-      it 'ignores a SAML stat without params' do
-        expect { get(:tracker) }
-          .not_to trigger_statsd_increment(described_class::STATSD_SSO_SAMLTRACKER_KEY,
-                                           tags: ['type:',
-                                                  'context:',
-                                                  'version:v1'])
-      end
-
-      it 'logs a SAML stat with valid params' do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger)
-          .to receive(:info).with('SSOe: SAML Tracker => {"id"=>"1", "type"=>"mhv", "authn"=>"myhealthevet"}')
-        expect { get(:tracker, params: { id: 1, type: 'mhv', authn: 'myhealthevet' }) }
-          .to trigger_statsd_increment(described_class::STATSD_SSO_SAMLTRACKER_KEY,
-                                       tags: ['type:mhv',
-                                              'context:myhealthevet',
-                                              'version:v1'])
       end
     end
   end
@@ -849,7 +817,7 @@ RSpec.describe V1::SessionsController, type: :controller do
       context 'when EDIPI user attribute validation fails' do
         let(:saml_attributes) do
           build(:ssoe_idme_mhv_loa3,
-                va_eauth_dodedipnid: ['0123456789,1111111111'])
+                va_eauth_gcIds: ['0123456789^NI^200DOD^USDOD^A|0000000054^NI^200DOD^USDOD^A|'])
         end
         let(:saml_response) do
           build_saml_response(

@@ -61,14 +61,6 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
             .to receive(:transform).and_return(mocked_observation_data)
         end
 
-        it 'emails the stakeholders' do
-          expect { FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name) }
-            .to change { ActionMailer::Base.deliveries.count }.by(1)
-          expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Code Hit'
-          expect(ActionMailer::Base.deliveries.last.body.raw_source)
-            .to match 'A claim was just submitted'
-        end
-
         it 'finishes successfully' do
           expect do
             FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
@@ -76,16 +68,44 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
         end
 
         context 'failure' do
-          it 'raises a helpful error if the failure is after the api call' do
+          before do
             allow_any_instance_of(
               SupportingEvidenceAttachment
             ).to receive(:save!).and_raise(StandardError)
+          end
 
+          it 'raises a helpful error if the failure is after the api call and emails the engineers' do
             expect do
               FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
             end.to raise_error(StandardError)
+            expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Errored'
+            expect(ActionMailer::Base.deliveries.last.body.raw_source)
+              .to match 'A claim just errored'
           end
         end
+      end
+    end
+
+    context 'when an account for the user is NOT found' do
+      before do
+        allow(Account).to receive(:where).and_return Account.none
+      end
+
+      it 'raises ActiveRecord::RecordNotFound exception' do
+        expect { subject.new.perform(submission.id, user_full_name) }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the ICN does NOT exist on the user Account' do
+      before do
+        allow_any_instance_of(Account).to receive(:icn).and_return('')
+      end
+
+      it 'raises an ArgumentError' do
+        expect do
+          subject.new.perform(submission.id,
+                              user_full_name)
+        end.to raise_error(ArgumentError, 'no ICN passed in for LH API request.')
       end
     end
   end
