@@ -21,6 +21,7 @@ services:
       "Settings.database_url": "postgis://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DATABASE:-vets_api_development}?pool=4"
       "Settings.test_database_url": "postgis://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DATABASE:-vets_api_test}"
       "Settings.binaries.clamdscan": "clamscan"           # Not running a separate process within the container for clamdscan, so we use clamscan which requires no daemon
+      "Settings.saml_ssoe.idp_metadata_url": "https://int.eauth.va.gov/isam/saml/metadata/saml20idp"
       POSTGRES_HOST: "${POSTGRES_HOST:-postgres}"
       POSTGRES_PORT: "${POSTGRES_PORT:-5432}"
       POSTGRES_USER: "${POSTGRES_USER:-postgres}"
