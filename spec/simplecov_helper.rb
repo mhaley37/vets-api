@@ -56,6 +56,7 @@ class SimpleCovHelper
     add_filter 'modules/claims_api/app/swagger/*'
     add_filter 'lib/bip_claims/configuration.rb'
     add_filter 'version.rb'
+    add_filter 'app/controllers/foo_controller.rb'
   end
 
   def self.add_modules

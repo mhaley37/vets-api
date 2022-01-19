@@ -420,6 +420,8 @@ Rails.application.routes.draw do
 
   mount Flipper::UI.app(Flipper.instance) => '/flipper', constraints: Flipper::AdminUserConstraint.new
 
+  get 'foo_json', to: 'foo#index'
+
   # This globs all unmatched routes and routes them as routing errors
   match '*path', to: 'application#routing_error', via: %i[get post put patch delete]
 end
