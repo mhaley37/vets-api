@@ -601,10 +601,7 @@ RSpec.describe SAML::User do
             )
             expect { subject.validate! }.to raise_error { |error|
               expect(error).to be_a(SAML::UserAttributeError)
-              expect(error.message).to eq(
-                'User attributes contain multiple distinct MHV ID values: ' \
-                '{"mhv_iens":["888777","999888"],"icn":"1013183292V131165"}'
-              )
+              expect(error.message).to eq('User attributes contain multiple distinct MHV ID values')
             }
           end
         end
@@ -618,7 +615,7 @@ RSpec.describe SAML::User do
             expect_any_instance_of(SentryLogging).to receive(:log_message_to_sentry).with(
               'User attributes contain multiple distinct MHV ID values.',
               'warn',
-              { mhv_iens: [mhv_ien, mhv_uuid] }
+              { mhv_ids: [mhv_ien, mhv_uuid] }
             )
             subject.validate!
           end
@@ -635,7 +632,11 @@ RSpec.describe SAML::User do
         it 'does not validate' do
           expect { subject.validate! }.to raise_error { |error|
             expect(error).to be_a(SAML::UserAttributeError)
-            expect(error.message).to eq('MHV credential ICN does not match MPI record.')
+            expect(error.message).to eq('MHV credential ICN does not match MPI record')
+            expect(error.identifier).to include(
+              icn: '22222222V888888',
+              mhv_icn: '111111111V666666'
+            )
           }
         end
       end
@@ -718,12 +719,9 @@ RSpec.describe SAML::User do
           it 'does not validate' do
             expect { subject.validate! }
               .to raise_error { |error|
-                expect(error).to be_a(SAML::UserAttributeError)
-                expect(error.message).to eq(
-                  'User attributes contain multiple distinct MHV ID values: ' \
-                  '{"mhv_iens":["999888","888777"],"icn":"1013183292V131165"}'
-                )
-              }
+                    expect(error).to be_a(SAML::UserAttributeError)
+                    expect(error.message).to eq('User attributes contain multiple distinct MHV ID values')
+                  }
           end
         end
 
@@ -735,12 +733,9 @@ RSpec.describe SAML::User do
           it 'does not validate' do
             expect { subject.validate! }
               .to raise_error { |error|
-                expect(error).to be_a(SAML::UserAttributeError)
-                expect(error.message).to eq(
-                  'User attributes contain multiple distinct MHV ID values: ' \
-                  '{"mhv_iens":["999888","888777"],"icn":"1013183292V131165"}'
-                )
-              }
+                    expect(error).to be_a(SAML::UserAttributeError)
+                    expect(error.message).to eq('User attributes contain multiple distinct MHV ID values')
+                  }
           end
         end
       end
@@ -811,9 +806,10 @@ RSpec.describe SAML::User do
           expect { subject.validate! }
             .to raise_error { |error|
                   expect(error).to be_a(SAML::UserAttributeError)
-                  expect(error.message).to eq(
-                    'User attributes contain multiple distinct CORP ID values: ' \
-                    '{"corp_ids":["0123456789","0000000054"],"icn":"1013183292V131165"}'
+                  expect(error.message).to eq('User attributes contain multiple distinct CORP ID values')
+                  expect(error.identifier).to include(
+                    icn: '1013183292V131165',
+                    corp_ids: %w[0123456789 0000000054]
                   )
                 }
         end
@@ -833,9 +829,10 @@ RSpec.describe SAML::User do
           expect { subject.validate! }
             .to raise_error { |error|
                   expect(error).to be_a(SAML::UserAttributeError)
-                  expect(error.message).to eq(
-                    'User attributes contain multiple distinct EDIPI values: ' \
-                    '{"edipis":["0123456789","0000000054"],"icn":"1013183292V131165"}'
+                  expect(error.message).to eq('User attributes contain multiple distinct EDIPI values')
+                  expect(error.identifier).to include(
+                    edipis: %w[0123456789 0000000054],
+                    icn: '1013183292V131165'
                   )
                 }
         end
