@@ -59,7 +59,7 @@ describe LGY::Service do
       it 'returns eligible' do
         VCR.use_cassette 'lgy/determination_eligible' do
           VCR.use_cassette 'lgy/application_not_found' do
-            expect(subject.coe_status).to eq({ status: 'eligible' })
+            expect(subject.coe_status).to eq status: 'eligible'
           end
         end
       end
