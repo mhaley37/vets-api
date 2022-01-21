@@ -30,9 +30,9 @@ module LGY
         # need confirmation from LGY on this
         { status: 'pending' }
       elsif get_determination.body['status'] == 'PENDING' && get_application.body['status'] == 'SUBMITTED'
-        { status: 'pending', application_create_date: get_application.body['create_date'] }
+        { status: 'pending', application_create_date: get_application.body['create_date'].to_s }
       elsif get_determination.body['status'] == 'PENDING' && get_application.body['status'] == 'RETURNED'
-        { status: 'pending-upload', application_create_date: get_application.body['create_date'] }
+        { status: 'pending-upload', application_create_date: get_application.body['create_date'].to_s }
       end
     end
 
