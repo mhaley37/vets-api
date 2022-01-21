@@ -38,6 +38,7 @@ module FastTrack
     end
 
     private
+    # Comment for a commit
 
     def bp_readings(client)
       @bp_readings ||= client.list_resource('observations')
