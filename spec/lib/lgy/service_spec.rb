@@ -93,12 +93,18 @@ describe LGY::Service do
       end
     end
 
-    context 'when get_determination is Pending and get_application is a 404' do
-      it 'returns pending' do
-        VCR.use_cassette 'lgy/determination_pending' do
-          VCR.use_cassette 'lgy/application_not_found' do
-            expect(subject.coe_status).to eq status: 'pending'
-          end
+    context 'when get_determination is Pending' do
+      before { VCR.insert_cassette 'lgy/determination_pending' }
+
+      after { VCR.eject_cassette 'lgy/determination_pending' }
+
+      context 'and get_application is a 404' do
+        before { VCR.insert_cassette 'lgy/application_not_found' }
+
+        after { VCR.eject_cassette 'lgy/application_not_found' }
+
+        it 'returns pending' do
+          expect(subject.coe_status).to eq status: 'pending'
         end
       end
     end
