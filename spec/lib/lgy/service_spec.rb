@@ -117,6 +117,16 @@ describe LGY::Service do
           expect(subject.coe_status).to eq status: 'pending', application_create_date: 1642619386000
         end
       end
+
+      context 'and get_application is 200 w/ status of RETURNED' do
+        before { VCR.insert_cassette 'lgy/application_200_status_returned' }
+
+        after { VCR.eject_cassette 'lgy/application_200_status_returned' }
+
+        it 'returns pending-upload and the application createDate' do
+          expect(subject.coe_status).to eq status: 'pending-upload', application_create_date: 1642619386000
+        end
+      end
     end
   end
 
