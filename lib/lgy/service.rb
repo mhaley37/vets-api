@@ -19,7 +19,7 @@ module LGY
 
     def coe_status
       if get_determination.body['status'] == 'ELIGIBLE' && get_application.status == 404
-        'eligible'
+        { status: 'eligible' }
       elsif get_determination.body['status'] == 'UNABLE_TO_DETERMINE_AUTOMATICALLY' && get_application.status == 404
         'unable-to-determine-eligibility'
       elsif get_determination.body['status'] == 'ELIGIBLE' && get_application.status == 200
