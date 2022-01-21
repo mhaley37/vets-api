@@ -69,7 +69,7 @@ describe LGY::Service do
       it 'returns unable-to-determine-eligibility' do
         VCR.use_cassette 'lgy/determination_unable_to_determine' do
           VCR.use_cassette 'lgy/application_not_found' do
-            expect(subject.coe_status).to eq 'unable-to-determine-eligibility'
+            expect(subject.coe_status).to eq status: 'unable-to-determine-eligibility'
           end
         end
       end
