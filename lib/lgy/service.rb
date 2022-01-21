@@ -25,7 +25,7 @@ module LGY
       elsif get_determination.body['status'] == 'ELIGIBLE' && get_application.status == 200
         { status: 'available' }
       elsif get_determination.body['status'] == 'NOT_ELIGIBLE'
-        'ineligible'
+        { status: 'ineligible' }
       elsif get_determination.body['status'] == 'PENDING' && get_application.status == 404
         # need confirmation from LGY on this
         'pending'

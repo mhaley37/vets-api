@@ -88,7 +88,7 @@ describe LGY::Service do
     context 'when get_determination is NOT_ELIGIBLE' do
       it 'returns ineligible' do
         VCR.use_cassette 'lgy/determination_not_eligible' do
-          expect(subject.coe_status).to eq 'ineligible'
+          expect(subject.coe_status).to eq status: 'ineligible'
         end
       end
     end
