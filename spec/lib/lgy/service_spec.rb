@@ -97,7 +97,7 @@ describe LGY::Service do
       it 'returns pending' do
         VCR.use_cassette 'lgy/determination_pending' do
           VCR.use_cassette 'lgy/application_not_found' do
-            expect(subject.coe_status).to eq 'pending'
+            expect(subject.coe_status).to eq status: 'pending'
           end
         end
       end
