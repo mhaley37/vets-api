@@ -38,6 +38,20 @@ describe LGY::Service do
         end
       end
     end
+
+    context 'when application is 200 and status is RETURNED' do
+      before { VCR.insert_cassette 'lgy/application_200_status_returned' }
+
+      after { VCR.eject_cassette 'lgy/application_200_status_returned' }
+
+      it 'response code is a 200' do
+        expect(subject.get_application.status).to eq 200
+      end
+
+      it 'response body has correct keys' do
+        expect(subject.get_application.body).to have_key 'status'
+      end
+    end
   end
 
   describe '#coe_status' do
