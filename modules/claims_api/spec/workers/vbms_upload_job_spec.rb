@@ -78,7 +78,22 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:upload_document).and_raise(Errno::ENOENT)
         subject.new.perform(power_of_attorney.id)
         power_of_attorney.reload
-        expect(power_of_attorney.status).to eq('failed')
+        expect(power_of_attorney.status).to eq('errored')
+      end
+    end
+
+    it "handles 'VBMS::FilenumberDoesNotExist' error" do
+      VCR.use_cassette('vbms/document_upload_success') do
+        allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token)
+          .and_raise(VBMS::FilenumberDoesNotExist.new(500, 'HelloWorld'))
+
+        subject.new.perform(power_of_attorney.id)
+        power_of_attorney.reload
+
+        expect(power_of_attorney.status).to eq('errored')
+        expect(power_of_attorney.vbms_error_message).to eq(
+          'VBMS is unable to locate file number'
+        )
       end
     end
 

@@ -141,7 +141,7 @@ module SAML
       end
 
       def edipi
-        safe_attr('va_eauth_dodedipnid')&.split(',')&.first
+        edipi_ids[:edipi]
       end
 
       def sponsor_dod_epi_pn_id
@@ -167,12 +167,12 @@ module SAML
 
       def mhv_loa_highest
         mhv_assurance = mhv_account_type
-        SAML::UserAttributes::MHV::PREMIUM_LOAS.include?(mhv_assurance) ? 3 : nil
+        LOA::MHV_PREMIUM_VERIFIED.include?(mhv_assurance) ? 3 : nil
       end
 
       def dslogon_loa_highest
         dslogon_assurance = dslogon_account_type
-        SAML::UserAttributes::DSLogon::PREMIUM_LOAS.include?(dslogon_assurance) ? 3 : nil
+        LOA::DSLOGON_PREMIUM_VERIFIED.include?(dslogon_assurance) ? 3 : nil
       end
 
       # This is the ID.me highest level of assurance attained
@@ -207,16 +207,16 @@ module SAML
       end
 
       def sign_in
-        sign_in = if @authn_context == INBOUND_AUTHN_CONTEXT
+        sign_in = if authn_context == INBOUND_AUTHN_CONTEXT
                     { service_name: csid == SAML::User::MHV_ORIGINAL_CSID ? SAML::User::MHV_MAPPED_CSID : csid }
                   else
-                    SAML::User::AUTHN_CONTEXTS.fetch(@authn_context).fetch(:sign_in)
+                    SAML::User::AUTHN_CONTEXTS.fetch(authn_context).fetch(:sign_in)
                   end
         sign_in.merge(account_type: account_type)
       end
 
       def to_hash
-        SERIALIZABLE_ATTRIBUTES.index_with { |k| send(k) }
+        SERIALIZABLE_ATTRIBUTES.index_with { |k| send(k) }.merge(authn_context: authn_context)
       end
 
       # Raise any fatal exceptions due to validation issues
@@ -233,13 +233,10 @@ module SAML
 
       def multiple_id_validations
         # EDIPI, ICN, and CORP ID all trigger errors if multiple unique IDs are found
-        raise SAML::UserAttributeError, SAML::UserAttributeError::ERRORS[:multiple_edipis] if edipi_mismatch?
-        raise SAML::UserAttributeError, SAML::UserAttributeError::ERRORS[:mhv_icn_mismatch] if mhv_icn_mismatch?
-        raise SAML::UserAttributeError, SAML::UserAttributeError::ERRORS[:multiple_corp_ids] if corp_id_mismatch?
-
-        # temporary conditional validation for MHV, can be only a warning if user is MHV inbound-outbound
-        conditional_validate_mhv_ids
-
+        check_mhv_icn_mismatch
+        check_id_mismatch(mvi_ids[:vba_corp_ids], :multiple_corp_ids)
+        check_id_mismatch(edipi_ids[:edipis], :multiple_edipis)
+        check_id_mismatch(mhv_iens, :multiple_mhv_ids, mhv_inbound_outbound: mhv_inbound_outbound)
         # SEC & BIRLS multiple IDs are more common, only log a warning
         if sec_id_mismatch?
           log_message_to_sentry(
@@ -273,31 +270,22 @@ module SAML
         @mvi_ids = parse_string_gcids(gcids)
       end
 
+      def edipi_ids
+        @edipi_ids ||= begin
+          gcids = safe_attr('va_eauth_gcIds')
+          return {} unless gcids
+
+          parse_string_gcids(gcids, DOD_ROOT_OID)
+        end
+      end
+
       def safe_attr(key)
         @attributes[key] == 'NOT_FOUND' ? nil : @attributes[key]
       end
 
-      def conditional_validate_mhv_ids
-        if mhv_id_mismatch?
-          if mhv_inbound_outbound
-            log_message_to_sentry(
-              'User attributes contain multiple distinct MHV ID values.',
-              'warn',
-              { mhv_ids: mhv_ids }
-            )
-          else
-            raise SAML::UserAttributeError, SAML::UserAttributeError::ERRORS[:multiple_mhv_ids]
-          end
-        end
-      end
-
-      def mhv_ids
+      def mhv_iens
         mhv_iens = mvi_ids[:mhv_iens] || []
         mhv_iens.append(safe_attr('va_eauth_mhvuuid')).reject(&:nil?).uniq
-      end
-
-      def mhv_id_mismatch?
-        mhv_ids.size > 1
       end
 
       def mhv_inbound_outbound
@@ -305,22 +293,37 @@ module SAML
         tracker&.payload_attr(:skip_dupe) == 'mhv'
       end
 
-      def mhv_icn_mismatch?
-        mhvicn_val = safe_attr('va_eauth_mhvicn')
+      def check_mhv_icn_mismatch
         icn_val = safe_attr('va_eauth_icn')
-        icn_val.present? && mhvicn_val.present? && icn_val != mhvicn_val
-      end
-
-      def edipi_mismatch?
-        attribute_has_multiple_values?('va_eauth_dodedipnid')
+        mhvicn_val = safe_attr('va_eauth_mhvicn')
+        if icn_val.present? && mhvicn_val.present? && icn_val != mhvicn_val
+          raise SAML::UserAttributeError, SAML::UserAttributeError::ERRORS[:mhv_icn_mismatch]
+        end
       end
 
       def birls_id_mismatch?
         attribute_has_multiple_values?('va_eauth_birlsfilenumber')
       end
 
-      def corp_id_mismatch?
-        attribute_has_multiple_values?('vba_corp_id')
+      def check_corp_id_mismatch
+        check_id_mismatch(mvi_ids[:vba_corp_ids], :multiple_corp_ids)
+      end
+
+      def check_id_mismatch(ids, multiple_ids_error_type, mhv_inbound_outbound: false)
+        return if ids.blank?
+
+        if ids.reject(&:nil?).uniq.size > 1
+          if mhv_inbound_outbound
+            log_message_to_sentry(
+              'User attributes contain multiple distinct MHV ID values.', 'warn', { mhv_iens: ids }
+            )
+          else
+            mismatched_ids_error = SAML::UserAttributeError::ERRORS[multiple_ids_error_type]
+            error_data = { mismatched_ids: ids, icn: mhv_icn }
+            Rails.logger.warn("[SAML::UserAttributes::SSOe] #{mismatched_ids_error[:message]}, #{error_data}")
+            raise SAML::UserAttributeError, mismatched_ids_error
+          end
+        end
       end
 
       def sec_id_mismatch?

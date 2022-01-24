@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'sidekiq/testing'
 
 RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
   subject { described_class }
@@ -61,31 +62,79 @@ RSpec.describe FastTrack::DisabilityCompensationJob, type: :worker do
             .to receive(:transform).and_return(mocked_observation_data)
         end
 
-        it 'emails the stakeholders' do
-          expect { FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name) }
-            .to change { ActionMailer::Base.deliveries.count }.by(1)
-          expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Code Hit'
-          expect(ActionMailer::Base.deliveries.last.body.raw_source)
-            .to match 'A claim was just submitted'
+        it 'finishes successfully' do
+          Sidekiq::Testing.inline! do
+            expect do
+              FastTrack::DisabilityCompensationJob.perform_async(submission.id, user_full_name)
+            end.not_to raise_error
+          end
         end
 
-        it 'finishes successfully' do
-          expect do
-            FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
-          end.not_to raise_error
+        it 'creates a job status record' do
+          Sidekiq::Testing.inline! do
+            expect do
+              FastTrack::DisabilityCompensationJob.perform_async(submission.id, user_full_name)
+            end.to change(Form526JobStatus, :count).by(1)
+          end
+        end
+
+        it 'marks the new Form526JobStatus record as successful' do
+          Sidekiq::Testing.inline! do
+            FastTrack::DisabilityCompensationJob.perform_async(submission.id, user_full_name)
+            expect(Form526JobStatus.last.status).to eq 'success'
+          end
         end
 
         context 'failure' do
-          it 'raises a helpful error if the failure is after the api call' do
+          before do
             allow_any_instance_of(
-              SupportingEvidenceAttachment
-            ).to receive(:save!).and_raise(StandardError)
+              FastTrack::HypertensionPdfGenerator
+            ).to receive(:generate).and_return(nil)
+          end
 
-            expect do
-              FastTrack::DisabilityCompensationJob.new.perform(submission.id, user_full_name)
-            end.to raise_error(StandardError)
+          it 'raises a helpful error if the failure is after the api call and emails the engineers' do
+            Sidekiq::Testing.inline! do
+              expect do
+                FastTrack::DisabilityCompensationJob.perform_async(submission.id, user_full_name)
+              end.to raise_error(NoMethodError)
+              expect(ActionMailer::Base.deliveries.last.subject).to eq 'Fast Track Hypertension Errored'
+              expect(ActionMailer::Base.deliveries.last.body.raw_source)
+                .to match 'A claim just errored'
+            end
+          end
+
+          it 'creates a job status record' do
+            Sidekiq::Testing.inline! do
+              expect do
+                FastTrack::DisabilityCompensationJob.perform_async(submission.id, user_full_name)
+              end.to raise_error(NoMethodError)
+              expect(Form526JobStatus.last.status).to eq 'retryable_error'
+            end
           end
         end
+      end
+    end
+
+    context 'when an account for the user is NOT found' do
+      before do
+        allow(Account).to receive(:where).and_return Account.none
+      end
+
+      it 'raises ActiveRecord::RecordNotFound exception' do
+        expect { subject.new.perform(submission.id, user_full_name) }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the ICN does NOT exist on the user Account' do
+      before do
+        allow_any_instance_of(Account).to receive(:icn).and_return('')
+      end
+
+      it 'raises an ArgumentError' do
+        expect do
+          subject.new.perform(submission.id,
+                              user_full_name)
+        end.to raise_error(ArgumentError, 'no ICN passed in for LH API request.')
       end
     end
   end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'lgy/aws_uploader'
 require 'lgy/configuration'
 require 'common/client/base'
 
@@ -18,13 +19,21 @@ module LGY
 
     def coe_status
       if get_determination.body['status'] == 'ELIGIBLE' && get_application.status == 404
-        'eligible'
+        { status: 'eligible' }
       elsif get_determination.body['status'] == 'UNABLE_TO_DETERMINE_AUTOMATICALLY' && get_application.status == 404
-        'unable-to-determine-eligibility'
+        { status: 'unable-to-determine-eligibility' }
       elsif get_determination.body['status'] == 'ELIGIBLE' && get_application.status == 200
-        'available'
-      elsif get_determination.body['status'] == 'NOT ELIGIBLE'
-        'ineligible'
+        { status: 'available' }
+      elsif get_determination.body['status'] == 'NOT_ELIGIBLE'
+        { status: 'ineligible' }
+      elsif get_determination.body['status'] == 'PENDING' && get_application.status == 404
+        # Kelli said we'll never having a pending status w/o an application, but LGY sqa data is getting hand crafted
+        { status: 'pending' }
+      elsif get_determination.body['status'] == 'PENDING' && get_application.body['status'] == 'SUBMITTED'
+        # SUBMITTED & RECEIVED ARE COMBINED ON LGY SIDE
+        { status: 'pending', application_create_date: get_application.body['create_date'] }
+      elsif get_determination.body['status'] == 'PENDING' && get_application.body['status'] == 'RETURNED'
+        { status: 'pending-upload', application_create_date: get_application.body['create_date'] }
       end
     end
 
@@ -55,9 +64,48 @@ module LGY
       raise e
     end
 
+    def get_coe_file
+      with_monitoring do
+        perform(
+          :get,
+          "#{end_point}/documents/coe/file",
+          { 'edipi' => @edipi, 'icn' => @icn },
+          request_headers.merge(pdf_headers)
+        )
+      end
+    rescue Common::Client::Errors::ClientError => e
+      # a 404 is expected if no COE is available
+      return e if e.status == 404
+
+      raise e
+    end
+
+    def coe_url
+      response = get_coe_file
+      # return if 404
+
+      folder = 'tmp/lgy_coe'
+      FileUtils.mkdir_p(folder)
+      filename = "#{folder}/#{DateTime.now.strftime('%Q')}.pdf"
+      File.open(filename, 'wb') do |f|
+        f.write(response.body)
+      end
+
+      coe_url = LGY::AwsUploader.get_s3_link(filename)
+      File.delete(filename)
+
+      coe_url
+    end
+
     def request_headers
       {
         Authorization: "api-key { \"appId\":\"#{Settings.lgy.app_id}\", \"apiKey\": \"#{Settings.lgy.api_key}\"}"
+      }
+    end
+
+    def pdf_headers
+      {
+        'Accept' => 'application/octet-stream', 'Content-Type' => 'application/octet-stream'
       }
     end
 

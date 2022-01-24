@@ -16,6 +16,10 @@ features:
     actor_type: user
     description: Whether Self-Identifying Gender Identity is enabled for caregiver.
     enable_in_development: true
+  caregiver_mulesoft:
+    actor_type: user
+    description: Whether to use MuleSoft when submitting to CARMA.
+    enable_in_development: true
   hca_american_indian_enabled:
     actor_type: user
     description: Enables American Indian SIGI question page.
@@ -111,6 +115,15 @@ features:
     actor_type: user
     description: Toggles the availability of covid-19 vaccine scheduling links in the facility locator frontend
     enable_in_development: true
+  covid_volunteer_intake_backend_enabled:
+    actor_type: cookie_id
+    description: Toggles whether the COVID Research volunteer intake vets-api endpoint is available
+  covid_volunteer_intake_enabled:
+    actor_type: cookie_id
+    description: Toggles whether COVID Research volunteer intake form Version 2 is available
+  covid_volunteer_update_enabled:
+    actor_type: cookie_id
+    description: Toggles whether COVID Research volunteer update form and associated endpoint are available
   covid_volunteer_delivery:
     actor_type: cookie_id
     description: Toggles whether COVID Research volunteer submissions will be delivered to genISIS
@@ -202,12 +215,6 @@ features:
   facility_locator_ppms_legacy_urgent_care_to_pos_locator:
     actor_type: user
     description: force the legacy urgent care path to use the new POS locator
-  facility_locator_ppms_use_secure_api:
-    actor_type: user
-    description: Use the new secure ppms api with new auth headers
-  facility_locator_ppms_use_paginated_endpoint:
-    actor_type: user
-    description: Use the new paginated endpoint for providers
   facility_locator_predictive_location_search:
     actor_type: user
     description: Use predictive location search in the Facility Locator UI
@@ -257,6 +264,10 @@ features:
     actor_type: user
     description: Form 10182 Notice of Disagreement - Request a board appeal
     enable_in_development: true
+  fsr_confirmation_email:
+    actor_type: user
+    description: Enables notifications to be sent via email upon FSR submission
+    enable_in_development: false
   get_help_ask_form:
     actor_type: user
     description: Enables inquiry form for users to submit questions, suggestions, and complaints.
@@ -308,6 +319,10 @@ features:
     actor_type: user
     description: Enable new list loop pattern
     enable_in_development: true
+  medical_copays_six_mo_window:
+    actor_type: user
+    description: This will filter to only show medical copays within the last 6 months
+    enable_in_development: true
   mega_menu_mobile_v2:
     actor_type: user
     description: Separates mobile mega menu from desktop mega menu
@@ -341,6 +356,10 @@ features:
   profile_schema_forms:
     actor_type: user
     description: Enables SchemaForm-based contact info edit forms on the VA.gov Veteran profile page
+    enable_in_development: true
+  profile_show_address_change_modal:
+    actor_type: user
+    description: Shows a modal that allows addresses to be duplicated from home to mailing and vice versa
     enable_in_development: true
   profile_show_receive_text_notifications:
     actor_type: user
@@ -521,14 +540,14 @@ features:
     actor_type: user
     enable_in_development: true
     description: Toggle for VAOS variant testing.
-  va_online_scheduling_cc_iterations:
-    actor_type: user
-    enable_in_development: true
-    description: Toggle for VAOS community care flow iterations.
   va_online_scheduling_poc_health_apt:
     actor_type: user
     enable_in_development: true
     description: Toggle for health apartment proof of concept
+  va_online_scheduling_status_improvement:
+    actor_type: user
+    enable_in_development: true
+    description: Toggle for homepage status improvement
   va_view_dependents_access:
     actor_type: user
     description: Allows us to gate the View/ Modify dependents content in a progressive rollout
@@ -540,6 +559,10 @@ features:
     actor_type: user
     description: Enables connection to webchat
     enable_in_development: true
+  virtual_agent_auth:
+    actor_type: user
+    description: Enables auth lock in order to access bot
+    enable_in_development: true
   yellow_ribbon_mvp_enhancement:
     actor_type: user
     description: Enhances Yellow Ribbon MVP.
@@ -548,3 +571,6 @@ features:
     actor_type: user
     description: Navigates user to 1990EZ or 1990 depending on form questions.
     enable_in_development: true
+  show_payment_and_debt_section:
+    actor_type: user
+    description: Enables payment and debt section

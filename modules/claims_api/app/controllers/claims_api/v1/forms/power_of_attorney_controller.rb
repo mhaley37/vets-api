@@ -25,20 +25,21 @@ module ClaimsApi
 
           poa_code = form_attributes.dig('serviceOrganization', 'poaCode')
           validate_poa_code!(poa_code)
-          validate_poa_code_for_current_user!(poa_code) if header_request?
+          validate_poa_code_for_current_user!(poa_code) if header_request? && !token.client_credentials_token?
 
           power_of_attorney = ClaimsApi::PowerOfAttorney.find_using_identifier_and_source(header_md5: header_md5,
                                                                                           source_name: source_name)
           unless power_of_attorney&.status&.in?(%w[submitted pending])
-            power_of_attorney = ClaimsApi::PowerOfAttorney.create(
+            attributes = {
               status: ClaimsApi::PowerOfAttorney::PENDING,
               auth_headers: auth_headers,
               form_data: form_attributes,
-              source_data: source_data,
               current_poa: current_poa_code,
               header_md5: header_md5
-            )
+            }
+            attributes.merge!({ source_data: source_data }) unless token.client_credentials_token?
 
+            power_of_attorney = ClaimsApi::PowerOfAttorney.create(attributes)
             unless power_of_attorney.persisted?
               power_of_attorney = ClaimsApi::PowerOfAttorney.find_by(md5: power_of_attorney.md5)
             end
@@ -46,7 +47,7 @@ module ClaimsApi
             power_of_attorney.save!
           end
 
-          # This job only occurs when a Veteran submits a PoA request, they are not required to submit a document.
+          # This job only occurs when a Veteran submits a POA request, they are not required to submit a document.
           ClaimsApi::PoaUpdater.perform_async(power_of_attorney.id) unless header_request?
           if enable_vbms_access?
             ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id,
@@ -67,7 +68,7 @@ module ClaimsApi
           validate_documents_page_size
           find_poa_by_id
 
-          # This job only occurs when a Representative submits a PoA request to ensure they've also uploaded a document.
+          # This job only occurs when a Representative submits a POA request to ensure they've also uploaded a document.
           ClaimsApi::PoaUpdater.perform_async(@power_of_attorney.id) if header_request?
 
           @power_of_attorney.set_file_data!(documents.first, params[:doc_type])

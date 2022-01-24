@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe ClaimsApi::UnsuccessfulReportMailer, type: [:mailer] do
-  let(:unsuccessful_submissions) do
+  let(:unsuccessful_claims_submissions) do
     FactoryBot.create(:auto_established_claim, :status_errored)
     ClaimsApi::AutoEstablishedClaim.where(status: 'errored')
                                    .order(:source, :status)
@@ -52,31 +52,26 @@ RSpec.describe ClaimsApi::UnsuccessfulReportMailer, type: [:mailer] do
 
   describe '#build' do
     subject do
-      described_class.build(7.days.ago, Time.zone.now, consumer_totals: totals,
-                                                       unsuccessful_submissions: unsuccessful_submissions,
-                                                       grouped_errors: statistics,
-                                                       grouped_warnings: statistics,
-                                                       pending_submissions: uploaded_upload,
+      described_class.build(7.days.ago, Time.zone.now, consumer_claims_totals: totals,
+                                                       unsuccessful_claims_submissions: unsuccessful_claims_submissions,
+                                                       grouped_claims_errors: statistics,
+                                                       grouped_claims_warnings: statistics,
+                                                       pending_claims_submissions: uploaded_upload,
                                                        flash_statistics: statistics,
-                                                       special_issues_statistics: statistics).deliver_now
+                                                       special_issues_statistics: statistics,
+                                                       poa_totals: { total: 0 },
+                                                       unsuccessful_poa_submissions: []).deliver_now
     end
 
     it 'sends the email' do
-      expect(subject.subject).to eq('Benefits Claims Unsuccessful Submission Report')
+      expect(subject.subject).to eq('Benefits Claims Daily Submission Report')
     end
 
     it 'sends to the right people' do
       expect(subject.to).to eq(
         %w[
-          zachary.goldfine@va.gov
-          david.mazik@va.gov
-          premal.shah@va.gov
-          mark.greenburg@adhocteam.us
-          emily.goodrich@oddball.io
-          lee.deboom@oddball.io
+          kayla.watanabe@adhocteam.us
           dan.hinze@adhocteam.us
-          ryan.link@oddball.io
-          christopher.stone@libertyits.com
           jeff.wallace@oddball.io
         ]
       )

@@ -164,16 +164,21 @@ RSpec.describe V1::SessionsController, type: :controller do
                        }]
                      })
           end
-        end
 
-        context 'routes /sessions/signup/new to SessionsController#new' do
-          it 'redirects' do
-            expect { get(:new, params: { type: :signup, client_id: '123123' }) }
-              .to trigger_statsd_increment(described_class::STATSD_SSO_NEW_KEY,
-                                           tags: ['context:signup', 'version:v1'], **once)
-            expect(response).to have_http_status(:ok)
-            expect_saml_post_form(response.body, 'https://pint.eauth.va.gov/isam/sps/saml20idp/saml20/login',
-                                  'originating_request_id' => nil, 'type' => 'signup')
+          it 'raises exception when authn parameter is not in list of AUTHN_CONTEXTS' do
+            expect { get(:new, params: { type: :custom, authn: 'qwerty', client_id: '123123' }) }
+              .not_to trigger_statsd_increment(described_class::STATSD_SSO_NEW_KEY,
+                                               tags: ['context:custom', 'version:v1'], **once)
+            expect(response).to have_http_status(:bad_request)
+            expect(JSON.parse(response.body))
+              .to eq({
+                       'errors' => [{
+                         'title' => 'Invalid field value',
+                         'detail' => '"qwerty" is not a valid value for "authn"',
+                         'code' => '103',
+                         'status' => '400'
+                       }]
+                     })
           end
         end
 
@@ -253,7 +258,7 @@ RSpec.describe V1::SessionsController, type: :controller do
 
       context 'for a user with semantically invalid SAML attributes' do
         let(:invalid_attributes) do
-          build(:ssoe_idme_mhv_loa3, va_eauth_dodedipnid: ['999888, 888777'])
+          build(:ssoe_idme_mhv_loa3, va_eauth_gcIds: ['0123456789^NI^200DOD^USDOD^A|0000000054^NI^200DOD^USDOD^A|'])
         end
         let(:valid_saml_response) do
           build_saml_response(
@@ -289,27 +294,6 @@ RSpec.describe V1::SessionsController, type: :controller do
 
           expect(response).to have_http_status(:found)
         end
-      end
-    end
-
-    describe 'track' do
-      it 'ignores a SAML stat without params' do
-        expect { get(:tracker) }
-          .not_to trigger_statsd_increment(described_class::STATSD_SSO_SAMLTRACKER_KEY,
-                                           tags: ['type:',
-                                                  'context:',
-                                                  'version:v1'])
-      end
-
-      it 'logs a SAML stat with valid params' do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger)
-          .to receive(:info).with('SSOe: SAML Tracker => {"id"=>"1", "type"=>"mhv", "authn"=>"myhealthevet"}')
-        expect { get(:tracker, params: { id: 1, type: 'mhv', authn: 'myhealthevet' }) }
-          .to trigger_statsd_increment(described_class::STATSD_SSO_SAMLTRACKER_KEY,
-                                       tags: ['type:mhv',
-                                              'context:myhealthevet',
-                                              'version:v1'])
       end
     end
   end
@@ -839,7 +823,8 @@ RSpec.describe V1::SessionsController, type: :controller do
 
         it 'logs a generic user validation error', :aggregate_failures do
           expect(controller).not_to receive(:log_message_to_sentry)
-          expect(Rails.logger).to receive(:warn).with(expected_warn_message)
+          expect(Rails.logger).to receive(:warn).ordered
+          expect(Rails.logger).to receive(:warn).ordered.with(expected_warn_message)
           expect(post(:saml_callback)).to redirect_to('http://127.0.0.1:3001/auth/login/callback?auth=fail&code=101')
 
           expect(response).to have_http_status(:found)
@@ -849,7 +834,7 @@ RSpec.describe V1::SessionsController, type: :controller do
       context 'when EDIPI user attribute validation fails' do
         let(:saml_attributes) do
           build(:ssoe_idme_mhv_loa3,
-                va_eauth_dodedipnid: ['0123456789,1111111111'])
+                va_eauth_gcIds: ['0123456789^NI^200DOD^USDOD^A|0000000054^NI^200DOD^USDOD^A|'])
         end
         let(:saml_response) do
           build_saml_response(

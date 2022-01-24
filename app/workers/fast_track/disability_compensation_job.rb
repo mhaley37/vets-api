@@ -3,10 +3,13 @@
 require 'prawn'
 require 'prawn/table'
 require 'lighthouse/veterans_health/client'
+require 'sidekiq/form526_job_status_tracker/job_tracker'
+require 'sidekiq/form526_job_status_tracker/metrics'
 
 module FastTrack
   class DisabilityCompensationJob
     include Sidekiq::Worker
+    include Sidekiq::Form526JobStatusTracker::JobTracker
 
     extend SentryLogging
     # NOTE: This is apparently at most about 4.5 hours.
@@ -19,48 +22,61 @@ module FastTrack
       submission.start_evss_submission(nil, { 'submission_id' => submission_id })
     end
 
+    STATSD_KEY_PREFIX = 'worker.fast_track.disability_compensation_job'
+
     def perform(form526_submission_id, full_name)
       form526_submission = Form526Submission.find(form526_submission_id)
       client = Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
 
       begin
-        send_fast_track_engineer_email_for_testing(form526_submission_id)
+        return if bp_readings(client).blank?
 
-        bp_readings = FastTrack::HypertensionObservationData.new(client.get_resource('observations')).transform
-        return if no_recent_bp_readings(bp_readings)
-
-        pdf = pdf(full_name, filtered_bp_readings(bp_readings),
-                  filtered_medications(client.get_resource('medications')))
-
-        upload_pdf_and_attach_special_issue(form526_submission, pdf)
+        with_tracking(self.class.name, form526_submission.saved_claim_id, form526_submission_id) do
+          pdf = pdf(full_name, bp_readings(client), medications(client))
+          upload_pdf_and_attach_special_issue(form526_submission, pdf)
+        end
       rescue => e
-        Rails.logger.error 'Disability Compensation Fast Track Job failing for form' \
-                           "id:#{form526_submission.id}. With error message: #{e.message}" \
-                           "with backtrace: #{e.backtrace}"
+        retryable_error_handler(e)
+        send_fast_track_engineer_email_for_testing(form526_submission_id, e.message, e.backtrace)
         raise
       end
     end
 
     private
 
-    def send_fast_track_engineer_email_for_testing(form526_submission_id)
+    def bp_readings(client)
+      @bp_readings ||= client.list_resource('observations')
+      @bp_readings.present? ? FastTrack::HypertensionObservationData.new(@bp_readings).transform : []
+    end
+
+    def medications(client)
+      @medications ||= client.list_resource('medications')
+      @medications.present? ? FastTrack::HypertensionMedicationRequestData.new(@medications).transform : []
+    end
+
+    def send_fast_track_engineer_email_for_testing(form526_submission_id, error_message, backtrace)
       # TODO: This should be removed once we have basic metrics
       # on this feature and the visibility is imporved.
-      body = "A claim was just submitted on the #{Rails.env} environment " \
-             "with submission id: #{form526_submission_id} and job_id #{jid}"
+      body = "A claim just errored on the #{Rails.env} environment " \
+             "with submission id: #{form526_submission_id} and job_id #{jid}." \
+             "The error was: #{error_message}. The backtrace was: #{backtrace}"
       ActionMailer::Base.mail(
         from: ApplicationMailer.default[:from],
         to: 'natasha.ibrahim@gsa.gov, emily.theis@gsa.gov, julia.l.allen@gsa.gov, tadhg.ohiggins@gsa.gov',
-        subject: 'Fast Track Hypertension Code Hit',
+        subject: 'Fast Track Hypertension Errored',
         body: body
       ).deliver_now
     end
 
     def get_icn(form526_submission)
-      account = Account.where(idme_uuid: form526_submission.user_uuid).first
-      account = Account.where(logingov_uuid: form526_submission.user_uuid).first if account.blank?
-      account = Account.where(edipi: form526_submission.auth_headers['va_eauth_dodedipnid']).first if account.blank?
-      account.icn if account.present? && account.icn.present?
+      account(form526_submission).icn.presence
+    end
+
+    def account(form526_submission)
+      user_uuid = form526_submission.user_uuid
+      @account ||= Account.where(idme_uuid: user_uuid)
+                          .or(Account.where(logingov_uuid: user_uuid))
+                          .or(Account.where(edipi: form526_submission.auth_headers['va_eauthdodedipnid'])).first!
     end
 
     def upload_pdf_and_attach_special_issue(form526_submission, pdf)
@@ -70,33 +86,8 @@ module FastTrack
       end
     end
 
-    def filtered_bp_readings(bp_readings)
-      bp_readings = bp_readings.filter do |reading|
-        reading[:issued].to_date > 1.year.ago
-      end
-
-      bp_readings.sort_by do |reading|
-        reading[:issued].to_date
-      end.reverse!
-    end
-
-    def filtered_medications(medication_request_response)
-      medications = FastTrack::HypertensionMedicationRequestData.new(medication_request_response).transform
-
-      medications.sort_by do |med|
-        med[:authoredOn].to_date
-      end.reverse!
-    end
-
     def pdf(full_name, bpreadings, medications)
-      FastTrack::HypertensionPdfGenerator.new(full_name, bpreadings, medications, Time.zone.today).generate
-    end
-
-    def no_recent_bp_readings(bp_readings)
-      return true if bp_readings.blank?
-
-      last_reading = bp_readings.map { |reading| reading[:issued] }.max
-      last_reading < 1.year.ago
+      FastTrack::HypertensionPdfGenerator.new(full_name, bpreadings, medications).generate
     end
   end
 end

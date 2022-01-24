@@ -5,9 +5,13 @@ require 'common/models/resource'
 module Mobile
   module V0
     class Immunization < Common::Resource
+      include Mobile::V0::Concerns::RedisCaching
+
+      redis_config REDIS_CONFIG[:mobile_app_immunizations_store]
+
       attribute :id, Types::String
-      attribute :cvx_code, Types::Coercible::Integer
-      attribute :date, Types::DateTime
+      attribute :cvx_code, Types::Coercible::Integer.optional
+      attribute :date, Types::DateTime.optional
       attribute :dose_number, Types::String.optional
       attribute :dose_series, Types::String.optional
       attribute :group_name, Types::String.optional

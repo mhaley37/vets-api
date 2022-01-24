@@ -21,6 +21,7 @@ saml_ssoe:
   relay: ~
   response_signing: false
   response_encryption: false
+  identity_slack_webhook: ~
 
 ssoe_eauth_cookie:
   name: vagov_saml_request_localhost
@@ -90,6 +91,13 @@ salesforce:
   env: dev
 
 form_10_10cg:
+  carma:
+    mulesoft:
+      mock: true
+      host: "https://fake-mulesoft.vapi.va.gov"
+      client_id: BEEFCAFE1234
+      client_secret: C0FFEEFACE4321
+      timeout: 10
   poa:
     s3:
       aws_access_key_id: my-aws-key-id
@@ -273,6 +281,9 @@ modules_appeals_api:
     bucket: "bucket"
   status_simulation_enabled: false
 
+onsite_notifications:
+  template_ids:
+    - "f9947b27-df3b-4b09-875c-7f76594d766d"
 
 vre_counseling:
   prefill: true
@@ -594,6 +605,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
   spool_submission:
     emails:
       - Brian.Grubb@va.gov
@@ -623,6 +635,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
   year_to_date_report:
     emails:
       - 222A.VBAVACO@va.gov
@@ -663,6 +676,7 @@ reports:
       - d.a.barnes@accenturefederal.com
       - jacob.finnern@accenturefederal.com
       - hocine.halli@accenturefederal.com
+      - adam.freemer@accenturefederal.com
 
 oidc:
   auth_server_metadata_url: ~
@@ -770,10 +784,12 @@ search_click_tracking:
 flipper:
   admin_user_emails:
     - adewitt@thoughtworks.com
+    - aditya.sharma@thoughtworks.com
     - adrian.rollett@agile6.com # Adrian Rollett (Agile6), Engineer/Product Manager Health Care Experience/Check-In
     - agarcia@clarityinnovates.com
     - alastair@adhocteam.us
     - bill.ryan@adhocteam.us
+    - bradley.gross@b3groupinc.com
     - brian.seek@civicactions.com # Brian Seek (Civic Actions), FE Engineer Health Care Experience/Check-In
     - clark@governmentcio.com # Designer on GCIO
     - cameron@oddball.io
@@ -786,6 +802,7 @@ flipper:
     - devinmccurdy@gmail.com
     - dnalbach@governmentcio.com
     - draju@governmentcio.com
+    - drew.fisher@adhocteam.us # Drew Fisher (Ad Hoc), Team Lead Decision Reviews
     - dror@matal.com
     - eric.boehs@oddball.io
     - erik@adhocteam.us
@@ -797,16 +814,16 @@ flipper:
     - hshin@thoughtworks.com
     - jacob.gacek@thoughtworks.com
     - james.childers@gcio.com
-    - jbalboni@gmail.com
     - james.adams2@va.gov # Jim Adams designer on GCIO
-    - jeff@adhocteam.us
     - jennie.mcgibney@va.gov
     - jesse.cohn@adhocteam.us
     - jlinn@governmentcio.com
+    - joe.hall@thoughtworks.com
     - joeyn414@gmail.com # Joe Niquette Oddball VSP Identity Team Sr Security Engineer
     - john.bramley@adhocteam.us
     - julie.adair@agile6.com # Julie Adair (Agile6), Product Manager Health Care Experience/Check-In
     - jwolf@governmentcio.com # Jason Wolf Product Manager for GCIO
+    - justin.trieu@thoughtworks.com
     - kabrown@thoughtworks.com
     - kadams@governmentcio.com
     - kathleen.crawford@gcio.com
@@ -818,12 +835,13 @@ flipper:
     - ksuriyamoorthy@kindsys.us # Kanchana Suriyamoorthy (Kindsys), BE Engineer Health Care Experience/Check-In
     - lauren.alexanderson@va.gov
     - lauren.ernest@adhocteam.us
+    - leah.delacosta@adhocteam.us
     - lihan@adhocteam.us
     - lindsey.hattamer@oddball.io
+    - lisa.zapson@adhocteam.us
     - lance.sanchez@gcio.com
     - ltran@thoughtworks.com
     - marisa.hoenig@thoughtworks.com
-    - mark.greenburg@adhocteam.us
     - mdewey@governmentcio.com
     - micah@adhocteam.us
     - michel.mcdonald@adhocteam.us
@@ -839,6 +857,7 @@ flipper:
     - patrick@adhocteam.us
     - patrickryll@yahoo.com
     - paul.phillips@thoughtworks.com
+    - paul.touchton@b3groupinc.com
     - pherbert@thoughtworks.com
     - regarr@gmail.com # Robin Garrison - AdHoc
     - riley.anderson@oddball.io
@@ -861,6 +880,7 @@ flipper:
     - abelardo.blanco@va.gov
     - eugenia.gina.ronat@accenturefederal.com
     - m.c.shah@accenturefederal.com
+    - mrmanishs@gmail.com
     - patrick.arthur@accenturefederal.com
     - adam.freemer@accenturefederal.com
     - dan.brooking@accenturefederal.com
@@ -1029,6 +1049,7 @@ vanotify:
         covid_vaccine_expanded_registration: fake_template_id
         direct_deposit_edu: edu_template_id
         direct_deposit_comp_pen: comp_pen_template_id
+        fsr_confirmation_email: fake_template_id
     lighthouse:
       api_key: fake_secret
       template_id:
@@ -1143,8 +1164,7 @@ veteran_readiness_and_employment:
       - Jason.Wolf@va.gov
       - Kathleen.Crawford@va.gov
       - Kevin.Musiorski@va.gov
-    staging_emails:
-      - kcrawford@governmentcio.com
+      - Amanda.Leaders@va.gov
 
 # Settings for connecting to the va.gov Google Analytics for the Cypress Viewport Updater
 google_analytics_cvu:

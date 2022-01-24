@@ -5,9 +5,13 @@ require CovidResearch::Engine.root.join('spec', 'rails_helper.rb')
 
 RSpec.describe 'covid research volunteer submissions', type: :request do
   describe 'POST /covid-research/volunteer/create' do
-    let(:valid)   { read_fixture('valid-submission.json') }
+    let(:valid)   { read_fixture('valid-intake-submission.json') }
     let(:invalid) { read_fixture('no-name-submission.json') }
     let(:email_template) { 'signup_confirmation.html.erb' }
+
+    before do
+      Flipper.enable(:covid_volunteer_intake_backend_enabled)
+    end
 
     it 'validates the payload' do
       expect_any_instance_of(CovidResearch::Volunteer::FormService).to receive(:valid?)
@@ -51,7 +55,7 @@ RSpec.describe 'covid research volunteer submissions', type: :request do
       end
     end
 
-    context 'feature flag' do
+    context 'delivery feature flag' do
       let(:form_service) { CovidResearch::Volunteer::FormService }
 
       it 'schedules delivery when the `covid_volunteer_delivery` flag is true' do
@@ -80,6 +84,15 @@ RSpec.describe 'covid research volunteer submissions', type: :request do
         post '/covid-research/volunteer/create', params: valid
       end
     end
+
+    context 'with feature toggle off' do
+      it 'returns a 404 status' do
+        Flipper.disable(:covid_volunteer_intake_backend_enabled)
+        post '/covid-research/volunteer/create', params: valid
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe 'POST /covid-research/volunteer/update' do
@@ -87,26 +100,29 @@ RSpec.describe 'covid research volunteer submissions', type: :request do
     let(:invalid) { read_fixture('no-name-submission.json') }
     let(:email_template) { 'update_confirmation.html.erb' }
 
+    before do
+      Flipper.enable(:covid_volunteer_update_enabled)
+    end
+
     it 'validates the payload' do
       expect_any_instance_of(CovidResearch::Volunteer::FormService).to receive(:valid?)
 
       post '/covid-research/volunteer/update', params: valid
     end
 
-    # TODO: - implement StatsD and then fix these tests
-    # context 'metrics' do
-    #   it 'records a metric for each call' do
-    #     expect { post '/covid-research/volunteer/update', params: valid }.to trigger_statsd_increment(
-    #       'api.covid_research.volunteer.create.total', times: 1, value: 1
-    #     )
-    #   end
+    context 'metrics' do
+      it 'records a metric for each call' do
+        expect { post '/covid-research/volunteer/update', params: valid }.to trigger_statsd_increment(
+          'api.covid_research.volunteer.update.total', times: 1, value: 1
+        )
+      end
 
-    #   it 'records a metric on failure' do
-    #     expect { post '/covid-research/volunteer/update', params: invalid }.to trigger_statsd_increment(
-    #       'api.covid_research.volunteer.create.fail', times: 1, value: 1
-    #     )
-    #   end
-    # end
+      it 'records a metric on failure' do
+        expect { post '/covid-research/volunteer/update', params: invalid }.to trigger_statsd_increment(
+          'api.covid_research.volunteer.update.fail', times: 1, value: 1
+        )
+      end
+    end
 
     context 'with a valid payload' do
       it 'returns a 202' do
@@ -157,6 +173,15 @@ RSpec.describe 'covid research volunteer submissions', type: :request do
         expect(confirmation_job).to receive(:perform_async).with(JSON.parse(valid)['email'], email_template)
 
         post '/covid-research/volunteer/update', params: valid
+      end
+    end
+
+    context 'with feature toggle off' do
+      it 'returns a 404 status' do
+        Flipper.disable(:covid_volunteer_update_enabled)
+        post '/covid-research/volunteer/update', params: valid
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end

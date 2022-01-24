@@ -26,6 +26,7 @@ EducationForm::Create10203SpoolSubmissionsReport:
 EducationForm::Create10203ApplicantDecisionLetters:
   cron: "45 4 * * MON-FRI America/New_York"
   description: "Send 10203 applicant decision letters to applicants"
+  enabled: false
 
 Preneeds::DeleteOldUploads:
   cron: "15 2 * * * America/New_York"
@@ -243,18 +244,10 @@ CovidVaccine::ExpandedSubmissionStateJob:
   class: CovidVaccine::ExpandedSubmissionStateJob
   description: Logs count of states in the covid_vaccine_expanded_registration_submissions table.
 
-VRE::CreateCh31SubmissionsReport:
+VRE::CreateCh31SubmissionsReportJob:
   cron: "0 0 * * * America/New_York"
   include_metadata: true
   description: "Send a daily report to the VRE team about Chapter 31 submissions"
-
-PgHeroQueryStatsJob:
-  cron: "0 8 * * * America/New_York"
-  description: captures PgHero query stats every day
-
-PgHeroCleanQueryStatsJob:
-  cron: "0 0 1,15 * * America/New_York"
-  description: Remove old PgHero query stats twice per month (1 and 15)
 
 Webhooks::SchedulerJob:
   at: "<%=Settings.vba_documents.v2_enabled ? 0.seconds.from_now : 100.years.from_now%>"
@@ -283,8 +276,9 @@ TestUserDashboard::MirrorAccountAvailabilityLogsInBigQuery:
   cron: "0 */2 * * * America/New_York"
   class: TestUserDashboard::MirrorAccountAvailabilityLogsInBigQuery
   description: "Mirrors the test_user_dashboard_tud_account_availability_logs table in BigQuery."
-  
+
 Mobile::V0::VaccinesUpdaterJob:
   cron: "0 * * * * America/New_York"
   class: Mobile::V0::VaccinesUpdaterJob
   description: "Creates and updates vaccine records from the CDC"
+

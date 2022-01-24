@@ -24,7 +24,7 @@ module AppealsApi
     serialize :auth_headers, JsonMarshal::Marshaller
     serialize :form_data, JsonMarshal::Marshaller
     has_kms_key
-    encrypts :auth_headers, :form_data, key: :kms_key, **lockbox_options
+    encrypts :auth_headers, :form_data, key: :kms_key
 
     has_many :evidence_submissions, as: :supportable, dependent: :destroy
     has_many :status_updates, as: :statusable, dependent: :destroy
@@ -148,11 +148,20 @@ module AppealsApi
     end
 
     def evidence_submission_days_window
-      10
+      7
     end
 
     def accepts_evidence?
       true
+    end
+
+    def outside_submission_window_error
+      {
+        title: 'unprocessable_entity',
+        detail: I18n.t('appeals_api.errors.sc_outside_submission_window'),
+        code: 'OutsideSubmissionWindow',
+        status: '422'
+      }
     end
 
     def soc_opt_in

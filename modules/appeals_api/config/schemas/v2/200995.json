@@ -14,23 +14,6 @@
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
     },
 
-    "dateRange": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "startDate": {
-          "$ref": "#/definitions/date"
-        },
-        "endDate": {
-          "$ref": "#/definitions/date"
-        }
-      },
-      "required": [
-        "endDate",
-        "startDate"
-      ]
-    },
-
     "scCreate": {
       "type": "object",
       "properties": {
@@ -107,6 +90,7 @@
                   "required": ["address", "phone", "email"]
                 },
                 "evidenceSubmission": {
+                  "description": "Evidence may be uploaded up to 7 days from the 'created_at' date of the associated Supplemental Claim via 'supplemental_claims/evidence_submissions'.",
                   "type": "object",
                   "properties": {
                     "evidenceType":{
@@ -127,7 +111,14 @@
                               "locationAndName": { "$ref": "#/definitions/nonBlankString" },
                               "evidenceDates": {
                                 "type": "array",
-                                "items": { "$ref": "#/definitions/dateRange" },
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "startDate": { "$ref": "#/definitions/date" },
+                                    "endDate": { "$ref": "#/definitions/date" }
+                                  },
+                                  "required": [ "startDate", "endDate" ]
+                                },
                                 "minItems": 1,
                                 "maxItems": 4
                               }

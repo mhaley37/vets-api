@@ -29,7 +29,7 @@ module AppealsApi
     serialize :auth_headers, JsonMarshal::Marshaller
     serialize :form_data, JsonMarshal::Marshaller
     has_kms_key
-    encrypts :auth_headers, :form_data, key: :kms_key, **lockbox_options
+    encrypts :auth_headers, :form_data, key: :kms_key
 
     validate :validate_hearing_type_selection, if: :pii_present?
 
@@ -132,6 +132,15 @@ module AppealsApi
 
     def evidence_submission_days_window
       91
+    end
+
+    def outside_submission_window_error
+      {
+        title: 'unprocessable_entity',
+        detail: I18n.t('appeals_api.errors.nod_outside_legal_window'),
+        code: 'OutsideLegalWindow',
+        status: '422'
+      }
     end
 
     def update_status!(status:, code: nil, detail: nil)
