@@ -27,6 +27,10 @@ features:
   can_upload_10_10cg_poa:
     actor_type: cookie_id
     description: Allows users to upload POA documentation when completing the 10-10CG.
+  10_10cg_poa_upload_virus_scanner_enabled:
+    actor_type: cookie_id
+    description: Feature to turn off virus scanner in lower environments.
+    enable_in_development: true
   cerner_override_463:
     actor_type: user
     description: This will show the Cerner facility 463 as `isCerner`.

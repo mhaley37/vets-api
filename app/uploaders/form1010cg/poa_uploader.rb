@@ -4,7 +4,7 @@ module Form1010cg
   class PoaUploader < CarrierWave::Uploader::Base
     include SetAWSConfig
     include LogMetrics
-    include UploaderVirusScan
+    include UploaderVirusScan if Flipper.enabled?('10_10cg_poa_upload_virus_scanner_enabled')
 
     storage :aws
 
