@@ -6,6 +6,9 @@ module TestUserDashboard
   class AccountsApiController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
 
+    before_action :authenticate!
+    before_action :authorize!
+
     def index
       render json: TudAccount.all
     end

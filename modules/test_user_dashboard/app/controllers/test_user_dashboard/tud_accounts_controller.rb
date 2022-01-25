@@ -6,8 +6,8 @@ module TestUserDashboard
   class TudAccountsController < ApplicationController
     # include Warden::GitHub::SSO
 
-    # before_action :authenticate!
-    # before_action :authorize!
+    before_action :authenticate!
+    before_action :authorize!
 
     def index
       render json: TestUserDashboard::TudClient.all
