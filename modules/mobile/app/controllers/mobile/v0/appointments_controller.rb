@@ -21,12 +21,14 @@ module Mobile
           page_number: params.dig(:page, :number),
           page_size: params.dig(:page, :size),
           use_cache: use_cache,
-          reverse_sort: reverse_sort
+          reverse_sort: reverse_sort,
+          included: params[:included]
         )
 
         raise Mobile::V0::Exceptions::ValidationErrors, validated_params if validated_params.failure?
 
         appointments = fetch_cached_or_service(validated_params)
+        appointment_requests = fetch_appointment_requests(validated_params)
         page_appointments, page_meta_data = paginate(appointments, validated_params)
 
         render json: Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
@@ -80,6 +82,20 @@ module Mobile
 
         appointments.reverse! if validated_params[:reverse_sort]
         appointments
+      end
+
+      def fetch_appointment_requests(validated_params)
+        # this won't work because it's not a model. perhaps it should be
+        requests = Mobile::V0::AppointmentRequest.get_cached(@current_user) if use_cache?(validated_params)
+
+        # couldn't this really be done by checking for the key?
+        if requests
+          Rails.logger.info('mobile appointment requests cache fetch')
+        else
+          requests = VAOS::AppointmentRequestsService.new(current_user).get_requests(one_year_ago, one_year_from_now)
+          Rails.logger.info('mobile appointment requests service fetch', user_uuid: @current_user.uuid)
+          # move sorting elsewhere
+        end
       end
 
       def paginate(appointments, validated_params)

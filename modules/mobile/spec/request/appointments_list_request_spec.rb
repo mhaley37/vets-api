@@ -861,5 +861,36 @@ RSpec.describe 'appointments', type: :request do
         end
       end
     end
+
+    # this should be moved into the valid params section
+    describe 'pending appointments' do
+      before do
+        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              VCR.use_cassette('vaos/appointment_requests/get_requests', match_requests_on: %i[method uri]) do
+                get '/mobile/v0/appointments', headers: iam_headers, params: params
+              end
+            end
+          end
+        end
+      end
+
+      context 'when pending appointments are not included in the query params' do
+        let(:params) { {} }
+
+        it 'does not include pending appointments' do
+          expect(response.parsed_body.length).to eq(3)
+        end
+      end
+
+      context 'when pending appointments are included in the query params' do
+        let(:params) { { included: ['pending'] } }
+
+        it 'returns pending appointments' do
+          expect(response.parsed_body.length).to eq(3)
+        end
+      end
+    end
   end
 end
