@@ -27,21 +27,22 @@ module Mobile
             useCache: false
           }
 
-          responses = { cc: nil, va: nil }
-          errors = { cc: nil, va: nil }
+          responses = { cc: nil, va: nil, requests: nil }
+          errors = { cc: nil, va: nil, requests: nil }
 
-          config.parallel_connection.in_parallel do
-            responses[:cc], errors[:cc] = parallel_get(cc_url, params)
-            responses[:va], errors[:va] = parallel_get(va_url, params)
-          end
+          va_response, cc_response, requests_response = Parallel.map([fetch_va_appointments(params), fetch_cc_appointments(params), fetch_appointment_requests(start_date, end_date)], in_threads: 3, &:call)
+
+          responses[:va], errors[:va] = va_response
+          responses[:va], errors[:va] = cc_response
+          responses[:requests] = requests_response # needs error handling
 
           [responses, errors]
         end
 
         private
 
-        def parallel_get(url, params)
-          response = config.parallel_connection.get(url, params, headers)
+        def get(url, params)
+          response = config.connection.get(url, params, headers)
           [response, nil]
         rescue VAOS::Exceptions::BackendServiceException => e
           vaos_error(e, url)
@@ -60,6 +61,25 @@ module Mobile
         def cc_url
           '/var/VeteranAppointmentRequestService/v4/rest/direct-scheduling' \
             "/patient/ICN/#{@user.icn}/booked-cc-appointments"
+        end
+
+        def fetch_va_appointments(params)
+          lambda {
+            get(va_url, params)
+          }
+        end
+
+        def fetch_cc_appointments(params)
+          lambda {
+            get(cc_url, params)
+          }
+        end
+
+        # this may need to change to match the error handling of the others
+        def fetch_appointment_requests(start_date, end_date)
+          lambda {
+            VAOS::AppointmentRequestsService.new(@user).get_requests(start_date, end_date)
+          }
         end
 
         def cancel_appointment_url(facility_id)

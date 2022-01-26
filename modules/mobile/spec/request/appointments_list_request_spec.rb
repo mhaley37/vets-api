@@ -865,11 +865,13 @@ RSpec.describe 'appointments', type: :request do
     # this should be moved into the valid params section
     describe 'pending appointments' do
       before do
-        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('vaos/appointment_requests/get_requests', match_requests_on: %i[method uri]) do
-                get '/mobile/v0/appointments', headers: iam_headers, params: params
+        Timecop.freeze(Time.zone.parse('2022-01-01')) do
+          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+                VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
+                  get '/mobile/v0/appointments', headers: iam_headers, params: params
+                end
               end
             end
           end
