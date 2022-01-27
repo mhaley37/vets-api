@@ -19,31 +19,34 @@ module Mobile
         #
         # @return Hash two lists of appointments, va and cc (community care)
         #
-        def get_appointments(start_date, end_date)
-          params = {
+
+        def initialize(user, start_date, end_date)
+          @params = {
             startDate: start_date.utc.iso8601,
             endDate: end_date.utc.iso8601,
             pageSize: 0,
             useCache: false
           }
+          super(user)
+        end
 
-          responses = { cc: nil, va: nil, requests: nil }
-          errors = { cc: nil, va: nil, requests: nil }
+        def fetch_va_appointments
+          lambda {
+            get(va_url)
+          }
+        end
 
-          va_response, cc_response, requests_response = Parallel.map([fetch_va_appointments(params), fetch_cc_appointments(params), fetch_appointment_requests(start_date, end_date)], in_threads: 3, &:call)
-
-          responses[:va], errors[:va] = va_response
-          responses[:cc], errors[:cc] = cc_response
-          responses[:requests], errors[:response] = requests_response # needs error handling
-
-          [responses, errors]
+        def fetch_cc_appointments
+          lambda {
+            get(cc_url)
+          }
         end
 
         private
 
-        def get(url, params)
-          response = config.connection.get(url, params, headers)
-          [response, nil]
+        def get(url)
+          response = config.connection.get(url, @params, headers)
+          { response: response, errors: nil }
         rescue VAOS::Exceptions::BackendServiceException => e
           vaos_error(e, url)
         rescue => e
@@ -63,26 +66,6 @@ module Mobile
             "/patient/ICN/#{@user.icn}/booked-cc-appointments"
         end
 
-        def fetch_va_appointments(params)
-          lambda {
-            get(va_url, params)
-          }
-        end
-
-        def fetch_cc_appointments(params)
-          lambda {
-            get(cc_url, params)
-          }
-        end
-
-        # this may need to change to match the error handling of the others
-        def fetch_appointment_requests(start_date, end_date)
-          lambda {
-            service = Mobile::V0::AppointmentRequests::Service.new(@user)
-            service.get_requests(start_date, end_date)
-          }
-        end
-
         def cancel_appointment_url(facility_id)
           "/var/VeteranAppointmentRequestService/v4/rest/direct-scheduling/site/#{facility_id}/patient/ICN/" \
             "#{@user.icn}/cancel-appointment"
@@ -100,7 +83,7 @@ module Mobile
             detail: e.message
           }
 
-          [nil, error]
+          { response: nil, errors: error }
         end
 
         def vaos_error(e, url)
@@ -115,7 +98,7 @@ module Mobile
             detail: e.response_values[:detail]
           }
 
-          [nil, error]
+          { response: nil, errors: error }
         end
 
         def log_clinic_details(action, clinic_id, site_code)

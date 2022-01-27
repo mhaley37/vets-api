@@ -865,13 +865,12 @@ RSpec.describe 'appointments', type: :request do
     # this should be moved into the valid params section
     describe 'pending appointments' do
       let(:get_appointments) do
-        Timecop.freeze(Time.zone.parse('2022-01-01')) do
-          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-                VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
-                  get '/mobile/v0/appointments', headers: iam_headers, params: params
-                end
+        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              VCR.use_cassette('vaos/appointment_requests/get_requests_with_params',
+                                match_requests_on: %i[method uri]) do
+                get '/mobile/v0/appointments', headers: iam_headers, params: params
               end
             end
           end
@@ -882,10 +881,7 @@ RSpec.describe 'appointments', type: :request do
         let(:params) { {} }
 
         it 'does not include pending appointments' do
-          expect {
-            get_appointments
-          }.not_to raise_error
-
+          get_appointments
           expect(response.parsed_body.length).to eq(3)
         end
       end
@@ -894,7 +890,24 @@ RSpec.describe 'appointments', type: :request do
         let(:params) { { included: ['pending'] } }
 
         it 'returns pending appointments' do
+          get_appointments
           expect(response.parsed_body.length).to eq(3)
+        end
+      end
+
+      context 'when pending appointments returns an error' do
+        let(:params) { { included: ['pending'] } }
+
+        it 'does not raise error' do
+          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+                VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
+                  get '/mobile/v0/appointments', headers: iam_headers, params: params
+                end
+              end
+            end
+          end
         end
       end
     end

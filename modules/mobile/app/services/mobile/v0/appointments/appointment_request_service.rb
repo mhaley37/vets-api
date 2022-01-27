@@ -2,9 +2,9 @@
 
 module Mobile
   module V0
-    module AppointmentRequests
+    module Appointments
       # connects to appointment request service
-      class Service < VAOS::SessionService
+      class AppointmentRequestService < VAOS::SessionService
         def get_requests(start_date, end_date)
           # do we care about this monitoring?
           response = nil

@@ -16,15 +16,23 @@ module Mobile
         end
 
         def get_appointments(start_date:, end_date:)
-          responses, errors = parallel_appointments_service.get_appointments(start_date, end_date)
+          appointments_service = appointments_service(start_date, end_date)
+
+          va_response, cc_response = Parallel.map(
+            [
+              appointments_service.fetch_va_appointments,
+              appointments_service.fetch_cc_appointments,
+              # fetch_appointment_requests(start_date, end_date)
+            ], in_threads: 2, &:call
+          )
 
           va_appointments = []
           cc_appointments = []
           requested_appointments = []
 
-          va_appointments = va_appointments_with_facilities(responses[:va].body) unless errors[:va]
-          cc_appointments = cc_appointments_adapter.parse(responses[:cc].body) unless errors[:cc]
-          requested_appointments = requested_appointments_adapter.parse(responses[:requests].body) unless errors[:requests]
+          va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:errors]
+          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:errors]
+          # requested_appointments = requests_adapter.parse(requests_response[:response].body) unless requests_response[:errors]
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected
@@ -34,7 +42,7 @@ module Mobile
 
           appointments = (va_appointments + cc_appointments).sort_by(&:start_date_utc)
 
-          errors = errors.values.compact
+          errors = [va_response[:errors], cc_response[:errors]].compact
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
           appointments
@@ -106,8 +114,15 @@ module Mobile
           raise e
         end
 
-        def parallel_appointments_service
-          Mobile::V0::Appointments::Service.new(@user)
+        def appointments_service(start_date, end_date)
+          Mobile::V0::Appointments::Service.new(@user, start_date, end_date)
+        end
+
+        def fetch_appointment_requests(start_date, end_date)
+          lambda {
+            service = Mobile::V0::AppointmentRequests::Service.new(@user)
+            service.get_requests(start_date, end_date)
+          }
         end
 
         def vaos_appointments_service
