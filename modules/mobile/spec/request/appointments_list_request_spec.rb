@@ -864,7 +864,7 @@ RSpec.describe 'appointments', type: :request do
 
     # this should be moved into the valid params section
     describe 'pending appointments' do
-      before do
+      let(:get_appointments) do
         Timecop.freeze(Time.zone.parse('2022-01-01')) do
           VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
@@ -882,6 +882,10 @@ RSpec.describe 'appointments', type: :request do
         let(:params) { {} }
 
         it 'does not include pending appointments' do
+          expect {
+            get_appointments
+          }.not_to raise_error
+
           expect(response.parsed_body.length).to eq(3)
         end
       end

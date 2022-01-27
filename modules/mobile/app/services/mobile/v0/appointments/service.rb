@@ -33,8 +33,8 @@ module Mobile
           va_response, cc_response, requests_response = Parallel.map([fetch_va_appointments(params), fetch_cc_appointments(params), fetch_appointment_requests(start_date, end_date)], in_threads: 3, &:call)
 
           responses[:va], errors[:va] = va_response
-          responses[:va], errors[:va] = cc_response
-          responses[:requests] = requests_response # needs error handling
+          responses[:cc], errors[:cc] = cc_response
+          responses[:requests], errors[:response] = requests_response # needs error handling
 
           [responses, errors]
         end
@@ -78,7 +78,8 @@ module Mobile
         # this may need to change to match the error handling of the others
         def fetch_appointment_requests(start_date, end_date)
           lambda {
-            VAOS::AppointmentRequestsService.new(@user).get_requests(start_date, end_date)
+            service = Mobile::V0::AppointmentRequests::Service.new(@user)
+            service.get_requests(start_date, end_date)
           }
         end
 
