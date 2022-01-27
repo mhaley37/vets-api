@@ -46,7 +46,7 @@ module Mobile
 
         def get(url)
           response = config.connection.get(url, @params, headers)
-          { response: response, errors: nil }
+          { response: response, error: nil }
         rescue VAOS::Exceptions::BackendServiceException => e
           vaos_error(e, url)
         rescue => e
@@ -83,7 +83,7 @@ module Mobile
             detail: e.message
           }
 
-          { response: nil, errors: error }
+          { response: nil, error: error }
         end
 
         def vaos_error(e, url)
@@ -98,7 +98,7 @@ module Mobile
             detail: e.response_values[:detail]
           }
 
-          { response: nil, errors: error }
+          { response: nil, error: error }
         end
 
         def log_clinic_details(action, clinic_id, site_code)

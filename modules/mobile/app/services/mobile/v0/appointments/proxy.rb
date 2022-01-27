@@ -18,21 +18,21 @@ module Mobile
         def get_appointments(start_date:, end_date:)
           appointments_service = appointments_service(start_date, end_date)
 
-          va_response, cc_response = Parallel.map(
+          va_response, cc_response, requests_response = Parallel.map(
             [
               appointments_service.fetch_va_appointments,
               appointments_service.fetch_cc_appointments,
-              # fetch_appointment_requests(start_date, end_date)
-            ], in_threads: 2, &:call
+              fetch_appointment_requests(start_date, end_date)
+            ], in_threads: 3, &:call
           )
 
           va_appointments = []
           cc_appointments = []
           requested_appointments = []
 
-          va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:errors]
-          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:errors]
-          # requested_appointments = requests_adapter.parse(requests_response[:response].body) unless requests_response[:errors]
+          va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
+          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
+          requested_appointments = requests_adapter.parse(requests_response[:response].bodya[:appointment_requests]) unless requests_response[:error]
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected
@@ -42,7 +42,7 @@ module Mobile
 
           appointments = (va_appointments + cc_appointments).sort_by(&:start_date_utc)
 
-          errors = [va_response[:errors], cc_response[:errors]].compact
+          errors = [va_response[:error], cc_response[:error]].compact
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
           appointments
@@ -120,7 +120,7 @@ module Mobile
 
         def fetch_appointment_requests(start_date, end_date)
           lambda {
-            service = Mobile::V0::AppointmentRequests::Service.new(@user)
+            service = Mobile::V0::Appointments::AppointmentRequestsService.new(@user)
             service.get_requests(start_date, end_date)
           }
         end
@@ -143,6 +143,10 @@ module Mobile
 
         def cc_appointments_adapter
           Mobile::V0::Adapters::CommunityCareAppointments.new
+        end
+
+        def requests_adapter
+          Mobile::V0::Adapters::AppointmentRequests.new
         end
       end
     end

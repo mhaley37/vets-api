@@ -4,7 +4,7 @@ module Mobile
   module V0
     module Appointments
       # connects to appointment request service
-      class AppointmentRequestService < VAOS::SessionService
+      class AppointmentRequestsService < VAOS::SessionService
         def get_requests(start_date, end_date)
           # do we care about this monitoring?
           response = nil
@@ -16,7 +16,7 @@ module Mobile
             error = e
           end
 
-          [response.body, error]
+          { response: response, error: error }
         end
 
         private
