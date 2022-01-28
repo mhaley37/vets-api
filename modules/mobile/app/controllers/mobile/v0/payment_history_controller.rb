@@ -9,7 +9,7 @@ module Mobile
         person = BGS::PeopleService.new(current_user).find_person_by_participant_id
         response = BGS::PaymentService.new(current_user).payment_history(person)
 
-        render json: Mobile::V0::PaymentHistorySerializer
+        render json: Mobile::V0::PaymentHistorySerializer.new(response)
       end
     end
   end
