@@ -22,7 +22,7 @@ module Mobile
         'VA_VIDEO_CONNECT_GFE',
         'VA_VIDEO_CONNECT_HOME'
       )
-      STATUS_TYPE = Types::String.enum('BOOKED', 'CANCELLED', 'HIDDEN')
+      STATUS_TYPE = Types::String.enum('BOOKED', 'CANCELLED', 'HIDDEN', 'REQUESTED')
       STATUS_DETAIL_TYPE = Types::String.enum('CANCELLED BY CLINIC & AUTO RE-BOOK',
                                               'CANCELLED BY CLINIC',
                                               'CANCELLED BY PATIENT & AUTO-REBOOK',
