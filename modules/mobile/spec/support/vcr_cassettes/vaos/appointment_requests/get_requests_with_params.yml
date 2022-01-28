@@ -21,7 +21,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 02 Nov 2019 00:41:56 GMT
+      - Fri, 02 Nov 2020 00:41:56 GMT
       Content-Type:
       - application/json
       Content-Length:
@@ -41,7 +41,7 @@ http_interactions:
       X-B3-Sampled:
       - '0'
       X-Vamf-Timestamp:
-      - '2019-07-08T16:09:14+0000'
+      - '2020-07-08T16:09:14+0000'
       Access-Control-Allow-Origin:
       - "*"
       X-B3-Spanid:
@@ -60,7 +60,7 @@ http_interactions:
       encoding: UTF-8
       string: |-
         {
-          "lastAccessDate": "10/08/2019 12:18:19",
+          "lastAccessDate": "10/08/2020 12:18:19",
           "selfUri": "https://var-resources-v4.sqa.svc.cluster.local/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointments",
           "selfLink": {
             "rel": "self",
@@ -80,8 +80,8 @@ http_interactions:
               },
               "surrogateIdentifier": {
               },
-              "lastUpdatedDate": "08/28/2019 09:17:40",
-              "optionDate1": "08/22/2019",
+              "lastUpdatedDate": "08/28/2020 09:17:40",
+              "optionDate1": "08/22/2020",
               "optionTime1": "PM",
               "optionDate2": "No Date Selected",
               "optionTime2": "No Time Selected",
@@ -133,7 +133,7 @@ http_interactions:
               "appointmentRequestDetailCode": [
                 {
                   "appointmentRequestDetailCodeId": "8a48e8b56cd0144c016cd8cdc8c00192",
-                  "createdDate": "08/28/2019 09:17:40",
+                  "createdDate": "08/28/2020 09:17:40",
                   "detailCode": {
                     "code": "DETCODE24",
                     "codeNumeric": 1,
@@ -186,7 +186,7 @@ http_interactions:
               },
               "patientId": "1249652616",
               "appointmentRequestId": "8a48912a6cab0202016cba350cd10054",
-              "date": "2019-08-22T10:42:14.000+0000",
+              "date": "2020-08-22T10:42:14.000+0000",
               "assigningAuthority": "ICN",
               "uniqueId": "8a48912a6cab0202016cba350cd10054",
               "systemId": "var",
@@ -222,7 +222,7 @@ http_interactions:
                   "objectType": "AtomLink"
                 }
               ],
-              "createdDate": "08/22/2019 10:42:14"
+              "createdDate": "08/22/2020 10:42:14"
             }
           ],
           "size": 1,

@@ -5,13 +5,14 @@ module Mobile
     module Adapters
       class AppointmentRequests
         def parse(requests)
-          facilities = Set.new
+          # a bit unclear how to handle this
+          # facilities = Set.new
 
           appointments = requests.map do |request|
             build_appointment_model(request)
           end
 
-          [appointments, facilities]
+          appointments
         end
 
         private
@@ -19,7 +20,7 @@ module Mobile
         def build_appointment_model(request)
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: 'VA', # request[:appointment_type], # check that this is actually the same
+            appointment_type: 'VA', # this is not correct. the appt type returned by the endpoint maps to the label in the list (like "nutrition and food")
             cancel_id: nil,
             comment: nil,
             facility_id: request.dig(:facility, :facility_code),
@@ -30,7 +31,7 @@ module Mobile
             minutes_duration: nil,
             phone_only: nil,
             start_date_local: nil,
-            start_date_utc: nil,
+            start_date_utc: start_date(request),
             status: 'REQUESTED',
             status_detail: nil,
             time_zone: nil, # maybe base off of facility?
@@ -71,6 +72,14 @@ module Mobile
             url: nil,
             code: nil
           }
+        end
+
+        def start_date(request)
+          date = request[:option_date1]
+          month, day, year = date.split('/').map(&:to_i)
+          hour = request[:option_time1] == 'AM' ? 9 : 13
+
+          DateTime.new(year, month, day, hour, 0)
         end
       end
     end

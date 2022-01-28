@@ -40,7 +40,7 @@ module Mobile
             appointment.start_date_utc.between?(start_date, end_date)
           end
 
-          appointments = (va_appointments + cc_appointments).sort_by(&:start_date_utc)
+          appointments = (va_appointments + cc_appointments + requested_appointments).sort_by(&:start_date_utc)
 
           errors = [va_response[:error], cc_response[:error]].compact
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
