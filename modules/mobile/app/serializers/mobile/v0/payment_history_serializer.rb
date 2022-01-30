@@ -6,9 +6,13 @@ module Mobile
   module V0
     class PaymentHistorySerializer
       include FastJsonapi::ObjectSerializer
-
       set_type :payment_history
-      attribute :payments
+
+      attributes :payment_amount,
+                 :payment_date,
+                 :payment_method,
+                 :payment_bank,
+                 :payment_account
     end
   end
 end
