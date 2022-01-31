@@ -887,16 +887,17 @@ RSpec.describe 'appointments', type: :request do
           end
 
           requested = response.parsed_body['data'].find { |appts| appts['id'] == '8a48912a6cab0202016cba350cd10054' }
-          expect(requested).not_to be_nil
+          expect(requested).to be_nil
         end
       end
 
       context 'when pending appointments are included in the query params' do
-        let(:params) { { included: ['pending'] } }
+        let(:params) { { included: ['pending'], page: { number: 1, size: 100 }} }
 
         it 'returns pending appointments' do
           get_appointments
-          expect(response.parsed_body.length).to eq(4)
+          requested = response.parsed_body['data'].find { |appts| appts['id'] == '8a48912a6cab0202016cba350cd10054' }
+          expect(response.parsed_body['data']).not_to be_nil
         end
       end
 

@@ -75,20 +75,28 @@ module Mobile
             start_date: [validated_params[:start_date], one_year_ago].min,
             end_date: [validated_params[:end_date], one_year_from_now].max
           )
+
           Mobile::V0::Appointment.set_cached(@current_user, appointments)
           Rails.logger.info('mobile appointments service fetch', user_uuid: @current_user.uuid)
         end
 
         appointments.reverse! if validated_params[:reverse_sort]
-        appointments
+        filter_requested_appointments(appointments, validated_params)
       end
 
       def paginate(appointments, validated_params)
         appointments = appointments.filter do |appointment|
           appointment.start_date_utc.between? validated_params[:start_date], validated_params[:end_date]
         end
+
         url = request.base_url + request.path
         Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
+      end
+
+      def filter_requested_appointments(appointments, validated_params)
+        return appointments if validated_params[:included]&.include?('pending')
+
+        appointments.filter { |appt| appt.status != 'REQUESTED' }
       end
 
       def appointments_proxy
