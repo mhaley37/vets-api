@@ -90,7 +90,9 @@ module Mobile
 
       def paginate(appointments, validated_params)
         appointments = appointments.filter do |appointment|
-          appointment.start_date_utc.between? validated_params[:start_date], validated_params[:end_date]
+          appointment.start_date_utc.between?(
+            validated_params[:start_date].beginning_of_day, validated_params[:end_date].end_of_day
+          )
         end
 
         url = request.base_url + request.path

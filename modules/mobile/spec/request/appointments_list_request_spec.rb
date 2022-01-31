@@ -21,8 +21,10 @@ RSpec.describe 'appointments', type: :request do
   after(:all) { VCR.configure { |c| c.cassette_library_dir = @original_cassette_dir } }
 
   describe 'GET /mobile/v0/appointments' do
+    let(:default_query_time) { Time.zone.parse('2020-11-01T10:30:00Z') }
+
     before do
-      Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
+      Timecop.freeze(default_query_time)
     end
 
     after { Timecop.return }
@@ -868,8 +870,7 @@ RSpec.describe 'appointments', type: :request do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('vaos/appointment_requests/get_requests_with_params',
-                                match_requests_on: %i[method uri]) do
+              VCR.use_cassette('appointments/get_appointment_requests', match_requests_on: %i[method uri]) do
                 get '/mobile/v0/appointments', headers: iam_headers, params: params
               end
             end
@@ -878,7 +879,7 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when pending appointments are not included in the query params' do
-        let(:params) { { page: { number: 1, size: 100 } } }
+        let(:params) { { page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date } }
 
         it 'does not include pending appointments' do
           get_appointments
@@ -892,12 +893,13 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when pending appointments are included in the query params' do
-        let(:params) { { included: ['pending'], page: { number: 1, size: 100 } } }
+        let(:params) { { included: ['pending'], page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date  } }
 
         it 'returns pending appointments' do
           get_appointments
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == '8a48912a6cab0202016cba350cd10054' }
-          expect(requested).not_to be_nil
+
+          requested = response.parsed_body['data'].select { |appts| appts['id'].in? ['8a48912a6d02b0fc016d20b4ccb9001a', '8a48912a6cab0202016cba350cd10054'] }
+          expect(requested.length).to eq 2
         end
 
         # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
