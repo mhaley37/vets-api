@@ -892,13 +892,17 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when pending appointments are included in the query params' do
-        let(:params) { { included: ['pending'], page: { number: 1, size: 100 }} }
+        let(:params) { { included: ['pending'], page: { number: 1, size: 100 } } }
 
         it 'returns pending appointments' do
           get_appointments
           requested = response.parsed_body['data'].find { |appts| appts['id'] == '8a48912a6cab0202016cba350cd10054' }
-          expect(response.parsed_body['data']).not_to be_nil
+          expect(requested).not_to be_nil
         end
+
+        # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
+        it 'includes cc data for cc appointments'
+        it 'includes va data for va appointments'
       end
 
       # context 'when pending appointments returns an error' do

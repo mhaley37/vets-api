@@ -80,8 +80,12 @@ module Mobile
           Rails.logger.info('mobile appointments service fetch', user_uuid: @current_user.uuid)
         end
 
+        unless validated_params[:included]&.include?('pending')
+          appointments.filter! { |appt| appt.status != 'REQUESTED' }
+        end
         appointments.reverse! if validated_params[:reverse_sort]
-        filter_requested_appointments(appointments, validated_params)
+
+        appointments
       end
 
       def paginate(appointments, validated_params)
@@ -91,12 +95,6 @@ module Mobile
 
         url = request.base_url + request.path
         Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
-      end
-
-      def filter_requested_appointments(appointments, validated_params)
-        return appointments if validated_params[:included]&.include?('pending')
-
-        appointments.filter { |appt| appt.status != 'REQUESTED' }
       end
 
       def appointments_proxy
