@@ -9,11 +9,29 @@ module Mobile
         person = BGS::PeopleService.new(current_user).find_person_by_participant_id
         response = BGS::PaymentService.new(current_user).payment_history(person)
 
-        #
-        render json: Mobile::V0::PaymentHistorySerializer.new(response)
+        #use_cache = params[:useCache] || true <- no caching at this time
+        start_date = params[:startDate] || one_year_ago.iso8601
+        end_date = params[:endDate] || one_year_from_now.iso8601
+        reverse_sort = !(params[:sort] =~ /-startDateUtc/).nil?
+
+        validated_params = Mobile::V0::Contracts::GetPaginatedList.new.call(
+          start_date: start_date,
+          end_date: end_date,
+          page_number: params.dig(:page, :number),
+          page_size: params.dig(:page, :size),
+          #use_cache: use_cache,
+          reverse_sort: reverse_sort
+        )
+
+        raise Mobile::V0::Exceptions::ValidationErrors, validated_params if validated_params.failure?
+
+        page_history, page_meta_data = paginate(response, validated_params)
+
+        #need to be checked
+        render json: Mobile::V0::PaymentHistorySerializer.new(page_history, page_meta_data)
       end
 
-      #
+      #X
       def initialize
         @formatted_payments = []
 
@@ -22,7 +40,7 @@ module Mobile
       end
     end
 
-    #
+    #X
     def payments
       @formatted_payments
     end
