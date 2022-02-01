@@ -8,11 +8,9 @@ module Mobile
           # a bit unclear how to handle this
           # facilities = Set.new
 
-          appointments = requests.map do |request|
+          requests.map do |request|
             build_appointment_model(request)
           end
-
-          appointments
         end
 
         private
@@ -37,21 +35,22 @@ module Mobile
             time_zone: nil, # maybe base off of facility?
             vetext_id: nil,
             reason: request[:reason_for_visit],
-            is_covid_vaccine: false,
+            is_covid_vaccine: false
           )
         end
 
-        # should this be the facility or the cc data?
         def location(request)
-          # perhaps facility otherwise?
           if request[:cc_appointment_request]
-            source = request[:cc_appointment_request]
+            cc_location(request)
           else
-            binding.pry
+            va_location(request)
           end
-          # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
-          # and extension (until the end of the string) (\S*)\z
-          phone_captures = request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
+        end
+
+        # should this be the facility or the cc data?
+        def cc_location(request)
+          source = request[:cc_appointment_request]
+          phone_captures = phone_captures(request)
 
           {
             id: nil,
@@ -74,12 +73,42 @@ module Mobile
           }
         end
 
+        def va_location(request)
+          facility_id = request.dig(:facility, :facility_code)
+          facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
+          {
+            id: facility_id,
+            name: facility ? facility[:name] : nil,
+            address: {
+              street: nil,
+              city: nil,
+              state: nil,
+              zip_code: nil
+            },
+            lat: nil,
+            long: nil,
+            phone: {
+              area_code: nil,
+              number: nil,
+              extension: nil
+            },
+            url: nil,
+            code: nil
+          }
+        end
+
         def start_date(request)
           date = request[:option_date1]
           month, day, year = date.split('/').map(&:to_i)
           hour = request[:option_time1] == 'AM' ? 9 : 13
 
           DateTime.new(year, month, day, hour, 0)
+        end
+
+        def phone_captures(request)
+          # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
+          # and extension (until the end of the string) (\S*)\z
+          request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
         end
       end
     end

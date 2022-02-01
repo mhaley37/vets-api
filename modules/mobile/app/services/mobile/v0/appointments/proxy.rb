@@ -32,7 +32,9 @@ module Mobile
 
           va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
           cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
-          requested_appointments = requests_adapter.parse(requests_response[:response].body[:appointment_requests]) unless requests_response[:error]
+          unless requests_response[:error]
+            requested_appointments = requests_adapter.parse(requests_response[:response].body[:appointment_requests])
+          end
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected

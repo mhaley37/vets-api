@@ -882,13 +882,13 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when pending appointments are not included in the query params' do
-        let(:params) { { page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date } }
+        let(:params) do
+          { page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date }
+        end
 
         it 'does not include pending appointments' do
           get_appointments
-          if response.status != 200
-            puts response.parsed_body
-          end
+          puts response.parsed_body if response.status != 200
 
           requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
           expect(requested).to be_empty
@@ -896,7 +896,14 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when pending appointments are included in the query params' do
-        let(:params) { { included: ['pending'], page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date  } }
+        let(:params) do
+          {
+            included: ['pending'],
+            page: { number: 1, size: 100 },
+            startDate: default_query_time.to_date,
+            endDate: default_query_time.to_date
+          }
+        end
 
         it 'returns pending appointments' do
           get_appointments
@@ -906,8 +913,101 @@ RSpec.describe 'appointments', type: :request do
         end
 
         # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
-        it 'includes cc data for cc appointments'
-        it 'includes va data for va appointments'
+        it 'includes cc data for cc appointments' do
+          expected_response = {
+            'id' => '8a48912a6cab0202016cba350cd10054',
+            'type' => 'appointment',
+            'attributes' => {
+              'appointmentType' => 'VA',
+              'cancelId' => nil,
+              'comment' => nil,
+              'healthcareProvider' => nil,
+              'healthcareService' => nil,
+              'location' => {
+                'id' => nil,
+                'name' => 'Test clinic 2',
+                'address' => {
+                  'street' => {},
+                  'city' => 'her',
+                  'state' => 'VA',
+                  'zipCode' => '20171'
+                },
+                'lat' => nil,
+                'long' => nil,
+                'phone' => {
+                  'areaCode' => '666',
+                  'number' => '666-6666',
+                  'extension' => nil
+                },
+                'url' => nil,
+                'code' => nil
+              },
+              'minutesDuration' => nil,
+              'phoneOnly' => nil,
+              'startDateLocal' => nil,
+              'startDateUtc' => '2020-11-01T13:00:00.000+00:00',
+              'status' => 'REQUESTED',
+              'statusDetail' => nil,
+              'timeZone' => nil,
+              'vetextId' => nil,
+              'reason' => 'Allergies',
+              'isCovidVaccine' => false
+            }
+          }
+
+          get_appointments
+
+          requested = response.parsed_body['data'].find { |appts| appts['id'] == cc_appt_request_id }
+          expect(requested).to eq(expected_response)
+        end
+
+        it 'includes va data for va appointments' do
+          expected_response = {
+            'id' => '8a48dea06c84a667016c866de87c000b',
+            'type' => 'appointment',
+            'attributes' => {
+              'appointmentType' => 'VA',
+              'cancelId' => nil,
+              'comment' => nil,
+              'healthcareProvider' => nil,
+              'healthcareService' => nil,
+              'location' => {
+                'id' => '983',
+                'name' => 'CHYSHR-Cheyenne VA Medical Center',
+                'address' => {
+                  'street' => nil,
+                  'city' => nil,
+                  'state' => nil,
+                  'zipCode' => nil
+                },
+                'lat' => nil,
+                'long' => nil,
+                'phone' => {
+                  'areaCode' => nil,
+                  'number' => nil,
+                  'extension' => nil
+                },
+                'url' => nil,
+                'code' => nil
+              },
+              'minutesDuration' => nil,
+              'phoneOnly' => nil,
+              'startDateLocal' => nil,
+              'startDateUtc' => '2020-11-01T09:00:00.000+00:00',
+              'status' => 'REQUESTED',
+              'statusDetail' => nil,
+              'timeZone' => nil,
+              'vetextId' => nil,
+              'reason' => nil,
+              'isCovidVaccine' => false
+            }
+          }
+
+          get_appointments
+
+          requested = response.parsed_body['data'].find { |appts| appts['id'] == va_appt_request_id }
+          expect(requested).to eq(expected_response)
+        end
       end
 
       # context 'when pending appointments returns an error' do
