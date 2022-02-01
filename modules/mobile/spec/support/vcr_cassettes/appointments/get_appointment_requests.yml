@@ -226,23 +226,23 @@ http_interactions:
             },
             {
               "dataIdentifier": {
-                "uniqueId": "8a48912a6d02b0fc016d20b4ccb9001a",
+                "uniqueId": "8a48dea06c84a667016c866de87c000b",
                 "systemId": "var"
               },
               "patientIdentifier": {
-                "uniqueId": "1012853550V207686",
+                "uniqueId": "1012845943V900681",
                 "assigningAuthority": "ICN"
               },
               "surrogateIdentifier": {},
-              "lastUpdatedDate": "09/11/2019 12:19:31",
+              "lastUpdatedDate": "08/16/2019 13:08:33",
               "optionDate1": "11/01/2020",
               "optionTime1": "AM",
-              "optionDate2": "09/19/2019",
-              "optionTime2": "PM",
+              "optionDate2": "No Date Selected",
+              "optionTime2": "No Time Selected",
               "optionDate3": "No Date Selected",
               "optionTime3": "No Time Selected",
-              "status": "Cancelled",
-              "appointmentType": "Optometry (routine eye exam)",
+              "status": "Booked",
+              "appointmentType": "Primary Care",
               "visitType": "Office Visit",
               "facility": {
                 "name": "CHYSHR-CHEYENNE VAMC",
@@ -253,148 +253,119 @@ http_interactions:
                 "address": "2360 EAST PERSHING BLVD",
                 "parentSiteCode": "983",
                 "objectType": "Facility",
-                "link": []
+                "link": [
+
+                ]
               },
-              "email": "samatha.girla@va.gov",
+              "email": "ruba.pichaimuthu@va.gov",
               "textMessagingAllowed": false,
-              "phoneNumber": "(703) 652-0000",
-              "purposeOfVisit": "routine-follow-up",
+              "phoneNumber": "(301) 916-1234",
+              "purposeOfVisit": "New Issue",
               "providerId": "0",
               "secondRequest": false,
               "secondRequestSubmitted": false,
               "patient": {
-                "displayName": "GPTESTSYSTWO, TRISTAN",
-                "firstName": "TRISTAN",
-                "lastName": "GPTESTSYSTWO",
-                "dateOfBirth": "Mar 07, 1977",
+                "displayName": "MORGAN, CECIL",
+                "firstName": "CECIL",
+                "lastName": "MORGAN",
+                "dateOfBirth": "May 31, 2001",
                 "patientIdentifier": {
-                  "uniqueId": "1012853550V207686"
+                  "uniqueId": "1249652616"
                 },
-                "ssn": "666811850",
+                "ssn": "796106146",
                 "inpatient": false,
                 "textMessagingAllowed": false,
-                "id": "1012853550V207686",
+                "id": "1249652616",
                 "objectType": "Patient",
-                "link": []
+                "link": [
+
+                ]
               },
               "bestTimetoCall": [
-                "Afternoon",
-                "Evening",
                 "Morning"
               ],
               "appointmentRequestDetailCode": [{
-                  "appointmentRequestDetailCodeId": "8a488e8b6d206838016d218d4be20179",
-                  "createdDate": "09/11/2019 12:19:31",
+                  "appointmentRequestDetailCodeId": "8a48e78f6c8bfe02016c9bd4d9590052",
+                  "createdDate": "08/16/2019 13:08:33",
                   "detailCode": {
-                    "code": "DETCODE19",
-                    "providerMessage": "Cancelled by VA - Unable to meet request; Veteran contacted but not available",
-                    "veteranMessage": "Your request for an appointment has been cancelled because we have been unable to contact you to complete the request.",
+                    "code": "DETCODE1",
+                    "providerMessage": "Made on requested date",
+                    "veteranMessage": "Your appointment was booked based upon your request for an appointment on %s %s.  Please use the Appointments feature on the previous screen to see more information on this and other appointments booked at VA healthcare facilities.",
                     "objectType": "VARDetailCode",
-                    "link": []
+                    "link": [
+
+                    ]
                   },
-                  "userId": "1013118126",
+                  "userId": "1013004612",
                   "objectType": "VARAppointmentRequestDetailCode",
-                  "link": []
+                  "link": [
+
+                  ]
                 },
                 {
-                  "appointmentRequestDetailCodeId": "8a488e8b6d206838016d218d4be20179",
-                  "createdDate": "09/11/2019 12:19:31",
+                  "appointmentRequestDetailCodeId": "8a48e79e6c8c2187016c95bb936d0007",
+                  "createdDate": "08/15/2019 08:43:13",
                   "detailCode": {
-                    "code": "DETCODE19",
-                    "providerMessage": "Cancelled by VA - Unable to meet request; Veteran contacted but not available",
-                    "veteranMessage": "Your request for an appointment has been cancelled because we have been unable to contact you to complete the request.",
+                    "code": "DETCODE8",
+                    "providerMessage": "Cancelled by Veteran - Pending",
+                    "veteranMessage": "Your request to cancel this appointment request has been sent.",
                     "objectType": "VARDetailCode",
-                    "link": []
+                    "link": [
+
+                    ]
                   },
-                  "userId": "1013118126",
+                  "userId": "1012845943V900681",
                   "objectType": "VARAppointmentRequestDetailCode",
-                  "link": []
-                },
-                {
-                  "appointmentRequestDetailCodeId": "8a488e8b6d206838016d218d4be20179",
-                  "createdDate": "09/11/2019 12:19:31",
-                  "detailCode": {
-                    "code": "DETCODE19",
-                    "providerMessage": "Cancelled by VA - Unable to meet request; Veteran contacted but not available",
-                    "veteranMessage": "Your request for an appointment has been cancelled because we have been unable to contact you to complete the request.",
-                    "objectType": "VARDetailCode",
-                    "link": []
-                  },
-                  "userId": "1013118126",
-                  "objectType": "VARAppointmentRequestDetailCode",
-                  "link": []
+                  "link": [
+
+                  ]
                 }
               ],
-              "hasVeteranNewMessage": true,
+              "hasVeteranNewMessage": false,
               "hasProviderNewMessage": false,
               "providerSeenAppointmentRequest": true,
               "requestedPhoneCall": false,
-              "typeOfCareId": "CCOPT",
+              "bookedApptDateTime": "08/27/2019 10:00:00",
+              "typeOfCareId": "323",
               "friendlyLocationName": "CHYSHR-Cheyenne VA Medical Center",
-              "ccAppointmentRequest": {
-                "dataIdentifier": {},
-                "patientIdentifier": {},
-                "surrogateIdentifier": {},
-                "hasVeteranNewMessage": false,
-                "preferredZipCode": "20171",
-                "preferredState": "VA",
-                "preferredCity": "her",
-                "preferredLanguage": "English",
-                "distanceWillingToTravel": 25,
-                "distanceEligible": false,
-                "officeHours": [
-                  "Evenings"
-                ],
-                "preferredProviders": [{
-                  "firstName": "Vilasini",
-                  "lastName": "Reddy",
-                  "practiceName": "Test clinic 2",
-                  "address": {},
-                  "preferredOrder": 0,
-                  "objectType": "Provider",
-                  "link": []
-                }],
-                "objectType": "CCAppointmentRequest",
-                "link": []
-              },
-              "patientId": "1012853550V207686",
-              "appointmentRequestId": "8a48912a6d02b0fc016d20b4ccb9001a",
-              "date": "2019-09-11T08:23:02.000+0000",
+              "patientId": "1249652616",
+              "appointmentRequestId": "8a48dea06c84a667016c866de87c000b",
+              "date": "2019-08-12T09:24:05.000+0000",
               "assigningAuthority": "ICN",
-              "uniqueId": "8a48912a6d02b0fc016d20b4ccb9001a",
+              "uniqueId": "8a48dea06c84a667016c866de87c000b",
               "systemId": "var",
-              "selfUri": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointments/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a",
+              "selfUri": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointments/system/var/id/8a48dea06c84a667016c866de87c000b",
               "selfLink": {
                 "rel": "self",
-                "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointments/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a",
+                "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointments/system/var/id/8a48dea06c84a667016c866de87c000b",
                 "objectType": "AtomLink"
               },
               "objectType": "VARAppointmentRequest",
               "link": [{
                   "rel": "self",
-                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointments/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a",
+                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointments/system/var/id/8a48dea06c84a667016c866de87c000b",
                   "objectType": "AtomLink"
                 },
                 {
                   "rel": "related",
                   "title": "appointment-request-messages",
-                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointment-requests/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a/messages",
+                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointment-requests/system/var/id/8a48dea06c84a667016c866de87c000b/messages",
                   "objectType": "AtomLink"
                 },
                 {
                   "rel": "related",
                   "title": "appointment-request-new-message-flag",
-                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointment-requests/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a/messages/read",
+                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointment-requests/system/var/id/8a48dea06c84a667016c866de87c000b/messages/read",
                   "objectType": "AtomLink"
                 },
                 {
                   "rel": "related",
                   "title": "appointment-request-provider-seen-flag",
-                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012853550V207686/appointment-requests/system/var/id/8a48912a6d02b0fc016d20b4ccb9001a/appointment/provider-read",
+                  "href": "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/1012845943V900681/appointment-requests/system/var/id/8a48dea06c84a667016c866de87c000b/appointment/provider-read",
                   "objectType": "AtomLink"
                 }
               ],
-              "createdDate": "09/11/2019 08:23:02"
+              "createdDate": "08/12/2019 09:24:05"
             }
           ],
           "size": 2,

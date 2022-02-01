@@ -866,6 +866,9 @@ RSpec.describe 'appointments', type: :request do
 
     # this should be moved into the valid params section
     describe 'pending appointments' do
+      let(:va_appt_request_id) { '8a48dea06c84a667016c866de87c000b' }
+      let(:cc_appt_request_id) { '8a48912a6cab0202016cba350cd10054' }
+      let(:appointment_request_ids) { [va_appt_request_id, cc_appt_request_id] }
       let(:get_appointments) do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
@@ -887,8 +890,8 @@ RSpec.describe 'appointments', type: :request do
             puts response.parsed_body
           end
 
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == '8a48912a6cab0202016cba350cd10054' }
-          expect(requested).to be_nil
+          requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
+          expect(requested).to be_empty
         end
       end
 
@@ -898,7 +901,7 @@ RSpec.describe 'appointments', type: :request do
         it 'returns pending appointments' do
           get_appointments
 
-          requested = response.parsed_body['data'].select { |appts| appts['id'].in? ['8a48912a6d02b0fc016d20b4ccb9001a', '8a48912a6cab0202016cba350cd10054'] }
+          requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
           expect(requested.length).to eq 2
         end
 
