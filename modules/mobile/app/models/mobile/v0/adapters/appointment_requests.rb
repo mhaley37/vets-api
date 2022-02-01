@@ -18,7 +18,7 @@ module Mobile
         def build_appointment_model(request)
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: 'VA', # this is not correct. the appt type returned by the endpoint maps to the label in the list (like "nutrition and food")
+            appointment_type: appointment_type(request),
             cancel_id: nil,
             comment: nil,
             facility_id: request.dig(:facility, :facility_code),
@@ -35,12 +35,17 @@ module Mobile
             time_zone: nil, # maybe base off of facility?
             vetext_id: nil,
             reason: request[:reason_for_visit],
-            is_covid_vaccine: false
+            is_covid_vaccine: false,
+            proposed_times: proposed_times(request)
           )
         end
 
+        def appointment_type(request)
+          request.key?(:cc_appointment_request) ? 'COMMUNITY_CARE' : 'VA'
+        end
+
         def location(request)
-          if request[:cc_appointment_request]
+          if appointment_type(request) == 'COMMUNITY_CARE'
             cc_location(request)
           else
             va_location(request)
@@ -103,6 +108,17 @@ module Mobile
           hour = request[:option_time1] == 'AM' ? 9 : 13
 
           DateTime.new(year, month, day, hour, 0)
+        end
+
+        def proposed_times(request)
+          [
+            option_date1: request[:option_date1],
+            option_time1: request[:option_time1],
+            option_date2: request[:option_date2],
+            option_time2: request[:option_time2],
+            option_date3: request[:option_date3],
+            option_time3: request[:option_time3]
+          ]
         end
 
         def phone_captures(request)

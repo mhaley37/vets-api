@@ -20,7 +20,8 @@ module Mobile
                  :time_zone,
                  :vetext_id,
                  :reason,
-                 :is_covid_vaccine
+                 :is_covid_vaccine,
+                 :proposed_times
     end
   end
 end

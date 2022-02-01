@@ -918,7 +918,7 @@ RSpec.describe 'appointments', type: :request do
             'id' => '8a48912a6cab0202016cba350cd10054',
             'type' => 'appointment',
             'attributes' => {
-              'appointmentType' => 'VA',
+              'appointmentType' => 'COMMUNITY_CARE',
               'cancelId' => nil,
               'comment' => nil,
               'healthcareProvider' => nil,
@@ -951,7 +951,17 @@ RSpec.describe 'appointments', type: :request do
               'timeZone' => nil,
               'vetextId' => nil,
               'reason' => 'Allergies',
-              'isCovidVaccine' => false
+              'isCovidVaccine' => false,
+              'proposedTimes' => [
+                {
+                  'optionDate1' => '11/01/2020',
+                  'optionTime1' => 'PM',
+                  'optionDate2' => 'No Date Selected',
+                  'optionTime2' => 'No Time Selected',
+                  'optionDate3' => 'No Date Selected',
+                  'optionTime3' => 'No Time Selected'
+                }
+              ]
             }
           }
 
@@ -999,7 +1009,17 @@ RSpec.describe 'appointments', type: :request do
               'timeZone' => nil,
               'vetextId' => nil,
               'reason' => nil,
-              'isCovidVaccine' => false
+              'isCovidVaccine' => false,
+              'proposedTimes' => [
+                {
+                  'optionDate1' => '11/01/2020',
+                  'optionTime1' => 'AM',
+                  'optionDate2' => 'No Date Selected',
+                  'optionTime2' => 'No Time Selected',
+                  'optionDate3' => 'No Date Selected',
+                  'optionTime3' => 'No Time Selected'
+                }
+              ]
             }
           }
 
@@ -1007,6 +1027,9 @@ RSpec.describe 'appointments', type: :request do
 
           requested = response.parsed_body['data'].find { |appts| appts['id'] == va_appt_request_id }
           expect(requested).to eq(expected_response)
+        end
+
+        it 'orders appointments by first proposed time' do
         end
       end
 

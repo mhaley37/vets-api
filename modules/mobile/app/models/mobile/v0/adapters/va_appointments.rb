@@ -126,7 +126,8 @@ module Mobile
             time_zone: time_zone,
             vetext_id: vetext_id(appointment_hash, start_date_local),
             reason: details[:booking_note],
-            is_covid_vaccine: covid_vaccine?(appointment_hash)
+            is_covid_vaccine: covid_vaccine?(appointment_hash),
+            proposed_times: nil
           }
 
           Rails.logger.info('metric.mobile.appointment.type', type: type)

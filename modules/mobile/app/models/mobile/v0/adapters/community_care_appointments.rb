@@ -62,7 +62,8 @@ module Mobile
             time_zone: time_zone,
             vetext_id: nil,
             reason: nil,
-            is_covid_vaccine: false
+            is_covid_vaccine: false,
+            proposed_times: nil
           }
         end
         # rubocop:enable Metrics/MethodLength
