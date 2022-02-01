@@ -20,9 +20,11 @@ module Mobile
         'VA',
         'VA_VIDEO_CONNECT_ATLAS',
         'VA_VIDEO_CONNECT_GFE',
-        'VA_VIDEO_CONNECT_HOME'
+        'VA_VIDEO_CONNECT_HOME',
+        'COMMUNITY_CARE_REQUEST',
+        'VA_REQUEST'
       )
-      STATUS_TYPE = Types::String.enum('BOOKED', 'CANCELLED', 'HIDDEN', 'REQUESTED')
+      STATUS_TYPE = Types::String.enum('BOOKED', 'CANCELLED', 'HIDDEN', 'SUBMITTED')
       STATUS_DETAIL_TYPE = Types::String.enum('CANCELLED BY CLINIC & AUTO RE-BOOK',
                                               'CANCELLED BY CLINIC',
                                               'CANCELLED BY PATIENT & AUTO-REBOOK',
@@ -59,7 +61,7 @@ module Mobile
       attribute :vetext_id, Types::String.optional
       attribute :reason, Types::String.optional
       attribute :is_covid_vaccine, Types::Bool
-      attribute :proposed_times, Types::Array.optional
+      attribute :proposed_times, Types::Hash.optional
 
       def self.toggle_non_prod_id!(id)
         return id if Settings.hostname == 'api.va.gov' || id.nil?

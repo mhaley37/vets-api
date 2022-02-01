@@ -918,7 +918,7 @@ RSpec.describe 'appointments', type: :request do
             'id' => '8a48912a6cab0202016cba350cd10054',
             'type' => 'appointment',
             'attributes' => {
-              'appointmentType' => 'COMMUNITY_CARE',
+              'appointmentType' => 'COMMUNITY_CARE_REQUEST',
               'cancelId' => nil,
               'comment' => nil,
               'healthcareProvider' => nil,
@@ -946,22 +946,20 @@ RSpec.describe 'appointments', type: :request do
               'phoneOnly' => nil,
               'startDateLocal' => nil,
               'startDateUtc' => '2020-11-01T13:00:00.000+00:00',
-              'status' => 'REQUESTED',
+              'status' => 'CANCELLED',
               'statusDetail' => nil,
               'timeZone' => nil,
               'vetextId' => nil,
               'reason' => 'Allergies',
               'isCovidVaccine' => false,
-              'proposedTimes' => [
-                {
-                  'optionDate1' => '11/01/2020',
-                  'optionTime1' => 'PM',
-                  'optionDate2' => 'No Date Selected',
-                  'optionTime2' => 'No Time Selected',
-                  'optionDate3' => 'No Date Selected',
-                  'optionTime3' => 'No Time Selected'
-                }
-              ]
+              'proposedTimes' => {
+                'optionDate1' => '11/01/2020',
+                'optionTime1' => 'PM',
+                'optionDate2' => 'No Date Selected',
+                'optionTime2' => 'No Time Selected',
+                'optionDate3' => 'No Date Selected',
+                'optionTime3' => 'No Time Selected'
+              }
             }
           }
 
@@ -1010,16 +1008,14 @@ RSpec.describe 'appointments', type: :request do
               'vetextId' => nil,
               'reason' => nil,
               'isCovidVaccine' => false,
-              'proposedTimes' => [
-                {
-                  'optionDate1' => '11/01/2020',
-                  'optionTime1' => 'AM',
-                  'optionDate2' => 'No Date Selected',
-                  'optionTime2' => 'No Time Selected',
-                  'optionDate3' => 'No Date Selected',
-                  'optionTime3' => 'No Time Selected'
-                }
-              ]
+              'proposedTimes' => {
+                'optionDate1' => '11/01/2020',
+                'optionTime1' => 'AM',
+                'optionDate2' => 'No Date Selected',
+                'optionTime2' => 'No Time Selected',
+                'optionDate3' => 'No Date Selected',
+                'optionTime3' => 'No Time Selected'
+              }
             }
           }
 
@@ -1031,6 +1027,8 @@ RSpec.describe 'appointments', type: :request do
 
         it 'orders appointments by first proposed time' do
         end
+
+        it 'omits resolved and booked appointment requests'
       end
 
       # context 'when pending appointments returns an error' do

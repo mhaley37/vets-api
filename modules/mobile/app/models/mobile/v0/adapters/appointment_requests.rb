@@ -9,96 +9,32 @@ module Mobile
           # facilities = Set.new
 
           requests.map do |request|
-            build_appointment_model(request)
-          end
+            status = status(request)
+            next if status.nil?
+
+            start_date = start_date(request)
+            proposed_times = proposed_times(request)
+            adapter_klass = type_adapter(request)
+            adapter_klass.build_appointment_model(start_date, proposed_times, status)
+          end.compact
         end
 
-        private
-
-        def build_appointment_model(request)
-          Mobile::V0::Appointment.new(
-            id: request[:appointment_request_id],
-            appointment_type: appointment_type(request),
-            cancel_id: nil,
-            comment: nil,
-            facility_id: request.dig(:facility, :facility_code),
-            sta6aid: nil,
-            healthcare_provider: nil,
-            healthcare_service: nil,
-            location: location(request),
-            minutes_duration: nil,
-            phone_only: nil,
-            start_date_local: nil,
-            start_date_utc: start_date(request),
-            status: 'REQUESTED',
-            status_detail: nil,
-            time_zone: nil, # maybe base off of facility?
-            vetext_id: nil,
-            reason: request[:reason_for_visit],
-            is_covid_vaccine: false,
-            proposed_times: proposed_times(request)
-          )
-        end
-
-        def appointment_type(request)
-          request.key?(:cc_appointment_request) ? 'COMMUNITY_CARE' : 'VA'
-        end
-
-        def location(request)
-          if appointment_type(request) == 'COMMUNITY_CARE'
-            cc_location(request)
+        def type_adapter(request)
+          if request.key?(:cc_appointment_request)
+            CC.new(request)
           else
-            va_location(request)
+            VA.new(request)
           end
         end
 
-        # should this be the facility or the cc data?
-        def cc_location(request)
-          source = request[:cc_appointment_request]
-          phone_captures = phone_captures(request)
-
+        def proposed_times(request)
           {
-            id: nil,
-            name: source.dig(:preferred_providers, 0, :practice_name),
-            address: {
-              street: source.dig(:preferred_providers, 0, :address),
-              city: source[:preferred_city],
-              state: source[:preferred_state],
-              zip_code: source[:preferred_zip_code]
-            },
-            lat: nil,
-            long: nil,
-            phone: {
-              area_code: phone_captures[1].presence,
-              number: phone_captures[2].presence,
-              extension: phone_captures[3].presence
-            },
-            url: nil,
-            code: nil
-          }
-        end
-
-        def va_location(request)
-          facility_id = request.dig(:facility, :facility_code)
-          facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
-          {
-            id: facility_id,
-            name: facility ? facility[:name] : nil,
-            address: {
-              street: nil,
-              city: nil,
-              state: nil,
-              zip_code: nil
-            },
-            lat: nil,
-            long: nil,
-            phone: {
-              area_code: nil,
-              number: nil,
-              extension: nil
-            },
-            url: nil,
-            code: nil
+            option_date1: request[:option_date1],
+            option_time1: request[:option_time1],
+            option_date2: request[:option_date2],
+            option_time2: request[:option_time2],
+            option_date3: request[:option_date3],
+            option_time3: request[:option_time3]
           }
         end
 
@@ -110,21 +46,136 @@ module Mobile
           DateTime.new(year, month, day, hour, 0)
         end
 
-        def proposed_times(request)
-          [
-            option_date1: request[:option_date1],
-            option_time1: request[:option_time1],
-            option_date2: request[:option_date2],
-            option_time2: request[:option_time2],
-            option_date3: request[:option_date3],
-            option_time3: request[:option_time3]
-          ]
+        # this is almost surely not correct
+        def status(request)
+          received_status = request[:status].upcase
+          return received_status if received_status.in?(%w[CANCELLED SUBMITTED])
+
+          nil
         end
 
-        def phone_captures(request)
-          # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
-          # and extension (until the end of the string) (\S*)\z
-          request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
+        class VA
+          attr_accessor :request
+
+          def initialize(request)
+            @request = request
+          end
+
+          def build_appointment_model(start_date, proposed_times, status)
+            Mobile::V0::Appointment.new(
+              id: request[:appointment_request_id],
+              appointment_type: 'VA_REQUEST',
+              cancel_id: nil,
+              comment: nil,
+              facility_id: request.dig(:facility, :facility_code),
+              sta6aid: nil,
+              healthcare_provider: nil,
+              healthcare_service: nil,
+              location: location,
+              minutes_duration: nil,
+              phone_only: nil,
+              start_date_local: nil,
+              start_date_utc: start_date,
+              status: status,
+              status_detail: nil,
+              time_zone: nil, # maybe base off of facility?
+              vetext_id: nil,
+              reason: request[:reason_for_visit],
+              is_covid_vaccine: false,
+              proposed_times: proposed_times
+            )
+          end
+
+          private
+
+          def location
+            facility_id = request.dig(:facility, :facility_code)
+            facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
+            {
+              id: facility_id,
+              name: facility ? facility[:name] : nil,
+              address: {
+                street: nil,
+                city: nil,
+                state: nil,
+                zip_code: nil
+              },
+              lat: nil,
+              long: nil,
+              phone: {
+                area_code: nil,
+                number: nil,
+                extension: nil
+              },
+              url: nil,
+              code: nil
+            }
+          end
+        end
+
+        class CC
+          attr_accessor :request
+
+          def initialize(request)
+            @request = request
+          end
+
+          def build_appointment_model(start_date, proposed_times, status)
+            Mobile::V0::Appointment.new(
+              id: request[:appointment_request_id],
+              appointment_type: 'COMMUNITY_CARE_REQUEST',
+              cancel_id: nil,
+              comment: nil,
+              facility_id: request.dig(:facility, :facility_code),
+              sta6aid: nil,
+              healthcare_provider: nil,
+              healthcare_service: nil,
+              location: location,
+              minutes_duration: nil,
+              phone_only: nil,
+              start_date_local: nil,
+              start_date_utc: start_date,
+              status: status,
+              status_detail: nil,
+              time_zone: nil, # maybe base off of facility?
+              vetext_id: nil,
+              reason: request[:reason_for_visit],
+              is_covid_vaccine: false,
+              proposed_times: proposed_times
+            )
+          end
+
+          private
+
+          # should this be the facility or the cc data?
+          def location
+            source = request[:cc_appointment_request]
+            {
+              id: nil,
+              name: source.dig(:preferred_providers, 0, :practice_name),
+              address: {
+                street: source.dig(:preferred_providers, 0, :address),
+                city: source[:preferred_city],
+                state: source[:preferred_state],
+                zip_code: source[:preferred_zip_code]
+              },
+              lat: nil,
+              long: nil,
+              phone: {
+                area_code: phone_captures[1].presence,
+                number: phone_captures[2].presence,
+                extension: phone_captures[3].presence
+              },
+              url: nil,
+              code: nil
+            }
+          end
+
+          def phone_captures
+            # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
+            # and extension (until the end of the string) (\S*)\z
+            @phone_captures ||= request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
+          end
         end
       end
     end
