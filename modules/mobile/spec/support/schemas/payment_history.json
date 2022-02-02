@@ -24,26 +24,26 @@
           "attributes": {
             "type": "object",
             "required": [
-              "paymentAmount",
-              "paymentDate",
-              "paymentMethod",
-              "paymentBank",
-              "paymentAccount"
+              "amount",
+              "date",
+              "method",
+              "bank",
+              "account"
             ],
             "properties": {
-              "paymentAmount": {
+              "amount": {
                 "type": "string"
               },
-              "paymentDate": {
+              "date": {
                 "type": "string"
               },
-              "paymentMethod": {
+              "method": {
                 "type": "string"
               },
-              "paymentBank": {
+              "bank": {
                 "type": ["string", "null"]
               },
-              "paymentAccount": {
+              "account": {
                 "type": ["string", "null"]
               }
             }

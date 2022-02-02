@@ -8,11 +8,11 @@ module Mobile
       include FastJsonapi::ObjectSerializer
       set_type :payment_history
 
-      attributes :payment_amount,
-                 :payment_date,
-                 :payment_method,
-                 :payment_bank,
-                 :payment_account
+      attributes :amount,
+                 :date,
+                 :method,
+                 :bank,
+                 :account
     end
   end
 end

@@ -23,9 +23,11 @@ RSpec.describe 'payment_history', type: :request do
         end
       end
       it 'should return 200' do
+        binding.pry
         expect(response).to have_http_status(:ok)
       end
       it 'should match expected schema' do
+        # binding.pry
         expect(response.body).to match_json_schema('payment_history')
       end
     end
