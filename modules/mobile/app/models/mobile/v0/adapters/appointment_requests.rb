@@ -19,6 +19,8 @@ module Mobile
           end.compact
         end
 
+        private
+
         def type_adapter(request)
           if request.key?(:cc_appointment_request)
             CC.new(request)
@@ -46,7 +48,6 @@ module Mobile
           DateTime.new(year, month, day, hour, 0)
         end
 
-        # this is almost surely not correct
         def status(request)
           received_status = request[:status].upcase
           return received_status if received_status.in?(%w[CANCELLED SUBMITTED])

@@ -866,8 +866,10 @@ RSpec.describe 'appointments', type: :request do
 
     # this should be moved into the valid params section
     describe 'pending appointments' do
-      let(:va_appt_request_id) { '8a48dea06c84a667016c866de87c000b' }
-      let(:cc_appt_request_id) { '8a48912a6cab0202016cba350cd10054' }
+      let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
+      let(:resolved_request_id) { '8a48e8db6d70a38a016d72b354240002' }
+      let(:va_appt_request_id) { '8a48e8db6d70a38a016d72b354240002' } # status: submitted
+      let(:cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
       let(:appointment_request_ids) { [va_appt_request_id, cc_appt_request_id] }
       let(:get_appointments) do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
@@ -890,7 +892,9 @@ RSpec.describe 'appointments', type: :request do
           get_appointments
           puts response.parsed_body if response.status != 200
 
-          requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
+          requested = response.parsed_body['data'].select do |appts|
+            appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
+          end
           expect(requested).to be_empty
         end
       end
@@ -907,6 +911,7 @@ RSpec.describe 'appointments', type: :request do
 
         it 'returns pending appointments' do
           get_appointments
+          puts response.parsed_body if response.status != 200
 
           requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
           expect(requested.length).to eq 2
@@ -915,7 +920,7 @@ RSpec.describe 'appointments', type: :request do
         # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
         it 'includes cc data for cc appointments' do
           expected_response = {
-            'id' => '8a48912a6cab0202016cba350cd10054',
+            'id' => '8a48912a6d02b0fc016d20b4ccb9001a',
             'type' => 'appointment',
             'attributes' => {
               'appointmentType' => 'COMMUNITY_CARE_REQUEST',
@@ -935,8 +940,8 @@ RSpec.describe 'appointments', type: :request do
                 'lat' => nil,
                 'long' => nil,
                 'phone' => {
-                  'areaCode' => '666',
-                  'number' => '666-6666',
+                  'areaCode' => '703',
+                  'number' => '652-0000',
                   'extension' => nil
                 },
                 'url' => nil,
@@ -950,13 +955,13 @@ RSpec.describe 'appointments', type: :request do
               'statusDetail' => nil,
               'timeZone' => nil,
               'vetextId' => nil,
-              'reason' => 'Allergies',
+              'reason' => nil,
               'isCovidVaccine' => false,
               'proposedTimes' => {
                 'optionDate1' => '11/01/2020',
                 'optionTime1' => 'PM',
-                'optionDate2' => 'No Date Selected',
-                'optionTime2' => 'No Time Selected',
+                'optionDate2' => '11/02/2020',
+                'optionTime2' => 'PM',
                 'optionDate3' => 'No Date Selected',
                 'optionTime3' => 'No Time Selected'
               }
@@ -971,17 +976,17 @@ RSpec.describe 'appointments', type: :request do
 
         it 'includes va data for va appointments' do
           expected_response = {
-            'id' => '8a48dea06c84a667016c866de87c000b',
+            'id' => '8a48e8db6d70a38a016d72b354240002',
             'type' => 'appointment',
             'attributes' => {
-              'appointmentType' => 'VA',
+              'appointmentType' => 'VA_REQUEST',
               'cancelId' => nil,
               'comment' => nil,
               'healthcareProvider' => nil,
               'healthcareService' => nil,
               'location' => {
-                'id' => '983',
-                'name' => 'CHYSHR-Cheyenne VA Medical Center',
+                'id' => '984',
+                'name' => 'DAYTSHR-Dayton VA Medical Center',
                 'address' => {
                   'street' => nil,
                   'city' => nil,
@@ -1002,7 +1007,7 @@ RSpec.describe 'appointments', type: :request do
               'phoneOnly' => nil,
               'startDateLocal' => nil,
               'startDateUtc' => '2020-11-01T09:00:00.000+00:00',
-              'status' => 'REQUESTED',
+              'status' => 'SUBMITTED',
               'statusDetail' => nil,
               'timeZone' => nil,
               'vetextId' => nil,
