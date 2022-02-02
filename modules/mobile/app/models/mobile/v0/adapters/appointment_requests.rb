@@ -10,7 +10,7 @@ module Mobile
 
           requests.map do |request|
             status = status(request)
-            next if status.nil?
+            next unless status
 
             start_date = start_date(request)
             proposed_times = proposed_times(request)
@@ -55,6 +55,11 @@ module Mobile
           nil
         end
 
+        # needs:
+        # provider name
+        # facility address (handled separately i believe)
+        # facility phone, also pulled from separate facility request
+        # user's contact info: email, phone, preferred call time
         class VA
           attr_accessor :request
 
@@ -83,7 +88,9 @@ module Mobile
               vetext_id: nil,
               reason: request[:reason_for_visit],
               is_covid_vaccine: false,
-              proposed_times: proposed_times
+              proposed_times: proposed_times,
+              type_of_care: request[:appointment_type],
+              visit_type: request[:visit_type]
             )
           end
 
@@ -114,6 +121,8 @@ module Mobile
           end
         end
 
+        # needs:
+        # user's contact info
         class CC
           attr_accessor :request
 
@@ -129,8 +138,8 @@ module Mobile
               comment: nil,
               facility_id: request.dig(:facility, :facility_code),
               sta6aid: nil,
-              healthcare_provider: nil,
-              healthcare_service: nil,
+              healthcare_provider: provider_name,
+              healthcare_service: practice_name,
               location: location,
               minutes_duration: nil,
               phone_only: nil,
@@ -142,18 +151,33 @@ module Mobile
               vetext_id: nil,
               reason: request[:reason_for_visit],
               is_covid_vaccine: false,
-              proposed_times: proposed_times
+              proposed_times: proposed_times,
+              type_of_care: request[:appointment_type],
+              visit_type: request[:visit_type]
             )
           end
 
           private
+
+          def provider_name
+            provider_section = request.dig(:cc_appointment_request, :preferred_providers, 0)
+            if provider_section.nil? || (provider_section[:first_name].nil? && provider_section[:last_name].nil?)
+              return nil
+            end
+
+            "#{provider_section[:first_name]} #{provider_section[:last_name]}".strip
+          end
+
+          def practice_name
+            request.dig(:cc_appointment_request, :preferred_providers, 0, :practice_name)
+          end
 
           # should this be the facility or the cc data?
           def location
             source = request[:cc_appointment_request]
             {
               id: nil,
-              name: source.dig(:preferred_providers, 0, :practice_name),
+              name: practice_name,
               address: {
                 street: source.dig(:preferred_providers, 0, :address),
                 city: source[:preferred_city],
