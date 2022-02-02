@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "type": "object",
+  "required": [
+    "data"
+  ],
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "id": "#/properties/data/items",
+        "anyOf": [
+          {
+            "id": "#/properties/data/items/anyOf/0",
+            "type": "object",
+            "title": "The first anyOf schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+              {
+                "id": "11213114",
+                "type": "payment_history",
+                "attributes": {
+                  "paymentAmount": "3444.7",
+                  "paymentDate": "2019-12-31T00:00:00.000-06:00",
+                  "paymentMethod": "Check",
+                  "paymentBank": "BANK OF AMERICA, N.A.",
+                  "paymentAccount": "123456"
+                }
+              }
+            ],
+            "required": [
+              "id",
+              "type",
+              "attributes"
+            ],
+            "properties": {
+              "id": {
+                "id": "#/properties/data/items/anyOf/0/properties/id",
+                "type": "string",
+                "title": "The id schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": "",
+                "examples": [
+                  "11213114"
+                ]
+              },
+              "type": {
+                "id": "#/properties/data/items/anyOf/0/properties/type",
+                "type": "string",
+                "title": "The type schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": "",
+                "examples": [
+                  "payment_history"
+                ]
+              },
+              "attributes": {
+                "id": "#/properties/data/items/anyOf/0/properties/attributes",
+                "type": "object",
+                "title": "The attributes schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": {},
+                "examples": [
+                  {
+                    "paymentAmount": "3444.7",
+                    "paymentDate": "2019-12-31T00:00:00.000-06:00",
+                    "paymentMethod": "Check",
+                    "paymentBank": "BANK OF AMERICA, N.A.",
+                    "paymentAccount": "123456"
+                  }
+                ],
+                "required": [
+                  "paymentAmount",
+                  "paymentDate",
+                  "paymentMethod",
+                  "paymentBank",
+                  "paymentAccount"
+                ],
+                "properties": {
+                  "paymentAmount": {
+                    "id": "#/properties/data/items/anyOf/0/properties/attributes/properties/paymentAmount",
+                    "type": "string",
+                    "title": "The paymentAmount schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                      "3444.7"
+                    ]
+                  },
+                  "paymentDate": {
+                    "id": "#/properties/data/items/anyOf/0/properties/attributes/properties/paymentDate",
+                    "type": "string",
+                    "title": "The paymentDate schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                      "2019-12-31T00:00:00.000-06:00"
+                    ]
+                  },
+                  "paymentMethod": {
+                    "id": "#/properties/data/items/anyOf/0/properties/attributes/properties/paymentMethod",
+                    "type": "string",
+                    "title": "The paymentMethod schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                      "Check"
+                    ]
+                  },
+                  "paymentBank": {
+                    "id": "#/properties/data/items/anyOf/0/properties/attributes/properties/paymentBank",
+                    "type": "string",
+                    "title": "The paymentBank schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                      "BANK OF AMERICA, N.A."
+                    ]
+                  },
+                  "paymentAccount": {
+                    "id": "#/properties/data/items/anyOf/0/properties/attributes/properties/paymentAccount",
+                    "type": "string",
+                    "title": "The paymentAccount schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                      "123456"
+                    ]
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}
