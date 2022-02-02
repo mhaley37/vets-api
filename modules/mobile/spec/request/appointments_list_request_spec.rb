@@ -864,13 +864,9 @@ RSpec.describe 'appointments', type: :request do
       end
     end
 
-    # this should be moved into the valid params section
     describe 'pending appointments' do
-      let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
-      let(:resolved_request_id) { '8a48e8db6d70a38a016d72b354240002' }
-      let(:va_appt_request_id) { '8a48e8db6d70a38a016d72b354240002' } # status: submitted
-      let(:cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
-      let(:appointment_request_ids) { [va_appt_request_id, cc_appt_request_id] }
+      let(:submitted_va_appt_request_id) { '8a48e8db6d70a38a016d72b354240002' }
+      let(:cancelled_cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
       let(:get_appointments) do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
@@ -909,12 +905,19 @@ RSpec.describe 'appointments', type: :request do
           }
         end
 
-        it 'returns pending appointments' do
-          get_appointments
-          puts response.parsed_body if response.status != 200
+        it 'returns cancelled and submitted requests in the date range and omits other statuses' do
+          booked_request_id = '8a48dea06c84a667016c866de87c000b'
+          resolved_request_id = '8a48e8db6d7682c3016d88dc21650024'
+          outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
 
-          requested = response.parsed_body['data'].select { |appts| appts['id'].in?(appointment_request_ids) }
-          expect(requested.length).to eq 2
+          get_appointments
+
+          requested = response.parsed_body['data'].pluck('id')
+          expect(requested).to eq([submitted_va_appt_request_id, cancelled_cc_appt_request_id])
+          # the above line makes this test redundant
+          # including it here to document test data that would be returned with a different date range
+          # or if we allowed other statuses
+          expect(requested).not_to include([booked_request_id, resolved_request_id, outside_date_range_request_id])
         end
 
         # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
@@ -970,7 +973,7 @@ RSpec.describe 'appointments', type: :request do
 
           get_appointments
 
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == cc_appt_request_id }
+          requested = response.parsed_body['data'].find { |appts| appts['id'] == cancelled_cc_appt_request_id }
           expect(requested).to eq(expected_response)
         end
 
@@ -1026,7 +1029,7 @@ RSpec.describe 'appointments', type: :request do
 
           get_appointments
 
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == va_appt_request_id }
+          requested = response.parsed_body['data'].find { |appts| appts['id'] == submitted_va_appt_request_id }
           expect(requested).to eq(expected_response)
         end
 
