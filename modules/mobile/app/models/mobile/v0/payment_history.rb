@@ -9,8 +9,8 @@ module Mobile
       attribute :payment_amount, Types::Float
       attribute :payment_date, Types::DateTime
       attribute :payment_method, Types::String
-      attribute :payment_bank, Types::String
-      attribute :payment_account, Types::String
+      attribute :payment_bank, Types::String.optional
+      attribute :payment_account, Types::String.optional
     end
   end
 end
