@@ -66,6 +66,7 @@ module Mobile
       attribute :visit_type, Types::String.optional
       attribute :patient_phone_number, Types::String.optional
       attribute :patient_email, Types::String.optional
+      attribute :best_time_to_call, Types::Array.optional
 
       def self.toggle_non_prod_id!(id)
         return id if Settings.hostname == 'api.va.gov' || id.nil?

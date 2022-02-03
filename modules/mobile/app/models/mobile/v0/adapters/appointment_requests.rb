@@ -46,7 +46,8 @@ module Mobile
             type_of_care: request[:appointment_type],
             visit_type: request[:visit_type],
             patient_phone_number: request[:phone_number],
-            patient_email: request[:email]
+            patient_email: request[:email],
+            best_time_to_call: request[:best_timeto_call] # incoming data capitalizes incorrectly
           )
         end
 

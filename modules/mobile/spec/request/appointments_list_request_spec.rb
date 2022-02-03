@@ -971,7 +971,8 @@ RSpec.describe 'appointments', type: :request do
               'typeOfCare' => 'Optometry (routine eye exam)',
               'visitType' => 'Office Visit',
               'patientPhoneNumber' => '(703) 652-0000',
-              'patientEmail' => 'samatha.girla@va.gov'
+              'patientEmail' => 'samatha.girla@va.gov',
+              'bestTimeToCall' => %w[Afternoon Evening Morning]
             }
           }
 
@@ -1031,7 +1032,8 @@ RSpec.describe 'appointments', type: :request do
               'typeOfCare' => 'Primary Care',
               'visitType' => 'Office Visit',
               'patientPhoneNumber' => '(666) 666-6666',
-              'patientEmail' => 'Vilasini.reddy@va.gov'
+              'patientEmail' => 'Vilasini.reddy@va.gov',
+              'bestTimeToCall' => ['Morning']
             }
           }
 
