@@ -21,6 +21,7 @@ module Mobile
 
         def build_appointment_model(request)
           klass = request.key?(:cc_appointment_request) ? CC : VA
+          start_date = start_date(request)
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
@@ -34,8 +35,8 @@ module Mobile
             location: klass.location(request),
             minutes_duration: nil,
             phone_only: phone_only?(request),
-            start_date_local: nil,
-            start_date_utc: start_date(request),
+            start_date_local: start_date,
+            start_date_utc: start_date.utc, # i don't believe this is correct
             status: status(request),
             status_detail: nil,
             time_zone: time_zone(request),
@@ -70,10 +71,11 @@ module Mobile
 
         def start_date(request)
           date = request[:option_date1]
+          time_zone = time_zone(request) || '+00:00'
           month, day, year = date.split('/').map(&:to_i)
-          hour = request[:option_time1] == 'AM' ? 9 : 13
+          hour = request[:option_time1] == 'AM' ? 8 : 12
 
-          DateTime.new(year, month, day, hour, 0)
+          DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
         end
 
         def status(request)
@@ -83,6 +85,8 @@ module Mobile
           nil
         end
 
+        # i believe this correct for VA appointments but it may not be for CC appointments
+        # i'm not sure there is a way to get this accurately for CC appointments at this time
         def time_zone(request)
           facility_id = request.dig(:facility, :parent_site_code)
           facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
@@ -92,7 +96,6 @@ module Mobile
         # needs:
         # facility address (handled separately i believe)
         # facility phone, also pulled from separate facility request
-        # user's contact info: email, phone, preferred call time
         # timezone
         class VA
           APPOINTMENT_TYPE = 'VA_REQUEST'
