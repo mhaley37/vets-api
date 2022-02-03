@@ -27,7 +27,7 @@ module Mobile
             appointment_type: klass::APPOINTMENT_TYPE,
             cancel_id: nil,
             comment: nil,
-            facility_id: request.dig(:facility, :facility_code),
+            facility_id: klass.facility_id(request),
             sta6aid: nil,
             healthcare_provider: klass.provider_name(request),
             healthcare_service: klass.practice_name(request),
@@ -38,7 +38,7 @@ module Mobile
             start_date_utc: start_date(request),
             status: status(request),
             status_detail: nil,
-            time_zone: nil, # maybe base off of facility?
+            time_zone: time_zone(request),
             vetext_id: nil,
             reason: request[:reason_for_visit],
             is_covid_vaccine: nil, # unable to find or create test data for this
@@ -83,6 +83,12 @@ module Mobile
           nil
         end
 
+        def time_zone(request)
+          facility_id = request.dig(:facility, :parent_site_code)
+          facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
+          facility ? facility[:time_zone] : nil
+        end
+
         # needs:
         # facility address (handled separately i believe)
         # facility phone, also pulled from separate facility request
@@ -97,6 +103,10 @@ module Mobile
 
           def self.practice_name(_)
             nil
+          end
+
+          def self.facility_id(request)
+            request.dig(:facility, :facility_code)
           end
 
           def self.location(request)
@@ -140,6 +150,10 @@ module Mobile
 
           def self.practice_name(request)
             request.dig(:cc_appointment_request, :preferred_providers, 0, :practice_name)
+          end
+
+          def self.facility_id(_)
+            nil
           end
 
           # should this be the facility or the cc data?
