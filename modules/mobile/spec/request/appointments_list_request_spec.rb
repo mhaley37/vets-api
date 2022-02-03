@@ -929,8 +929,8 @@ RSpec.describe 'appointments', type: :request do
               'appointmentType' => 'COMMUNITY_CARE_REQUEST',
               'cancelId' => nil,
               'comment' => nil,
-              'healthcareProvider' => nil,
-              'healthcareService' => nil,
+              'healthcareProvider' => 'Vilasini Reddy',
+              'healthcareService' => 'Test clinic 2',
               'location' => {
                 'id' => nil,
                 'name' => 'Test clinic 2',
@@ -951,7 +951,7 @@ RSpec.describe 'appointments', type: :request do
                 'code' => nil
               },
               'minutesDuration' => nil,
-              'phoneOnly' => nil,
+              'phoneOnly' => false,
               'startDateLocal' => nil,
               'startDateUtc' => '2020-11-01T13:00:00.000+00:00',
               'status' => 'CANCELLED',
@@ -1007,7 +1007,7 @@ RSpec.describe 'appointments', type: :request do
                 'code' => nil
               },
               'minutesDuration' => nil,
-              'phoneOnly' => nil,
+              'phoneOnly' => false,
               'startDateLocal' => nil,
               'startDateUtc' => '2020-11-01T09:00:00.000+00:00',
               'status' => 'SUBMITTED',
