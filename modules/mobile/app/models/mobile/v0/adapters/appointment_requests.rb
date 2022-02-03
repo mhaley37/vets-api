@@ -20,20 +20,20 @@ module Mobile
         private
 
         def build_appointment_model(request)
-          mod = request.key?(:cc_appointment_request) ? CC : VA
+          klass = request.key?(:cc_appointment_request) ? CC : VA
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: mod::APPOINTMENT_TYPE,
+            appointment_type: klass::APPOINTMENT_TYPE,
             cancel_id: nil,
             comment: nil,
             facility_id: request.dig(:facility, :facility_code),
             sta6aid: nil,
-            healthcare_provider: mod.provider_name(request),
-            healthcare_service: mod.practice_name(request),
-            location: mod.location(request),
+            healthcare_provider: klass.provider_name(request),
+            healthcare_service: klass.practice_name(request),
+            location: klass.location(request),
             minutes_duration: nil,
-            phone_only: request[:text_messaging_allowed],
+            phone_only: phone_only?(request),
             start_date_local: nil,
             start_date_utc: start_date(request),
             status: status(request),
@@ -41,11 +41,19 @@ module Mobile
             time_zone: nil, # maybe base off of facility?
             vetext_id: nil,
             reason: request[:reason_for_visit],
-            is_covid_vaccine: false, # is there any way to know if this is true?
+            is_covid_vaccine: nil, # unable to find or create test data for this
             proposed_times: proposed_times(request),
             type_of_care: request[:appointment_type],
-            visit_type: request[:visit_type]
+            visit_type: request[:visit_type],
+            patient_phone_number: request[:phone_number],
+            patient_email: request[:email]
           )
+        end
+
+        def phone_only?(request)
+          return false if request[:text_messaging_allowed].nil?
+
+          !request[:text_messaging_allowed]
         end
 
         def proposed_times(request)
@@ -75,11 +83,11 @@ module Mobile
         end
 
         # needs:
-        # provider name
         # facility address (handled separately i believe)
         # facility phone, also pulled from separate facility request
         # user's contact info: email, phone, preferred call time
-        module VA
+        # timezone
+        class VA
           APPOINTMENT_TYPE = 'VA_REQUEST'
 
           def self.provider_name(_)
@@ -117,7 +125,7 @@ module Mobile
 
         # needs:
         # user's contact info
-        module CC
+        class CC
           APPOINTMENT_TYPE = 'COMMUNITY_CARE_REQUEST'
 
           def self.provider_name(request)
