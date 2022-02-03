@@ -7,8 +7,8 @@ module Adapters
     end
 
     def adapted
-      payments, returned_payments = @input_payments.partition do |p|
-        p.dig(:return_payment, :check_trace_number).blank?
+      payments, returned_payments = @input_payments.partition do |payment|
+        payment.dig(:return_payment, :check_trace_number).blank?
       end
 
       payments = process_payments(payments)
