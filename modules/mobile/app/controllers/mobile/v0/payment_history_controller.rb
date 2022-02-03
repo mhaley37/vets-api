@@ -8,7 +8,7 @@ module Mobile
     class PaymentHistoryController < ApplicationController
       def index
         start_date = params[:startDate] || (DateTime.now.utc.beginning_of_day - 1.year).iso8601
-        end_date = params[:endDate] || (DateTime.now.utc.beginning_of_day).iso8601
+        end_date = params[:endDate] || DateTime.now.utc.beginning_of_day.iso8601
 
         validated_params = Mobile::V0::Contracts::GetPaginatedList.new.call(
           start_date: start_date,
@@ -26,7 +26,6 @@ module Mobile
 
         # render json: Mobile::V0::PaymentHistorySerializer.new(paginated)
         list, meta = paginate(payments, validated_params)
-        binding.pry
         render json: Mobile::V0::PaymentHistorySerializer.new(list, meta)
       end
 
@@ -34,14 +33,16 @@ module Mobile
 
       def adapt_payments(payments)
         payments.map do |payment|
-          Mobile::V0::PaymentHistory.new(
-            id: payment.dig(:payment_record_identifier, :payment_id),
-            amount: ActiveSupport::NumberHelper.number_to_currency(payment[:payment_amount]),
-            date: payment[:payment_date],
-            method: ::Adapters::PaymentSharedAdapter.new.get_payment_method(payment),
-            bank: payment.dig(:address_eft, :bank_name),
-            account: ::Adapters::PaymentSharedAdapter.new.mask_account_number(payment[:address_eft])
-            ) unless payment.dig(:return_payment, :check_trace_number).present?
+          if payment.dig(:return_payment, :check_trace_number).blank?
+            Mobile::V0::PaymentHistory.new(
+              id: payment.dig(:payment_record_identifier, :payment_id),
+              amount: ActiveSupport::NumberHelper.number_to_currency(payment[:payment_amount]),
+              date: payment[:payment_date],
+              method: ::Adapters::PaymentSharedAdapter.new.get_payment_method(payment),
+              bank: payment.dig(:address_eft, :bank_name),
+              account: ::Adapters::PaymentSharedAdapter.new.mask_account_number(payment[:address_eft])
+            )
+          end
         end
       end
 

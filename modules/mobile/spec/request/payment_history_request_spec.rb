@@ -15,6 +15,7 @@ RSpec.describe 'payment_history', type: :request do
   after(:all) { VCR.configure { |c| c.cassette_library_dir = @original_cassette_dir } }
 
   before { iam_sign_in }
+
   describe 'GET /mobile/v0/payment-history' do
     context 'with successful response' do
       before do
@@ -22,15 +23,14 @@ RSpec.describe 'payment_history', type: :request do
           get '/mobile/v0/payment-history', headers: iam_headers, params: nil
         end
       end
-      it 'should return 200' do
-        binding.pry
+
+      it 'returns 200' do
         expect(response).to have_http_status(:ok)
       end
-      it 'should match expected schema' do
-        # binding.pry
+
+      it 'matches expected schema' do
         expect(response.body).to match_json_schema('payment_history')
       end
     end
   end
-
 end

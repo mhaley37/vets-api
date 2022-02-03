@@ -8,10 +8,11 @@ module V0
       def index
         person = BGS::PeopleService.new(current_user).find_person_by_participant_id
         response = BGS::PaymentService.new(current_user).payment_history(person)
+        payments, return_payments = Adapters::PaymentHistoryAdapter.new(response).adapted
 
         render(
-          json: response,
-          serializer: VetPaymentHistorySerializer
+          json: PaymentHistory.new(payments: payments, return_payments: return_payments),
+          serializer: PaymentHistorySerializer
         )
       end
     end
