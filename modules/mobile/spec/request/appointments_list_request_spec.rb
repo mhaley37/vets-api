@@ -903,8 +903,11 @@ RSpec.describe 'appointments', type: :request do
 
         context 'when pending appointments are not included in the query params' do
           let(:params) do
-            { page: { number: 1, size: 100 }, startDate: default_query_time.to_date,
-              endDate: default_query_time.to_date }
+            {
+              page: { number: 1, size: 100 },
+              startDate: default_query_time.to_date,
+              endDate: default_query_time.to_date
+            }
           end
 
           it 'does not include pending appointments' do
@@ -1075,21 +1078,33 @@ RSpec.describe 'appointments', type: :request do
           it 'excludes cancelled appointment requests created more than 30 days ago'
         end
 
-        # context 'when pending appointments returns an error' do
-        #   let(:params) { { included: ['pending'] } }
+        context 'when pending appointments returns an error' do
+          let(:params) do
+            {
+              included: ['pending'],
+              page: { number: 1, size: 100 },
+              startDate: default_query_time.to_date,
+              endDate: default_query_time.to_date
+            }
+          end
 
-        #   it 'does not raise error' do
-        #     VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-        #       VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-        #         VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-        #           VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
-        #             get '/mobile/v0/appointments', headers: iam_headers, params: params
-        #           end
-        #         end
-        #       end
-        #     end
-        #   end
-        # end
+          it 'does not raise error' do
+            Flipper.enable(:mobile_appointment_requests)
+
+            VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+              VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+                VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+                  VCR.use_cassette('appointments/get_appointment_requests_500',
+                                   match_requests_on: %i[method uri]) do
+                    get '/mobile/v0/appointments', headers: iam_headers, params: params
+                  end
+                end
+              end
+            end
+
+            expect(response.status).to eq(502)
+          end
+        end
       end
     end
   end

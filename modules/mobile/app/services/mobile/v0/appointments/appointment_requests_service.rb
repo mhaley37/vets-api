@@ -7,13 +7,13 @@ module Mobile
       class AppointmentRequestsService < VAOS::SessionService
         # always fetches the past 90 days
         def get_appointment_requests
-          # do we care about this monitoring?
           response = nil
           error = nil
           end_date = Time.zone.today
           start_date = end_date - 90.days
           date_params = { startDate: date_format(start_date), endDate: date_format(end_date) }
 
+          # do we care about this monitoring?
           with_monitoring do
             response = perform(:get, get_requests_url, date_params, headers)
           rescue => e
