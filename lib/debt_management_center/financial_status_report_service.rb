@@ -95,7 +95,11 @@ module DebtManagementCenter
       email = @user.email&.downcase
       return if email.blank?
 
-      VANotifyEmailJob.perform_async(email, CONFIRMATION_TEMPLATE)
+      VANotifyEmailJob.perform_async(email, CONFIRMATION_TEMPLATE, email_personalization_info)
+    end
+
+    def email_personalization_info
+      { 'name' => @user.first_name, 'time' => '48 hours', 'date' => Time.now.strftime("%m/%d/%Y") }
     end
   end
 end
