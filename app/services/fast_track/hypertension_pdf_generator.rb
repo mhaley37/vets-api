@@ -22,7 +22,7 @@ module FastTrack
       add_medications_list
       add_about
 
-      pdf
+      @pdf
     end
 
     private
@@ -50,10 +50,10 @@ module FastTrack
       ]
 
       intro_lines.each do |line|
-        pdf.text line, inline_format: true
+        @pdf.text line, inline_format: true
       end
 
-      pdf
+      @pdf
     end
 
     def add_blood_pressure_intro
@@ -72,51 +72,51 @@ module FastTrack
       ]
 
       bp_intro_lines.each do |line|
-        pdf.text line, inline_format: true
+        @pdf.text line, inline_format: true
       end
 
-      return pdf unless blood_pressure_data?
+      return @pdf unless blood_pressure_data?
 
-      pdf.text "\n", size: 10
+      @pdf.text "\n", size: 10
 
-      pdf
+      @pdf
     end
 
     def add_blood_pressure_list
       @blood_pressure_data.each do |bp|
-        pdf.text "<b>Blood pressure: #{bp[:systolic]['value']}/#{bp[:diastolic]['value']} #{bp[:systolic]['unit']}",
+        @pdf.text "<b>Blood pressure: #{bp[:systolic]['value']}/#{bp[:diastolic]['value']} #{bp[:systolic]['unit']}",
                  inline_format: true, size: 11
-        pdf.text "Taken on: #{bp[:issued].to_date.strftime('%m/%d/%Y')} " \
+        @pdf.text "Taken on: #{bp[:issued].to_date.strftime('%m/%d/%Y')} " \
                  "at #{Time.iso8601(bp[:issued]).strftime('%H:%M %Z')}",
                  size: 11
-        pdf.text "Location: #{bp[:organization] || 'Unknown'}", size: 11
-        pdf.text "\n", size: 8
+        @pdf.text "Location: #{bp[:organization] || 'Unknown'}", size: 11
+        @pdf.text "\n", size: 8
       end
 
-      pdf.text "\n", size: 12
+      @pdf.text "\n", size: 12
 
-      pdf
+      @pdf
     end
 
     def add_blood_pressure_outro
-      pdf.text 'Hypertension Rating Schedule', size: 14
-      pdf.table(
+      @pdf.text 'Hypertension Rating Schedule', size: 14
+      @pdf.table(
         RATING_SCHEDULE, width: 350, column_widths: [30, 320], cell_style: {
           size: 10, border_width: 0, background_color: 'f3f3f3'
         }
       )
 
-      pdf.text "\n"
-      pdf.text RAGING_SCHEDULE_LINK,
+      @pdf.text "\n"
+      @pdf.text RAGING_SCHEDULE_LINK,
                inline_format: true, color: '0000ff', size: 11
-      pdf
+      @pdf
     end
 
     def add_medications_intro
-      return pdf unless medications?
+      return @pdf unless medications?
 
-      pdf.text "\n", size: 11
-      pdf.text 'Active Prescriptions', size: 16
+      @pdf.text "\n", size: 11
+      @pdf.text 'Active Prescriptions', size: 16
 
       med_search_window = 'VHA records searched for medication prescriptions active as of ' \
                           "#{Time.zone.today.strftime('%m/%d/%Y')}"
@@ -127,35 +127,35 @@ module FastTrack
       ]
 
       prescription_lines.each do |line|
-        pdf.text line, size: 11, style: :italic
+        @pdf.text line, size: 11, style: :italic
       end
 
-      pdf
+      @pdf
     end
 
     def add_medications_list
-      return pdf unless medications?
+      return @pdf unless medications?
 
       @medications.each do |medication|
-        pdf.text medication['description'], size: 11, style: :bold
-        pdf.text "Prescribed on: #{medication['authoredOn'][0, 10].to_date.strftime('%m/%d/%Y')}"
+        @pdf.text medication['description'], size: 11, style: :bold
+        @pdf.text "Prescribed on: #{medication['authoredOn'][0, 10].to_date.strftime('%m/%d/%Y')}"
         if medication['dosageInstructions'].present?
-          pdf.text "Dosage instructions: #{medication['dosageInstructions'].join('; ')}"
+          @pdf.text "Dosage instructions: #{medication['dosageInstructions'].join('; ')}"
         end
-        pdf.text "\n", size: 8
+        @pdf.text "\n", size: 8
       end
 
-      pdf
+      @pdf
     end
 
     def add_about
-      pdf.text  "\n"
-      pdf.text  'About this Document', size: 14
+      @pdf.text  "\n"
+      @pdf.text  'About this Document', size: 14
       ABOUT_LINES.each do |line|
-        pdf.text line, size: 11, inline_format: true
+        @pdf.text line, size: 11, inline_format: true
       end
 
-      pdf
+      @pdf
     end
 
     ABOUT_LINES = [
