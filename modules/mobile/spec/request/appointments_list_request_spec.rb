@@ -879,23 +879,7 @@ RSpec.describe 'appointments', type: :request do
         end
       end
 
-      context 'when pending appointments are not included in the query params' do
-        let(:params) do
-          { page: { number: 1, size: 100 }, startDate: default_query_time.to_date, endDate: default_query_time.to_date }
-        end
-
-        it 'does not include pending appointments' do
-          get_appointments
-          puts response.parsed_body if response.status != 200
-
-          requested = response.parsed_body['data'].select do |appts|
-            appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
-          end
-          expect(requested).to be_empty
-        end
-      end
-
-      context 'when pending appointments are included in the query params' do
+      context 'with feature flag off' do
         let(:params) do
           {
             included: ['pending'],
@@ -905,167 +889,207 @@ RSpec.describe 'appointments', type: :request do
           }
         end
 
-        it 'returns cancelled and submitted requests in the date range and omits other statuses' do
-          booked_request_id = '8a48dea06c84a667016c866de87c000b'
-          resolved_request_id = '8a48e8db6d7682c3016d88dc21650024'
-          outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
+        it 'does not return appointment requests' do
+          Flipper.disable(:mobile_appointment_requests)
 
           get_appointments
 
-          requested = response.parsed_body['data'].pluck('id')
-          expect(requested).to eq([submitted_va_appt_request_id, cancelled_cc_appt_request_id])
-          # the above line makes this test redundant
-          # including it here to document test data that would be returned with a different date range
-          # or if we allowed other statuses
-          expect(requested).not_to include([booked_request_id, resolved_request_id, outside_date_range_request_id])
+          expect(response.parsed_body['data']).to be_empty
         end
-
-        # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
-        it 'includes cc data for cc appointments' do
-          expected_response = {
-            'id' => '8a48912a6d02b0fc016d20b4ccb9001a',
-            'type' => 'appointment',
-            'attributes' => {
-              'appointmentType' => 'COMMUNITY_CARE_REQUEST',
-              'cancelId' => nil,
-              'comment' => nil,
-              'healthcareProvider' => 'Vilasini Reddy',
-              'healthcareService' => 'Test clinic 2',
-              'location' => {
-                'id' => nil,
-                'name' => 'Test clinic 2',
-                'address' => {
-                  'street' => {},
-                  'city' => 'her',
-                  'state' => 'VA',
-                  'zipCode' => '20171'
-                },
-                'lat' => nil,
-                'long' => nil,
-                'phone' => {
-                  'areaCode' => '703',
-                  'number' => '652-0000',
-                  'extension' => nil
-                },
-                'url' => nil,
-                'code' => nil
-              },
-              'minutesDuration' => nil,
-              'phoneOnly' => true,
-              'startDateLocal' => nil,
-              'startDateUtc' => '2020-11-01T13:00:00.000+00:00',
-              'status' => 'CANCELLED',
-              'statusDetail' => nil,
-              'timeZone' => 'America/Denver',
-              'vetextId' => nil,
-              'reason' => nil,
-              'isCovidVaccine' => nil,
-              'proposedTimes' => {
-                'optionDate1' => '11/01/2020',
-                'optionTime1' => 'PM',
-                'optionDate2' => '11/02/2020',
-                'optionTime2' => 'PM',
-                'optionDate3' => 'No Date Selected',
-                'optionTime3' => 'No Time Selected'
-              },
-              'typeOfCare' => 'Optometry (routine eye exam)',
-              'visitType' => 'Office Visit',
-              'patientPhoneNumber' => '(703) 652-0000',
-              'patientEmail' => 'samatha.girla@va.gov',
-              'bestTimeToCall' => %w[Afternoon Evening Morning]
-            }
-          }
-
-          get_appointments
-
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == cancelled_cc_appt_request_id }
-          expect(requested).to eq(expected_response)
-        end
-
-        it 'includes va data for va appointments' do
-          expected_response = {
-            'id' => '8a48e8db6d70a38a016d72b354240002',
-            'type' => 'appointment',
-            'attributes' => {
-              'appointmentType' => 'VA_REQUEST',
-              'cancelId' => nil,
-              'comment' => nil,
-              'healthcareProvider' => nil,
-              'healthcareService' => nil,
-              'location' => {
-                'id' => '984',
-                'name' => 'DAYTSHR-Dayton VA Medical Center',
-                'address' => {
-                  'street' => nil,
-                  'city' => nil,
-                  'state' => nil,
-                  'zipCode' => nil
-                },
-                'lat' => nil,
-                'long' => nil,
-                'phone' => {
-                  'areaCode' => nil,
-                  'number' => nil,
-                  'extension' => nil
-                },
-                'url' => nil,
-                'code' => nil
-              },
-              'minutesDuration' => nil,
-              'phoneOnly' => true,
-              'startDateLocal' => nil,
-              'startDateUtc' => '2020-11-01T09:00:00.000+00:00',
-              'status' => 'SUBMITTED',
-              'statusDetail' => nil,
-              'timeZone' => 'America/New_York',
-              'vetextId' => nil,
-              'reason' => nil,
-              'isCovidVaccine' => nil,
-              'proposedTimes' => {
-                'optionDate1' => '11/01/2020',
-                'optionTime1' => 'AM',
-                'optionDate2' => 'No Date Selected',
-                'optionTime2' => 'No Time Selected',
-                'optionDate3' => 'No Date Selected',
-                'optionTime3' => 'No Time Selected'
-              },
-              'typeOfCare' => 'Primary Care',
-              'visitType' => 'Office Visit',
-              'patientPhoneNumber' => '(666) 666-6666',
-              'patientEmail' => 'Vilasini.reddy@va.gov',
-              'bestTimeToCall' => ['Morning']
-            }
-          }
-
-          get_appointments
-
-          requested = response.parsed_body['data'].find { |appts| appts['id'] == submitted_va_appt_request_id }
-          expect(requested).to eq(expected_response)
-        end
-
-        it 'orders appointments by first proposed time' do
-        end
-
-        it 'omits resolved and booked appointment requests'
-
-        it 'does only returns data created within the past 90 days'
       end
 
-      # context 'when pending appointments returns an error' do
-      #   let(:params) { { included: ['pending'] } }
+      context 'with feature flag on' do
+        before { Flipper.enable(:mobile_appointment_requests) }
 
-      #   it 'does not raise error' do
-      #     VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-      #       VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-      #         VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-      #           VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
-      #             get '/mobile/v0/appointments', headers: iam_headers, params: params
-      #           end
-      #         end
-      #       end
-      #     end
-      #   end
-      # end
+        context 'when pending appointments are not included in the query params' do
+          let(:params) do
+            { page: { number: 1, size: 100 }, startDate: default_query_time.to_date,
+              endDate: default_query_time.to_date }
+          end
+
+          it 'does not include pending appointments' do
+            get_appointments
+            puts response.parsed_body if response.status != 200
+
+            requested = response.parsed_body['data'].select do |appts|
+              appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
+            end
+            expect(requested).to be_empty
+          end
+        end
+
+        context 'when pending appointments are included in the query params' do
+          let(:params) do
+            {
+              included: ['pending'],
+              page: { number: 1, size: 100 },
+              startDate: default_query_time.to_date,
+              endDate: default_query_time.to_date
+            }
+          end
+
+          it 'returns cancelled and submitted requests in the date range and omits other statuses' do
+            booked_request_id = '8a48dea06c84a667016c866de87c000b'
+            resolved_request_id = '8a48e8db6d7682c3016d88dc21650024'
+            outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
+
+            get_appointments
+
+            requested = response.parsed_body['data'].pluck('id')
+            expect(requested).to eq([submitted_va_appt_request_id, cancelled_cc_appt_request_id])
+            # the above line makes this test redundant
+            # including it here to document test data that would be returned with a different date range
+            # or if we allowed other statuses
+            expect(requested).not_to include([booked_request_id, resolved_request_id, outside_date_range_request_id])
+          end
+
+          # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
+          it 'includes cc data for cc appointments' do
+            expected_response = {
+              'id' => '8a48912a6d02b0fc016d20b4ccb9001a',
+              'type' => 'appointment',
+              'attributes' => {
+                'appointmentType' => 'COMMUNITY_CARE_REQUEST',
+                'cancelId' => nil,
+                'comment' => nil,
+                'healthcareProvider' => 'Vilasini Reddy',
+                'healthcareService' => 'Test clinic 2',
+                'location' => {
+                  'id' => nil,
+                  'name' => 'Test clinic 2',
+                  'address' => {
+                    'street' => {},
+                    'city' => 'her',
+                    'state' => 'VA',
+                    'zipCode' => '20171'
+                  },
+                  'lat' => nil,
+                  'long' => nil,
+                  'phone' => {
+                    'areaCode' => '703',
+                    'number' => '652-0000',
+                    'extension' => nil
+                  },
+                  'url' => nil,
+                  'code' => nil
+                },
+                'minutesDuration' => nil,
+                'phoneOnly' => true,
+                'startDateLocal' => '2020-11-01T05:00:00.000-07:00',
+                'startDateUtc' => '2020-11-01T12:00:00.000Z', # INCORRECT
+                'status' => 'CANCELLED',
+                'statusDetail' => nil,
+                'timeZone' => 'America/Denver',
+                'vetextId' => nil,
+                'reason' => nil,
+                'isCovidVaccine' => nil,
+                'proposedTimes' => {
+                  'optionDate1' => '11/01/2020',
+                  'optionTime1' => 'PM',
+                  'optionDate2' => '11/02/2020',
+                  'optionTime2' => 'PM',
+                  'optionDate3' => 'No Date Selected',
+                  'optionTime3' => 'No Time Selected'
+                },
+                'typeOfCare' => 'Optometry (routine eye exam)',
+                'visitType' => 'Office Visit',
+                'patientPhoneNumber' => '(703) 652-0000',
+                'patientEmail' => 'samatha.girla@va.gov',
+                'bestTimeToCall' => %w[Afternoon Evening Morning]
+              }
+            }
+
+            get_appointments
+
+            requested = response.parsed_body['data'].find { |appts| appts['id'] == cancelled_cc_appt_request_id }
+            expect(requested).to eq(expected_response)
+          end
+
+          it 'includes va data for va appointments' do
+            expected_response = {
+              'id' => '8a48e8db6d70a38a016d72b354240002',
+              'type' => 'appointment',
+              'attributes' => {
+                'appointmentType' => 'VA_REQUEST',
+                'cancelId' => nil,
+                'comment' => nil,
+                'healthcareProvider' => nil,
+                'healthcareService' => nil,
+                'location' => {
+                  'id' => '984',
+                  'name' => 'DAYTSHR-Dayton VA Medical Center',
+                  'address' => {
+                    'street' => nil,
+                    'city' => nil,
+                    'state' => nil,
+                    'zipCode' => nil
+                  },
+                  'lat' => nil,
+                  'long' => nil,
+                  'phone' => {
+                    'areaCode' => nil,
+                    'number' => nil,
+                    'extension' => nil
+                  },
+                  'url' => nil,
+                  'code' => nil
+                },
+                'minutesDuration' => nil,
+                'phoneOnly' => true,
+                'startDateLocal' => '2020-11-01T03:00:00.000-05:00',
+                'startDateUtc' => '2020-11-01T08:00:00.000Z', # INCORRECT
+                'status' => 'SUBMITTED',
+                'statusDetail' => nil,
+                'timeZone' => 'America/New_York',
+                'vetextId' => nil,
+                'reason' => nil,
+                'isCovidVaccine' => nil,
+                'proposedTimes' => {
+                  'optionDate1' => '11/01/2020',
+                  'optionTime1' => 'AM',
+                  'optionDate2' => 'No Date Selected',
+                  'optionTime2' => 'No Time Selected',
+                  'optionDate3' => 'No Date Selected',
+                  'optionTime3' => 'No Time Selected'
+                },
+                'typeOfCare' => 'Primary Care',
+                'visitType' => 'Office Visit',
+                'patientPhoneNumber' => '(666) 666-6666',
+                'patientEmail' => 'Vilasini.reddy@va.gov',
+                'bestTimeToCall' => ['Morning']
+              }
+            }
+
+            get_appointments
+
+            requested = response.parsed_body['data'].find { |appts| appts['id'] == submitted_va_appt_request_id }
+            expect(requested).to eq(expected_response)
+          end
+
+          it 'orders appointments by first proposed time' do
+          end
+
+          it 'omits resolved and booked appointment requests'
+
+          it 'does only returns data created within the past 90 days'
+        end
+
+        # context 'when pending appointments returns an error' do
+        #   let(:params) { { included: ['pending'] } }
+
+        #   it 'does not raise error' do
+        #     VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+        #       VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+        #         VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+        #           VCR.use_cassette('vaos/appointment_requests/get_requests_with_params', match_requests_on: %i[method uri]) do
+        #             get '/mobile/v0/appointments', headers: iam_headers, params: params
+        #           end
+        #         end
+        #       end
+        #     end
+        #   end
+        # end
+      end
     end
   end
 end
