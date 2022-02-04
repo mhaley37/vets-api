@@ -50,8 +50,6 @@ module FastTrack
       intro_lines.each do |line|
         @pdf.text line, inline_format: true
       end
-
-      @pdf
     end
 
     def add_blood_pressure_intro
@@ -76,8 +74,6 @@ module FastTrack
       return @pdf unless blood_pressure_data?
 
       @pdf.text "\n", size: 10
-
-      @pdf
     end
 
     def add_blood_pressure_list
@@ -92,8 +88,6 @@ module FastTrack
       end
 
       @pdf.text "\n", size: 12
-
-      @pdf
     end
 
     def add_blood_pressure_outro
@@ -106,8 +100,7 @@ module FastTrack
 
       @pdf.text "\n"
       @pdf.text RAGING_SCHEDULE_LINK,
-                inline_format: true, color: '0000ff', size: 11
-      @pdf
+                inline_format: true, color: '0000ff', size: 1
     end
 
     def add_medications_intro
@@ -127,8 +120,6 @@ module FastTrack
       prescription_lines.each do |line|
         @pdf.text line, size: 11, style: :italic
       end
-
-      @pdf
     end
 
     def add_medications_list
@@ -142,8 +133,6 @@ module FastTrack
         end
         @pdf.text "\n", size: 8
       end
-
-      @pdf
     end
 
     def add_about
@@ -152,8 +141,6 @@ module FastTrack
       ABOUT_LINES.each do |line|
         @pdf.text line, size: 11, inline_format: true
       end
-
-      @pdf
     end
 
     ABOUT_LINES = [
