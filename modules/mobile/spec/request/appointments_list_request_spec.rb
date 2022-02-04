@@ -1071,7 +1071,8 @@ RSpec.describe 'appointments', type: :request do
 
           it 'omits resolved and booked appointment requests'
 
-          it 'does only returns data created within the past 90 days'
+          it 'only returns data created within the past 90 days'
+          it 'excludes cancelled appointment requests created more than 30 days ago'
         end
 
         # context 'when pending appointments returns an error' do

@@ -23,7 +23,7 @@ module Mobile
               [
                 appointments_service.fetch_va_appointments,
                 appointments_service.fetch_cc_appointments,
-                fetch_appointment_requests(start_date, end_date)
+                fetch_appointment_requests
               ], in_threads: 3, &:call
             )
 
@@ -50,8 +50,7 @@ module Mobile
             va_response, cc_response = Parallel.map(
               [
                 appointments_service.fetch_va_appointments,
-                appointments_service.fetch_cc_appointments,
-                fetch_appointment_requests(start_date, end_date)
+                appointments_service.fetch_cc_appointments
               ], in_threads: 2, &:call
             )
 
@@ -147,10 +146,10 @@ module Mobile
           Mobile::V0::Appointments::Service.new(@user, start_date, end_date)
         end
 
-        def fetch_appointment_requests(start_date, end_date)
+        def fetch_appointment_requests
           lambda {
             service = Mobile::V0::Appointments::AppointmentRequestsService.new(@user)
-            service.get_requests(start_date, end_date)
+            service.get_appointment_requests
           }
         end
 

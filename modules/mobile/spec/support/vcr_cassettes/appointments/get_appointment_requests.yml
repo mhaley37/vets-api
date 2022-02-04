@@ -2,7 +2,7 @@
 http_interactions:
   - request:
       method: get
-      uri: https://veteran.apps.va.gov/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/24811694708759028/appointments?endDate=11/01/2021&startDate=11/01/2019
+      uri: https://veteran.apps.va.gov/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/24811694708759028/appointments?endDate=11/01/2020&startDate=08/03/2020
       body:
         encoding: US-ASCII
         string: ''
@@ -3141,7 +3141,7 @@ http_interactions:
           					"objectType": "AtomLink"
           				}
           			],
-          			"createdDate": "09/24/2019 10:01:57"
+          			"createdDate": "11/01/2020 10:01:57"
           		},
           		{
           			"dataIdentifier": {
@@ -5223,7 +5223,7 @@ http_interactions:
           					"objectType": "AtomLink"
           				}
           			],
-          			"createdDate": "09/11/2019 08:23:02"
+          			"createdDate": "11/01/2020 08:23:02"
           		},
           		{
           			"dataIdentifier": {

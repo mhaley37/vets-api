@@ -4,17 +4,24 @@ module Mobile
   module V0
     module Adapters
       class AppointmentRequests
+        # accepts an array of appointment requests
+        # returns a list of appointments that are either status SUBMITTED
+        # or status CANCELLED and created in the past 30 days
         def parse(requests)
           # a bit unclear how to handle this
           # facilities = Set.new
 
-          # replace with each with object
-          requests.map do |request|
+          requests.each_with_object([]) do |request, result|
             status = status(request)
-            next unless status
+            next unless status.in?(%w[CANCELLED SUBMITTED])
 
-            build_appointment_model(request)
-          end.compact
+            if status == 'CANCELLED'
+              created_at = Date.strptime(request[:created_date], '%m/%d/%Y')
+              next if created_at < 30.days.ago
+            end
+
+            result << build_appointment_model(request)
+          end
         end
 
         private
@@ -79,10 +86,7 @@ module Mobile
         end
 
         def status(request)
-          received_status = request[:status].upcase
-          return received_status if received_status.in?(%w[CANCELLED SUBMITTED])
-
-          nil
+          request[:status].upcase
         end
 
         # i believe this correct for VA appointments but it may not be for CC appointments
