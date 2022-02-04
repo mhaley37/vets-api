@@ -147,9 +147,7 @@ class SavedClaim::VeteranReadinessEmploymentClaim < SavedClaim
       doc_type: doc_type
     )
 
-    log_to_statsd('vbms') do
-      uploader.upload!
-    end
+    uploader.upload!
   end
 
   def send_to_central_mail!
@@ -163,9 +161,7 @@ class SavedClaim::VeteranReadinessEmploymentClaim < SavedClaim
 
     log_message_to_sentry(guid, :warn, { attachment_id: guid }, { team: 'vfs-ebenefits' })
     @sent_to_cmp = true
-    log_to_statsd('cmp') do
-      process_attachments!
-    end
+    process_attachments!
   end
 
   # SavedClaims require regional_office to be defined
@@ -221,19 +217,10 @@ class SavedClaim::VeteranReadinessEmploymentClaim < SavedClaim
 
   def veteran_va_file_number(user)
     service = BGS::PeopleService.new(user)
-    StatsD.measure('api.1900.bgs.response_time') do
-      @response = service.find_person_by_participant_id
-    end
+    @response = service.find_person_by_participant_id
     file_number = @response[:file_nbr]
     file_number.presence
   rescue
     nil
-  end
-
-  def log_to_statsd(service)
-    start_time = Time.current
-    yield
-    elapsed_time = Time.current - start_time
-    StatsD.measure("api.1900.#{service}.response_time", elapsed_time, tags: {})
   end
 end
