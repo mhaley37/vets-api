@@ -2,8 +2,6 @@
 
 module FastTrack
   class HypertensionPdfGenerator
-    attr_accessor :patient, :blood_pressure_data, :medications, :pdf
-
     def initialize(patient, blood_pressure_data, medications)
       @pdf = Prawn::Document.new
       @patient = patient
@@ -36,7 +34,7 @@ module FastTrack
     end
 
     def add_intro
-      names = patient.with_indifferent_access
+      names = @patient.with_indifferent_access
       full_name = [names[:first], names[:middle], names[:last]].reject(&:blank?).join ' '
       patient_name = [full_name, names[:suffix]].reject(&:blank?).join ', '
       generated_time = Time.now.getlocal
@@ -85,10 +83,10 @@ module FastTrack
     def add_blood_pressure_list
       @blood_pressure_data.each do |bp|
         @pdf.text "<b>Blood pressure: #{bp[:systolic]['value']}/#{bp[:diastolic]['value']} #{bp[:systolic]['unit']}",
-                 inline_format: true, size: 11
+                  inline_format: true, size: 11
         @pdf.text "Taken on: #{bp[:issued].to_date.strftime('%m/%d/%Y')} " \
-                 "at #{Time.iso8601(bp[:issued]).strftime('%H:%M %Z')}",
-                 size: 11
+                  "at #{Time.iso8601(bp[:issued]).strftime('%H:%M %Z')}",
+                  size: 11
         @pdf.text "Location: #{bp[:organization] || 'Unknown'}", size: 11
         @pdf.text "\n", size: 8
       end
@@ -108,7 +106,7 @@ module FastTrack
 
       @pdf.text "\n"
       @pdf.text RAGING_SCHEDULE_LINK,
-               inline_format: true, color: '0000ff', size: 11
+                inline_format: true, color: '0000ff', size: 11
       @pdf
     end
 
