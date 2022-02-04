@@ -32,7 +32,7 @@ module FastTrack
     end
 
     def medications?
-      @medications.length > 1
+      @medications.any?
     end
 
     def add_intro
