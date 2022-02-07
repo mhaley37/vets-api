@@ -865,6 +865,8 @@ RSpec.describe 'appointments', type: :request do
     end
 
     describe 'pending appointments' do
+      let(:start_date) { (Time.now.utc - 3.months).iso8601 }
+      let(:end_date) { (Time.now.utc + 3.months).iso8601 }
       let(:submitted_va_appt_request_id) { '8a48e8db6d70a38a016d72b354240002' }
       let(:cancelled_cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
       let(:get_appointments) do
@@ -905,8 +907,8 @@ RSpec.describe 'appointments', type: :request do
           let(:params) do
             {
               page: { number: 1, size: 100 },
-              startDate: default_query_time.to_date,
-              endDate: default_query_time.to_date
+              startDate: start_date,
+              endDate: end_date
             }
           end
 
@@ -926,8 +928,8 @@ RSpec.describe 'appointments', type: :request do
             {
               included: ['pending'],
               page: { number: 1, size: 100 },
-              startDate: default_query_time.to_date,
-              endDate: default_query_time.to_date
+              startDate: start_date,
+              endDate: end_date
             }
           end
 
@@ -939,7 +941,7 @@ RSpec.describe 'appointments', type: :request do
             get_appointments
 
             requested = response.parsed_body['data'].pluck('id')
-            expect(requested).to eq([submitted_va_appt_request_id, cancelled_cc_appt_request_id])
+            expect(requested).to include(submitted_va_appt_request_id, cancelled_cc_appt_request_id)
             # the above line makes this test redundant
             # including it here to document test data that would be returned with a different date range
             # or if we allowed other statuses

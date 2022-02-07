@@ -28,10 +28,9 @@ module Mobile
               ], in_threads: 3, &:call
             )
 
-            va_appointments = [] # temporary
-            cc_appointments = []
-            # va_appointments, va_faciltiies = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
-            # cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
+            va_appointments = va_appointments_adapter.parse(va_response[:response].body) unless va_response[:error]
+            cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
+
             unless requests_response[:error]
               va_appointment_requests, cc_appointment_requests =
                 requests_adapter.parse(requests_response[:response].body[:appointment_requests])
@@ -39,7 +38,6 @@ module Mobile
 
             errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
             raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
-
 
             # There's currently a bug in the underlying Community Care service
             # where date ranges are not being respected
@@ -65,7 +63,7 @@ module Mobile
             va_appointments = []
             cc_appointments = []
 
-            va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
+            va_appointments = va_appointments_adapter.parse(va_response[:response].body) unless va_response[:error]
             cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
 
             # There's currently a bug in the underlying Community Care service
@@ -110,13 +108,8 @@ module Mobile
 
         private
 
-        def va_appointments_with_facilities(appointments_from_response)
-          appointments = va_appointments_adapter.parse(appointments_from_response)
-          return [] if appointments.nil?
-        end
-
         def fetch_facilities(appointments)
-          facility_ids = appointments.collect { |appt| appt.sta6aid || appt.facility_id }
+          facility_ids = appointments.collect { |appt| appt.sta6aid || appt.facility_id }.uniq
           facility_ids.each do |facility_id|
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
           end

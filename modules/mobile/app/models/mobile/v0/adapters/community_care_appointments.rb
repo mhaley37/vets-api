@@ -63,7 +63,12 @@ module Mobile
             vetext_id: nil,
             reason: nil,
             is_covid_vaccine: false,
-            proposed_times: nil
+            proposed_times: nil,
+            type_of_care: nil,
+            visit_type: nil,
+            patient_phone_number: nil,
+            patient_email: nil,
+            best_time_to_call: nil
           }
         end
         # rubocop:enable Metrics/MethodLength
