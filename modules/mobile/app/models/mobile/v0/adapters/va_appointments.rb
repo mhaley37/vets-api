@@ -66,23 +66,17 @@ module Mobile
         #
         def parse(appointments)
           appointments_list = appointments.dig(:data, :appointment_list)
-          return [nil, nil] if appointments_list.size.zero?
+          return nil if appointments_list.size.zero?
 
-          appointments = appointments_list.map do |appointment_hash|
-            build_appointment_model(appointment_hash, facilities)
+          appointments_list.map do |appointment_hash|
+            build_appointment_model(appointment_hash)
           end
-
-          facilities.each do |facility_id|
-            Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
-          end
-
-          appointments
         end
 
         private
 
         # rubocop:disable Metrics/MethodLength
-        def build_appointment_model(appointment_hash, facilities)
+        def build_appointment_model(appointment_hash)
           facility_id = Mobile::V0::Appointment.toggle_non_prod_id!(
             appointment_hash[:facility_id]
           )
@@ -131,10 +125,7 @@ module Mobile
 
           Rails.logger.info('metric.mobile.appointment.type', type: type)
 
-          model = Mobile::V0::Appointment.new(adapted_hash)
-          facilities.add(model.id_for_address)
-
-          model
+          Mobile::V0::Appointment.new(adapted_hash)
         end
         # rubocop:enable Metrics/MethodLength
 

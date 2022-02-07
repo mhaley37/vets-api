@@ -37,6 +37,10 @@ module Mobile
                 requests_adapter.parse(requests_response[:response].body[:appointment_requests])
             end
 
+            errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
+            raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
+
+
             # There's currently a bug in the underlying Community Care service
             # where date ranges are not being respected
             cc_appointments.select! do |appointment|
@@ -44,12 +48,12 @@ module Mobile
             end
 
             facilities = fetch_facilities(va_appointments + va_appointment_requests)
+
             va_appointments = backfill_appointments_with_facilities(va_appointments, facilities)
             va_appointment_requests = backfill_appointments_with_facilities(va_appointment_requests, facilities)
 
             appointments = (va_appointments + cc_appointments + va_appointment_requests + cc_appointment_requests).sort_by(&:start_date_utc)
 
-            errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
           else
             va_response, cc_response = Parallel.map(
               [
@@ -73,9 +77,9 @@ module Mobile
             appointments = (va_appointments + cc_appointments).sort_by(&:start_date_utc)
 
             errors = [va_response[:error], cc_response[:error]].compact
-          end
+            raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
-          raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
+          end
 
           appointments
         end
@@ -112,11 +116,14 @@ module Mobile
         end
 
         def fetch_facilities(appointments)
-          facility_ids = appointments.collect {|appt| appt.sta6aid || appt.facility_id }
+          facility_ids = appointments.collect { |appt| appt.sta6aid || appt.facility_id }
+          facility_ids.each do |facility_id|
+            Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
+          end
           Mobile::FacilitiesHelper.get_facilities(facility_ids)
         end
 
-        def backfill_facility_data(appointments, facilities)
+        def backfill_appointments_with_facilities(appointments, facilities)
           va_facilities_adapter.map_appointments_to_facilities(appointments, facilities)
         end
 

@@ -934,7 +934,7 @@ RSpec.describe 'appointments', type: :request do
           it 'returns cancelled and submitted requests in the date range and omits other statuses' do
             booked_request_id = '8a48dea06c84a667016c866de87c000b'
             resolved_request_id = '8a48e8db6d7682c3016d88dc21650024'
-            outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
+            cancelled_outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
 
             get_appointments
 
@@ -943,7 +943,7 @@ RSpec.describe 'appointments', type: :request do
             # the above line makes this test redundant
             # including it here to document test data that would be returned with a different date range
             # or if we allowed other statuses
-            expect(requested).not_to include([booked_request_id, resolved_request_id, outside_date_range_request_id])
+            expect(requested).not_to include(booked_request_id, resolved_request_id, cancelled_outside_date_range_request_id)
           end
 
           # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
@@ -1019,19 +1019,19 @@ RSpec.describe 'appointments', type: :request do
                 'healthcareProvider' => nil,
                 'healthcareService' => nil,
                 'location' => {
-                  'id' => '984',
-                  'name' => 'DAYTSHR-Dayton VA Medical Center',
+                  'id' => '442',
+                  'name' => 'Cheyenne VA Medical Center',
                   'address' => {
-                    'street' => nil,
-                    'city' => nil,
-                    'state' => nil,
-                    'zipCode' => nil
+                    'street' => '2360 East Pershing Boulevard',
+                    'city' => 'Cheyenne',
+                    'state' => 'WY',
+                    'zipCode' => '82001-5356'
                   },
-                  'lat' => nil,
-                  'long' => nil,
+                  'lat' => 41.148027,
+                  'long' => -104.7862575,
                   'phone' => {
-                    'areaCode' => nil,
-                    'number' => nil,
+                    'areaCode' => '307',
+                    'number' => '778-7550',
                     'extension' => nil
                   },
                   'url' => nil,
@@ -1039,11 +1039,11 @@ RSpec.describe 'appointments', type: :request do
                 },
                 'minutesDuration' => nil,
                 'phoneOnly' => true,
-                'startDateLocal' => '2020-11-01T03:00:00.000-05:00',
+                'startDateLocal' => '2020-11-01T01:00:00.000-07:00',
                 'startDateUtc' => '2020-11-01T08:00:00.000Z', # INCORRECT
                 'status' => 'SUBMITTED',
                 'statusDetail' => nil,
-                'timeZone' => 'America/New_York',
+                'timeZone' => 'America/Denver',
                 'vetextId' => nil,
                 'reason' => nil,
                 'isCovidVaccine' => nil,
