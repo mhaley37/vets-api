@@ -749,7 +749,6 @@ RSpec.describe 'appointments', type: :request do
       before do
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
 
-        VCR.use_cassette('appointments/get_facilities_address_bug', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_address_bug', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_appointments_address_bug', match_requests_on: %i[method uri]) do
               get '/mobile/v0/appointments', headers: iam_headers, params: params

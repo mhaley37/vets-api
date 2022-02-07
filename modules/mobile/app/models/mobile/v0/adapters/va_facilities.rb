@@ -8,7 +8,7 @@ module Mobile
           facilities_by_id = facilities.index_by(&:id)
 
           appointments.map do |appointment|
-            facility = facilities_by_id["vha_#{appointment.id_for_address}"]
+            facility = facilities_by_id[appointment.id_for_address]
             if facility.nil?
               log_missing_facility(appointment)
               raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error'
