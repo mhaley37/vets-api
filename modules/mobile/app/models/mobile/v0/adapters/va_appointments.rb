@@ -65,7 +65,6 @@ module Mobile
         # @return Hash the adapted list
         #
         def parse(appointments)
-          facilities = Set.new
           appointments_list = appointments.dig(:data, :appointment_list)
           return [nil, nil] if appointments_list.size.zero?
 
@@ -77,7 +76,7 @@ module Mobile
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
           end
 
-          [appointments, facilities]
+          appointments
         end
 
         private

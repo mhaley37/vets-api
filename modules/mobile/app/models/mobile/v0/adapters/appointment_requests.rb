@@ -8,10 +8,10 @@ module Mobile
         # returns a list of appointments that are either status SUBMITTED
         # or status CANCELLED and created in the past 30 days
         def parse(requests)
-          # a bit unclear how to handle this
-          # facilities = Set.new
+          va_appointments = []
+          cc_appointments = []
 
-          requests.each_with_object([]) do |request, result|
+          requests.each do |request|
             status = status(request)
             next unless status.in?(%w[CANCELLED SUBMITTED])
 
@@ -20,8 +20,15 @@ module Mobile
               next if created_at < 30.days.ago
             end
 
-            result << build_appointment_model(request)
+            model = build_appointment_model(request)
+            if model[:appointment_type] == 'VA_REQUEST'
+              va_appointments << model
+            else
+              cc_appointments << model
+            end
           end
+
+          [va_appointments, cc_appointments]
         end
 
         private

@@ -15,6 +15,7 @@ module Mobile
           @user = user
         end
 
+        # rubocop:disable Metrics/MethodLength
         def get_appointments(start_date:, end_date:)
           appointments_service = appointments_service(start_date, end_date)
 
@@ -27,14 +28,13 @@ module Mobile
               ], in_threads: 3, &:call
             )
 
-            va_appointments = []
+            va_appointments = [] # temporary
             cc_appointments = []
-            requested_appointments = []
-
-            # va_appointments = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
+            # va_appointments, va_faciltiies = va_appointments_with_facilities(va_response[:response].body) unless va_response[:error]
             # cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
             unless requests_response[:error]
-              requested_appointments = requests_adapter.parse(requests_response[:response].body[:appointment_requests])
+              va_appointment_requests, cc_appointment_requests =
+                requests_adapter.parse(requests_response[:response].body[:appointment_requests])
             end
 
             # There's currently a bug in the underlying Community Care service
@@ -43,7 +43,11 @@ module Mobile
               appointment.start_date_utc.between?(start_date, end_date)
             end
 
-            appointments = (va_appointments + cc_appointments + requested_appointments).sort_by(&:start_date_utc)
+            facilities = fetch_facilities(va_appointments + va_appointment_requests)
+            va_appointments = backfill_appointments_with_facilities(va_appointments, facilities)
+            va_appointment_requests = backfill_appointments_with_facilities(va_appointment_requests, facilities)
+
+            appointments = (va_appointments + cc_appointments + va_appointment_requests + cc_appointment_requests).sort_by(&:start_date_utc)
 
             errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
           else
@@ -75,6 +79,7 @@ module Mobile
 
           appointments
         end
+        # rubocop:enable Metrics/MethodLength
 
         def put_cancel_appointment(params)
           facility_id = Mobile::V0::Appointment.toggle_non_prod_id!(params[:facilityId])
@@ -102,14 +107,16 @@ module Mobile
         private
 
         def va_appointments_with_facilities(appointments_from_response)
-          appointments, facility_ids = va_appointments_adapter.parse(appointments_from_response)
+          appointments = va_appointments_adapter.parse(appointments_from_response)
           return [] if appointments.nil?
-
-          get_appointment_facilities(appointments, facility_ids) if appointments.size.positive?
         end
 
-        def get_appointment_facilities(appointments, facility_ids)
-          facilities = Mobile::FacilitiesHelper.get_facilities(facility_ids)
+        def fetch_facilities(appointments)
+          facility_ids = appointments.collect {|appt| appt.sta6aid || appt.facility_id }
+          Mobile::FacilitiesHelper.get_facilities(facility_ids)
+        end
+
+        def backfill_facility_data(appointments, facilities)
           va_facilities_adapter.map_appointments_to_facilities(appointments, facilities)
         end
 
