@@ -28,12 +28,12 @@ RSpec.describe 'appointments', type: :request do
     after { Timecop.return }
 
     context 'with a missing params' do
+      let!(:facility) { create(:base_facility) }
+
       before do
-        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-              get '/mobile/v0/appointments', headers: iam_headers, params: nil
-            end
+        VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments', headers: iam_headers, params: nil
           end
         end
       end
@@ -247,14 +247,13 @@ RSpec.describe 'appointments', type: :request do
 
     context 'with valid params' do
       let(:params) { { page: { number: 1, size: 10 }, useCache: true } }
+      let!(:facility) { create(:base_facility) }
 
       context 'with a user has mixed upcoming appointments' do
         before do
-          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-                get '/mobile/v0/appointments', headers: iam_headers, params: params
-              end
+          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/appointments', headers: iam_headers, params: params
             end
           end
         end
@@ -394,13 +393,12 @@ RSpec.describe 'appointments', type: :request do
         let(:first_appointment) { response.parsed_body['data'].first['attributes'] }
         let(:last_appointment) { response.parsed_body['data'].last['attributes'] }
         let(:params) { { endDate: end_date, page: { number: 1, size: 10 }, useCache: true } }
+        let!(:facility) { create(:base_facility) }
 
         before do
-          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_cc_appointments_large_range', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('appointments/get_appointments_large_range', match_requests_on: %i[method uri]) do
-                get '/mobile/v0/appointments', headers: iam_headers, params: params
-              end
+          VCR.use_cassette('appointments/get_cc_appointments_large_range', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_large_range', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/appointments', headers: iam_headers, params: params
             end
           end
         end
@@ -513,12 +511,12 @@ RSpec.describe 'appointments', type: :request do
       end
 
       context 'when va appointments succeeds but cc appointments fail' do
+        let!(:facility) { create(:base_facility) }
+
         before do
-          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_cc_appointments_500', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-                get '/mobile/v0/appointments', headers: iam_headers, params: params
-              end
+          VCR.use_cassette('appointments/get_cc_appointments_500', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/appointments', headers: iam_headers, params: params
             end
           end
         end
@@ -586,20 +584,18 @@ RSpec.describe 'appointments', type: :request do
     context 'when a VA appointment should use the clinic rather than facility address' do
       before do
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
-
-        VCR.use_cassette('appointments/get_facilities_address_bug', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_address_bug', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_appointments_address_bug', match_requests_on: %i[method uri]) do
               get '/mobile/v0/appointments', headers: iam_headers, params: nil
             end
           end
-        end
       end
 
       after { Timecop.return }
 
       let(:facility_appointment) { response.parsed_body['data'][5]['attributes'] }
       let(:clinic_appointment) { response.parsed_body['data'][6]['attributes'] }
+      let!(:facility) { create(:base_facility) } #address bug
 
       it 'has clinic appointments use the clinic address' do
         expect(clinic_appointment['location']).to eq(
@@ -651,14 +647,12 @@ RSpec.describe 'appointments', type: :request do
     end
 
     context "when a VA appointment's facility does not have a phone number" do
+
       before do
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
-
-        VCR.use_cassette('appointments/get_facilities_phone_bug', match_requests_on: %i[method uri]) do
-          VCR.use_cassette('appointments/get_cc_appointments_address_bug', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_appointments_address_bug', match_requests_on: %i[method uri]) do
-              get '/mobile/v0/appointments', headers: iam_headers, params: nil
-            end
+        VCR.use_cassette('appointments/get_cc_appointments_address_bug', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_appointments_address_bug', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments', headers: iam_headers, params: nil
           end
         end
       end
@@ -666,6 +660,7 @@ RSpec.describe 'appointments', type: :request do
       after { Timecop.return }
 
       let(:location) { response.parsed_body['data'].first.dig('attributes', 'location') }
+      let!(:facility) { create(:base_facility) } #phone bug
 
       it 'correctly parses the phone number as nil' do
         expect(location).to eq(
@@ -689,25 +684,30 @@ RSpec.describe 'appointments', type: :request do
     end
 
     context "when a VA appointment's facility phone number is malformed" do
+      let!(:facility_442) { create(:base_facility,phone: {'fax' => '970-407-7440',
+                                                          'main' => '970224-1550',
+                                                          'pharmacy' => '866-420-6337',
+                                                          'afterHours' => '307-778-7550',
+                                                          'patientAdvocate' => '307-778-7550 x7517',
+                                                          'mentalHealthClinic' => '307-778-7349',
+                                                          'enrollmentCoordinator' => '307-778-7550 x7579'}) }
+      let!(:facility_442GC) { create(:base_facility,unique_id: "442GC") }
       before do
         allow(Rails.logger).to receive(:warn)
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
-
-        VCR.use_cassette('appointments/get_facilities_phone_bug', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_address_bug', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_appointments_address_bug', match_requests_on: %i[method uri]) do
               get '/mobile/v0/appointments', headers: iam_headers, params: nil
             end
           end
-        end
+
       end
 
       after { Timecop.return }
-
-      let(:location) { response.parsed_body['data'][1].dig('attributes', 'location') }
+      let(:malformed_phone_appointments) { response.parsed_body['data'].filter_map{ |i| i.dig('attributes', 'location') if i.dig('attributes', 'location','id') == '442' }}
 
       it 'correctly parses the phone number as nil' do
-        expect(location).to eq(
+        expect(malformed_phone_appointments.first).to eq(
           {
             'id' => '442',
             'name' => 'Cheyenne VA Medical Center',
@@ -730,7 +730,7 @@ RSpec.describe 'appointments', type: :request do
         expect(Rails.logger).to have_received(:warn).at_least(:once).with(
           'mobile appointments failed to parse facility phone number',
           {
-            facility_id: 'vha_442GC',
+            facility_id: '442',
             facility_phone: {
               'fax' => '970-407-7440',
               'main' => '970224-1550',
@@ -754,13 +754,14 @@ RSpec.describe 'appointments', type: :request do
               get '/mobile/v0/appointments', headers: iam_headers, params: params
             end
           end
-        end
+
       end
 
       after { Timecop.return }
 
       let(:first_appointment_date) { DateTime.parse(response.parsed_body['data'].first['attributes']['startDateUtc']) }
       let(:last_appointment_date) { DateTime.parse(response.parsed_body['data'].last['attributes']['startDateUtc']) }
+      let!(:facility) { create(:base_facility, unique_id: "442GC") } #address bug
 
       context 'when ascending sorting is requested in params' do
         let(:params) { { sort: 'startDateUtc' } }
@@ -790,12 +791,9 @@ RSpec.describe 'appointments', type: :request do
     describe 'phone only' do
       before do
         Timecop.freeze(Time.zone.parse('2021-09-13T11:07:07Z'))
-
-        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-          VCR.use_cassette('appointments/get_cc_appointments_phone_only', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_appointments_phone_only', match_requests_on: %i[method uri]) do
-              get '/mobile/v0/appointments', headers: iam_headers, params: params
-            end
+        VCR.use_cassette('appointments/get_cc_appointments_phone_only', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_appointments_phone_only', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments', headers: iam_headers, params: params
           end
         end
       end
@@ -807,6 +805,7 @@ RSpec.describe 'appointments', type: :request do
       let(:params) { { startDate: start_date, endDate: end_date } }
       let(:appointment_with_phone) { response.parsed_body['data'][0]['attributes'] }
       let(:appointment_without_phone) { response.parsed_body['data'][1]['attributes'] }
+      let!(:facility) { create(:base_facility) }
 
       it 'matches the expected schema' do
         expect(response.body).to match_json_schema('appointments')
@@ -828,12 +827,9 @@ RSpec.describe 'appointments', type: :request do
     describe 'reason for visit' do
       before do
         Timecop.freeze(Time.zone.parse('2021-09-13T11:07:07Z'))
-
-        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-          VCR.use_cassette('appointments/get_cc_appointments_reason_for_visit', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_appointments_reason_for_visit', match_requests_on: %i[method uri]) do
-              get '/mobile/v0/appointments', headers: iam_headers, params: params
-            end
+        VCR.use_cassette('appointments/get_cc_appointments_reason_for_visit', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_appointments_reason_for_visit', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments', headers: iam_headers, params: params
           end
         end
       end
@@ -845,6 +841,7 @@ RSpec.describe 'appointments', type: :request do
       let(:params) { { startDate: start_date, endDate: end_date } }
       let(:va_appointment_with_reason) { response.parsed_body['data'][0]['attributes'] }
       let(:va_appointment_without_reason) { response.parsed_body['data'][2]['attributes'] }
+      let!(:facility) { create(:base_facility) }
 
       it 'matches the expected schema' do
         expect(response.body).to match_json_schema('appointments')
