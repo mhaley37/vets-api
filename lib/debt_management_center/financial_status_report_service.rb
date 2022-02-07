@@ -99,7 +99,7 @@ module DebtManagementCenter
     end
 
     def email_personalization_info
-      { 'name' => @user.first_name, 'time' => '48 hours', 'date' => Time.now.strftime("%m/%d/%Y") }
+      { 'name' => @user.first_name, 'time' => '48 hours', 'date' => Time.zone.now.strftime('%m/%d/%Y') }
     end
   end
 end
