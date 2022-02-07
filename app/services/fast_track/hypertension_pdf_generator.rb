@@ -99,7 +99,7 @@ module FastTrack
       )
 
       @pdf.text "\n"
-      @pdf.text RAGING_SCHEDULE_LINK,
+      @pdf.text RATING_SCHEDULE_LINK,
                 inline_format: true, color: '0000ff', size: 1
     end
 
@@ -182,7 +182,7 @@ module FastTrack
       ]
     ].freeze
 
-    RAGING_SCHEDULE_LINK =  "<link href='" \
+    RATING_SCHEDULE_LINK =  "<link href='" \
                             'https://www.ecfr.gov/current/title-38/' \
                             "chapter-I/part-4'>View rating schedule</link>"
   end
