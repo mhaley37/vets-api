@@ -90,10 +90,10 @@ http_interactions:
               "visitType": "Office Visit",
               "facility": {
                 "name": "CHYSHR-CHEYENNE VAMC",
-                "facilityCode": "442",
+                "facilityCode": "983",
                 "state": "WY",
                 "city": "Cheyenne",
-                "parentSiteCode": "442",
+                "parentSiteCode": "983",
                 "objectType": "Facility",
                 "link": []
               },

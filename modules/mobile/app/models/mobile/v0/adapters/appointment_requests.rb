@@ -62,7 +62,7 @@ module Mobile
             visit_type: request[:visit_type],
             patient_phone_number: request[:phone_number],
             patient_email: request[:email],
-            best_time_to_call: request[:best_timeto_call] # incoming data capitalizes incorrectly
+            best_time_to_call: request[:best_timeto_call]
           )
         end
 
@@ -104,10 +104,7 @@ module Mobile
           facility ? facility[:time_zone] : nil
         end
 
-        # needs:
-        # facility address (handled separately i believe)
-        # facility phone, also pulled from separate facility request
-        # timezone
+
         class VA
           APPOINTMENT_TYPE = 'VA_REQUEST'
 
@@ -120,11 +117,11 @@ module Mobile
           end
 
           def self.facility_id(request)
-            request.dig(:facility, :facility_code)
+            Mobile::V0::Appointment.toggle_non_prod_id!(request.dig(:facility, :facility_code))
           end
 
           def self.location(request)
-            facility_id = request.dig(:facility, :facility_code)
+            facility_id = facility_id(request)
             facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
             {
               id: facility_id,
@@ -148,8 +145,6 @@ module Mobile
           end
         end
 
-        # needs:
-        # user's contact info
         class CC
           APPOINTMENT_TYPE = 'COMMUNITY_CARE_REQUEST'
 
