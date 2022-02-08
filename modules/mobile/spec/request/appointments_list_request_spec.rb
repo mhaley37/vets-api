@@ -21,10 +21,8 @@ RSpec.describe 'appointments', type: :request do
   after(:all) { VCR.configure { |c| c.cassette_library_dir = @original_cassette_dir } }
 
   describe 'GET /mobile/v0/appointments' do
-    let(:default_query_time) { Time.zone.parse('2020-11-01T10:30:00Z') }
-
     before do
-      Timecop.freeze(default_query_time)
+      Timecop.freeze('2020-11-01T10:30:00Z')
     end
 
     after { Timecop.return }
@@ -889,8 +887,8 @@ RSpec.describe 'appointments', type: :request do
           {
             included: ['pending'],
             page: { number: 1, size: 100 },
-            startDate: default_query_time.to_date,
-            endDate: default_query_time.to_date
+            startDate: start_date,
+            endDate: end_date
           }
         end
 
@@ -899,7 +897,10 @@ RSpec.describe 'appointments', type: :request do
 
           get_appointments
 
-          expect(response.parsed_body['data']).to be_empty
+          appointment_requests = response.parsed_body['data'].select do |appts|
+            appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
+          end
+          expect(appointment_requests).to be_empty
         end
       end
 
@@ -917,7 +918,6 @@ RSpec.describe 'appointments', type: :request do
 
           it 'does not include pending appointments' do
             get_appointments
-            puts response.parsed_body if response.status != 200
 
             requested = response.parsed_body['data'].select do |appts|
               appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
@@ -1068,19 +1068,16 @@ RSpec.describe 'appointments', type: :request do
           end
 
           it 'orders appointments by first proposed time' do
-            # va appointment 11/01/2020 am
-            # cc appointment 11/01/ pm
-
             get_appointments
 
             order_times = response.parsed_body['data'].collect do |a|
               a.dig('attributes', 'startDateUtc')
             end
 
-            # these are utc representations of the va and cc appointment request data proprosed dates
+            # these are utc representations of the va and cc appointment request first proprosed dates
             expect(order_times).to include("2020-11-01T08:00:00.000Z", "2020-11-01T12:00:00.000Z")
             sorted = order_times.map(&:to_datetime).sort { |a, b| a <=> b }
-            expect(order_times).to eq(sorted)) # needs to be formatted
+            expect(order_times.map(&:to_datetime)).to eq(sorted)
           end
         end
 
@@ -1089,8 +1086,8 @@ RSpec.describe 'appointments', type: :request do
             {
               included: ['pending'],
               page: { number: 1, size: 100 },
-              startDate: default_query_time.to_date,
-              endDate: default_query_time.to_date
+              startDate: start_date,
+              endDate: end_date
             }
           end
 
