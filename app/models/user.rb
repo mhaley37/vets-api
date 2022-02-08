@@ -71,6 +71,21 @@ class User < Common::RedisStore
   end
 
   # Identity getter methods
+  def active_mhv_ids
+    identity&.active_mhv_ids || mpi_profile&.active_mhv_ids
+  end
+
+  def address
+    address = identity&.address || mpi_profile&.address
+    {
+      street: address[:street],
+      street2: address[:street2],
+      city: address[:city],
+      state: address[:state],
+      country: address[:country],
+      zip: address[:postal_code]
+    }
+  end
 
   def birls_id
     identity&.birls_id || mpi_birls_id
@@ -100,6 +115,14 @@ class User < Common::RedisStore
 
   def gender
     identity.gender.presence || gender_mpi
+  end
+
+  def given_names
+    identity&.given_names || mpi_profile&.given_names
+  end
+
+  def home_phone
+    identity&.phone || mpi_profile&.home_phone
   end
 
   def icn
@@ -148,22 +171,6 @@ class User < Common::RedisStore
 
   # MPI getter methods
 
-  def active_mhv_ids
-    mpi_profile&.active_mhv_ids
-  end
-
-  def address
-    address = identity&.address || mpi_profile&.address
-    {
-      street: address[:street],
-      street2: address[:street2],
-      city: address[:city],
-      state: address[:state],
-      country: address[:country],
-      zip: address[:postal_code]
-    }
-  end
-
   def birth_date_mpi
     return nil unless mpi_profile
 
@@ -180,27 +187,19 @@ class User < Common::RedisStore
   end
 
   def first_name_mpi
-    given_names&.first
+    mpi_profile&.given_names.first
   end
 
   def middle_name_mpi
-    mpi&.profile&.given_names.to_a[1..]&.join(' ').presence
+    mpi_profile&.given_names.to_a[1..]&.join(' ').presence
   end
 
   def gender_mpi
     mpi_profile&.gender
   end
 
-  def given_names
-    mpi_profile&.given_names
-  end
-
   def historical_icns
     @mpi_historical_icn ||= MPIData.historical_icn_for_user(self)
-  end
-
-  def home_phone
-    identity&.phone || mpi_profile&.home_phone
   end
 
   def last_name_mpi

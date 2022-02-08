@@ -14,6 +14,7 @@ class UserIdentity < Common::RedisStore
   # identity attributes
   attribute :uuid
   attribute :email
+  attribute :given_names
   attribute :first_name
   attribute :middle_name
   attribute :last_name
@@ -31,6 +32,7 @@ class UserIdentity < Common::RedisStore
   attribute :loa
   attribute :multifactor, Boolean # used by F/E to decision on whether or not to prompt user to add MFA
   attribute :authn_context # used by F/E to handle various identity related complexities pending refactor
+  attribute :active_mhv_ids
   attribute :idme_uuid
   attribute :logingov_uuid
   attribute :verified_at # Login.gov IAL2 verification timestamp
