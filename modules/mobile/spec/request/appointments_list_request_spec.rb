@@ -869,6 +869,9 @@ RSpec.describe 'appointments', type: :request do
       let(:end_date) { (Time.now.utc + 3.months).iso8601 }
       let(:submitted_va_appt_request_id) { '8a48e8db6d70a38a016d72b354240002' }
       let(:cancelled_cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
+      let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
+      let(:resolved_request_id) { '8a48e8db6d7682c3016d88dc21650024' }
+      let(:cancelled_outside_date_range_request_id) { '8a48912a6d02b0fc016d63942b3200ac' }
       let(:get_appointments) do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
@@ -934,17 +937,10 @@ RSpec.describe 'appointments', type: :request do
           end
 
           it 'returns cancelled and submitted requests in the date range and omits other statuses' do
-            booked_request_id = '8a48dea06c84a667016c866de87c000b'
-            resolved_request_id = '8a48e8db6d7682c3016d88dc21650024'
-            cancelled_outside_date_range_request_id = '8a48912a6d02b0fc016d63942b3200ac'
-
             get_appointments
 
             requested = response.parsed_body['data'].pluck('id')
             expect(requested).to include(submitted_va_appt_request_id, cancelled_cc_appt_request_id)
-            # the above line makes this test redundant
-            # including it here to document test data that would be returned with a different date range
-            # or if we allowed other statuses
             expect(requested).not_to include(booked_request_id, resolved_request_id, cancelled_outside_date_range_request_id)
           end
 
@@ -981,12 +977,12 @@ RSpec.describe 'appointments', type: :request do
                 'minutesDuration' => nil,
                 'phoneOnly' => true,
                 'startDateLocal' => '2020-11-01T05:00:00.000-07:00',
-                'startDateUtc' => '2020-11-01T12:00:00.000Z', # INCORRECT
+                'startDateUtc' => '2020-11-01T12:00:00.000Z',
                 'status' => 'CANCELLED',
                 'statusDetail' => nil,
                 'timeZone' => 'America/Denver',
                 'vetextId' => nil,
-                'reason' => nil,
+                'reason' => 'routine-follow-up',
                 'isCovidVaccine' => nil,
                 'proposedTimes' => {
                   'optionDate1' => '11/01/2020',
@@ -1042,12 +1038,12 @@ RSpec.describe 'appointments', type: :request do
                 'minutesDuration' => nil,
                 'phoneOnly' => true,
                 'startDateLocal' => '2020-11-01T01:00:00.000-07:00',
-                'startDateUtc' => '2020-11-01T08:00:00.000Z', # INCORRECT
+                'startDateUtc' => '2020-11-01T08:00:00.000Z',
                 'status' => 'SUBMITTED',
                 'statusDetail' => nil,
                 'timeZone' => 'America/Denver',
                 'vetextId' => nil,
-                'reason' => nil,
+                'reason' => 'New Issue',
                 'isCovidVaccine' => nil,
                 'proposedTimes' => {
                   'optionDate1' => '11/01/2020',
@@ -1074,13 +1070,10 @@ RSpec.describe 'appointments', type: :request do
           it 'orders appointments by first proposed time' do
           end
 
-          it 'omits resolved and booked appointment requests'
-
-          it 'only returns data created within the past 90 days'
-          it 'excludes cancelled appointment requests created more than 30 days ago'
+          it 'always requests 90 days'
         end
 
-        context 'when pending appointments returns an error' do
+        context 'when the appointments request service fails' do
           let(:params) do
             {
               included: ['pending'],
@@ -1090,9 +1083,7 @@ RSpec.describe 'appointments', type: :request do
             }
           end
 
-          it 'does not raise error' do
-            Flipper.enable(:mobile_appointment_requests)
-
+          it 'returns 502' do
             VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
               VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
                 VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do

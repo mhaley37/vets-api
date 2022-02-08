@@ -20,8 +20,10 @@ module Mobile
               next if created_at < 30.days.ago
             end
 
-            model = build_appointment_model(request)
-            if model[:appointment_type] == 'VA_REQUEST'
+            klass = request.key?(:cc_appointment_request) ? CC : VA
+            model = build_appointment_model(request, klass)
+
+            if klass == VA
               va_appointments << model
             else
               cc_appointments << model
@@ -33,9 +35,8 @@ module Mobile
 
         private
 
-        def build_appointment_model(request)
-          klass = request.key?(:cc_appointment_request) ? CC : VA
-          start_date = start_date(request)
+        def build_appointment_model(request, klass)
+          start_date = localized_start_date(request)
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
@@ -50,12 +51,12 @@ module Mobile
             minutes_duration: nil,
             phone_only: phone_only?(request),
             start_date_local: start_date,
-            start_date_utc: start_date.utc, # i don't believe this is correct
+            start_date_utc: start_date.utc,
             status: status(request),
             status_detail: nil,
             time_zone: time_zone(request),
             vetext_id: nil,
-            reason: request[:reason_for_visit],
+            reason: request[:purpose_of_visit],
             is_covid_vaccine: nil, # unable to find or create test data for this
             proposed_times: proposed_times(request),
             type_of_care: request[:appointment_type],
@@ -83,7 +84,7 @@ module Mobile
           }
         end
 
-        def start_date(request)
+        def localized_start_date(request)
           date = request[:option_date1]
           time_zone = time_zone(request) || '+00:00'
           month, day, year = date.split('/').map(&:to_i)
@@ -96,14 +97,13 @@ module Mobile
           request[:status].upcase
         end
 
-        # i believe this correct for VA appointments but it may not be for CC appointments
-        # i'm not sure there is a way to get this accurately for CC appointments at this time
+        # this is not correct for cc appointment requests.
+        # unfortunately, we don't have a better way of handling this currently
         def time_zone(request)
           facility_id = request.dig(:facility, :parent_site_code)
           facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
           facility ? facility[:time_zone] : nil
         end
-
 
         class VA
           APPOINTMENT_TYPE = 'VA_REQUEST'
@@ -165,7 +165,6 @@ module Mobile
             nil
           end
 
-          # should this be the facility or the cc data?
           def self.location(request)
             source = request[:cc_appointment_request]
             # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
