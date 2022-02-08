@@ -5,7 +5,7 @@ module Mobile
     module Appointments
       # connects to appointment request service
       class AppointmentRequestsService < VAOS::SessionService
-        # always fetches the past 90 days
+        # fetches the past 90 days of appointment requests
         def get_appointment_requests
           response = nil
           error = nil
@@ -13,7 +13,6 @@ module Mobile
           start_date = end_date - 90.days
           date_params = { startDate: date_format(start_date), endDate: date_format(end_date) }
 
-          # do we care about this monitoring?
           with_monitoring do
             response = perform(:get, get_requests_url, date_params, headers)
           rescue => e
@@ -30,7 +29,7 @@ module Mobile
         end
 
         def date_format(date)
-          date&.strftime('%m/%d/%Y')
+          date.strftime('%m/%d/%Y')
         end
       end
     end

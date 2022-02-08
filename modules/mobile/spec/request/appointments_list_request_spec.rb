@@ -1068,9 +1068,20 @@ RSpec.describe 'appointments', type: :request do
           end
 
           it 'orders appointments by first proposed time' do
-          end
+            # va appointment 11/01/2020 am
+            # cc appointment 11/01/ pm
 
-          it 'always requests 90 days'
+            get_appointments
+
+            order_times = response.parsed_body['data'].collect do |a|
+              a.dig('attributes', 'startDateUtc')
+            end
+
+            # these are utc representations of the va and cc appointment request data proprosed dates
+            expect(order_times).to include("2020-11-01T08:00:00.000Z", "2020-11-01T12:00:00.000Z")
+            sorted = order_times.map(&:to_datetime).sort { |a, b| a <=> b }
+            expect(order_times).to eq(sorted)) # needs to be formatted
+          end
         end
 
         context 'when the appointments request service fails' do

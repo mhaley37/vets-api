@@ -5,8 +5,9 @@ module Mobile
     module Adapters
       class AppointmentRequests
         # accepts an array of appointment requests
-        # returns a list of appointments that are either status SUBMITTED
-        # or status CANCELLED and created in the past 30 days
+        # returns a list of appointments
+        # only returns SUBMITTED appointment requests
+        # and CANCELLED requests that were created in the past 30 days
         def parse(requests)
           va_appointments = []
           cc_appointments = []
@@ -98,7 +99,8 @@ module Mobile
         end
 
         # this is not correct for cc appointment requests.
-        # unfortunately, we don't have a better way of handling this currently
+        # the more accurate way would be to base it on preferred_zip_code
+        # if we can find a mechanism for conversion
         def time_zone(request)
           facility_id = request.dig(:facility, :parent_site_code)
           facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
@@ -167,9 +169,7 @@ module Mobile
 
           def self.location(request)
             source = request[:cc_appointment_request]
-            # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
-            # and extension (until the end of the string) (\S*)\z
-            phone_captures = request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
+            phone_captures = phone_captures(request)
             {
               id: nil,
               name: practice_name(request),
@@ -189,6 +189,12 @@ module Mobile
               url: nil,
               code: nil
             }
+          end
+
+          def self.phone_captures(request)
+            # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
+            # and extension (until the end of the string) (\S*)\z
+            phone_captures = request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
           end
         end
       end
