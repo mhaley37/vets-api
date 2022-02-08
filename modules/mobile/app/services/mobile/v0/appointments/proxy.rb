@@ -15,15 +15,14 @@ module Mobile
           @user = user
         end
 
-        # rubocop:disable Metrics/MethodLength
         def get_appointments(start_date:, end_date:)
           if Flipper.enabled?(:mobile_appointment_requests)
-            fetch_appointments_and_appointment_requests(start_date, end_date)
+            responses = fetch_appointments(start_date, end_date)
+            normalize_appointments(responses, start_date, end_date)
           else
             legacy_fetch_appointments(start_date, end_date)
           end
         end
-        # rubocop:enable Metrics/MethodLength
 
         def put_cancel_appointment(params)
           facility_id = Mobile::V0::Appointment.toggle_non_prod_id!(params[:facilityId])
@@ -50,27 +49,11 @@ module Mobile
 
         private
 
-        def fetch_appointments_and_appointment_requests(start_date, end_date)
-          appointments_service = appointments_service(start_date, end_date)
-
-          va_response, cc_response, requests_response = Parallel.map(
-            [
-              appointments_service.fetch_va_appointments,
-              appointments_service.fetch_cc_appointments,
-              fetch_appointment_requests
-            ], in_threads: 3, &:call
-          )
-
-          va_appointments = va_appointments_adapter.parse(va_response[:response].body) unless va_response[:error]
-          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
-
-          unless requests_response[:error]
-            va_appointment_requests, cc_appointment_requests =
-              requests_adapter.parse(requests_response[:response].body[:appointment_requests])
-          end
-
-          errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
-          raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
+        def normalize_appointments(responses, start_date, end_date)
+          va_appointments = va_appointments_adapter.parse(responses[:va][:response].body)
+          cc_appointments = cc_appointments_adapter.parse(responses[:cc][:response].body)
+          va_appointment_requests, cc_appointment_requests =
+            requests_adapter.parse(responses[:requests][:response].body[:appointment_requests])
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected
@@ -83,7 +66,8 @@ module Mobile
           va_appointments = backfill_appointments_with_facilities(va_appointments, facilities)
           va_appointment_requests = backfill_appointments_with_facilities(va_appointment_requests, facilities)
 
-          (va_appointments + cc_appointments + va_appointment_requests + cc_appointment_requests).sort_by(&:start_date_utc)
+          (va_appointments + cc_appointments + va_appointment_requests + cc_appointment_requests)
+            .sort_by(&:start_date_utc)
         end
 
         def legacy_fetch_appointments(start_date, end_date)
@@ -114,6 +98,23 @@ module Mobile
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
           appointments
+        end
+
+        def fetch_appointments(start_date, end_date)
+          appointments_service = appointments_service(start_date, end_date)
+
+          va_response, cc_response, requests_response = Parallel.map(
+            [
+              appointments_service.fetch_va_appointments,
+              appointments_service.fetch_cc_appointments,
+              fetch_appointment_requests
+            ], in_threads: 3, &:call
+          )
+
+          errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
+          raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
+
+          { va: va_response, cc: cc_response, requests: requests_response }
         end
 
         def fetch_facilities(appointments)

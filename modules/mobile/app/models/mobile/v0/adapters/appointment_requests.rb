@@ -36,6 +36,7 @@ module Mobile
 
         private
 
+        # rubocop:disable Metrics/MethodLength
         def build_appointment_model(request, klass)
           start_date = localized_start_date(request)
 
@@ -67,6 +68,7 @@ module Mobile
             best_time_to_call: request[:best_timeto_call]
           )
         end
+        # rubcop:enable Metrics/MethodLength
 
         def phone_only?(request)
           return false if request[:text_messaging_allowed].nil?
@@ -146,6 +148,7 @@ module Mobile
             }
           end
         end
+        # rubocop:enable Metrics/MethodLength
 
         class CC
           APPOINTMENT_TYPE = 'COMMUNITY_CARE_REQUEST'
@@ -167,6 +170,7 @@ module Mobile
             nil
           end
 
+          # rubocop:disable Metrics/MethodLength
           def self.location(request)
             source = request[:cc_appointment_request]
             phone_captures = phone_captures(request)
@@ -190,11 +194,12 @@ module Mobile
               code: nil
             }
           end
+          # rubocop:enable Metrics/MethodLength
 
           def self.phone_captures(request)
             # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
             # and extension (until the end of the string) (\S*)\z
-            phone_captures = request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
+            request[:phone_number].match(/\((\d{3})\)\s(\d{3}-\d{4})(\S*)\z/)
           end
         end
       end

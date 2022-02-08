@@ -941,7 +941,8 @@ RSpec.describe 'appointments', type: :request do
 
             requested = response.parsed_body['data'].pluck('id')
             expect(requested).to include(submitted_va_appt_request_id, cancelled_cc_appt_request_id)
-            expect(requested).not_to include(booked_request_id, resolved_request_id, cancelled_outside_date_range_request_id)
+            expect(requested).not_to include(booked_request_id, resolved_request_id,
+                                             cancelled_outside_date_range_request_id)
           end
 
           # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
@@ -1075,7 +1076,7 @@ RSpec.describe 'appointments', type: :request do
             end
 
             # these are utc representations of the va and cc appointment request first proprosed dates
-            expect(order_times).to include("2020-11-01T08:00:00.000Z", "2020-11-01T12:00:00.000Z")
+            expect(order_times).to include('2020-11-01T08:00:00.000Z', '2020-11-01T12:00:00.000Z')
             sorted = order_times.map(&:to_datetime).sort { |a, b| a <=> b }
             expect(order_times.map(&:to_datetime)).to eq(sorted)
           end
