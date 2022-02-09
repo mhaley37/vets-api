@@ -980,7 +980,7 @@ RSpec.describe 'appointments', type: :request do
                 'startDateLocal' => '2020-11-01T05:00:00.000-07:00',
                 'startDateUtc' => '2020-11-01T12:00:00.000Z',
                 'status' => 'CANCELLED',
-                'statusDetail' => nil,
+                'statusDetail' => 'CANCELLED BY CLINIC',
                 'timeZone' => 'America/Denver',
                 'vetextId' => nil,
                 'reason' => 'routine-follow-up',

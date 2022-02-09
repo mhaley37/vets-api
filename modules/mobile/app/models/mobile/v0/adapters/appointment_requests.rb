@@ -52,7 +52,7 @@ module Mobile
             start_date_local: start_date,
             start_date_utc: start_date.utc,
             status: status(request),
-            status_detail: nil,
+            status_detail: status_detail(request),
             time_zone: time_zone(request),
             vetext_id: nil,
             reason: request[:purpose_of_visit],
@@ -84,6 +84,9 @@ module Mobile
           }
         end
 
+        # this is used for sorting requests into appointments list
+        # setting to 8AM and 12PM because when creating appointment
+        # requests on staging all available slots are between 8-4
         def localized_start_date(request)
           date = request[:option_date1]
           time_zone = time_zone(request) || '+00:00'
@@ -95,6 +98,14 @@ module Mobile
 
         def status(request)
           request[:status].upcase
+        end
+
+        def status_detail(request)
+          cancellation_reason = request.dig(:appointment_request_detail_code, 0, :detail_code, :provider_message)
+          return nil unless cancellation_reason
+
+          return 'CANCELLED BY CLINIC' if cancellation_reason.start_with?('Cancelled by VA')
+          return 'CANCELLED BY PATIENT' if cancellation_reason.start_with?('Cancelled by Veteran')
         end
 
         # this is not correct for cc appointment requests.
