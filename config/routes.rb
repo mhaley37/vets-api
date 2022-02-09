@@ -86,6 +86,7 @@ Rails.application.routes.draw do
 
     resources :caregivers_assistance_claims, only: :create
     post 'caregivers_assistance_claims/download_pdf', to: 'caregivers_assistance_claims#download_pdf'
+    get 'tax_1095/download_pdf', to: 'tax_1095#download_pdf'
 
     namespace :form1010cg do
       resources :attachments, only: :create
