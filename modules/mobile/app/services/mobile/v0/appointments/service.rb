@@ -20,32 +20,24 @@ module Mobile
         # @return Hash two lists of appointments, va and cc (community care)
         #
 
-        def initialize(user, start_date, end_date)
-          @params = {
+        def fetch_va_appointments(start_date, end_date)
+          get(va_url, start_date, end_date)
+        end
+
+        def fetch_cc_appointments(start_date, end_date)
+          get(cc_url, start_date, end_date)
+        end
+
+        private
+
+        def get(url, start_date, end_date)
+          params = {
             startDate: start_date.utc.iso8601,
             endDate: end_date.utc.iso8601,
             pageSize: 0,
             useCache: false
           }
-          super(user)
-        end
-
-        def fetch_va_appointments
-          lambda {
-            get(va_url)
-          }
-        end
-
-        def fetch_cc_appointments
-          lambda {
-            get(cc_url)
-          }
-        end
-
-        private
-
-        def get(url)
-          response = config.connection.get(url, @params, headers)
+          response = config.connection.get(url, params, headers)
           { response: response, error: nil }
         rescue VAOS::Exceptions::BackendServiceException => e
           vaos_error(e, url)

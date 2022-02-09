@@ -72,12 +72,10 @@ module Mobile
         end
 
         def legacy_fetch_appointments(start_date, end_date)
-          appointments_service = appointments_service(start_date, end_date)
-
           va_response, cc_response = Parallel.map(
             [
-              appointments_service.fetch_va_appointments,
-              appointments_service.fetch_cc_appointments
+              fetch_va_appointments(start_date, end_date),
+              fetch_cc_appointments(start_date, end_date)
             ], in_threads: 2, &:call
           )
 
@@ -102,12 +100,10 @@ module Mobile
         end
 
         def fetch_appointments(start_date, end_date)
-          appointments_service = appointments_service(start_date, end_date)
-
           va_response, cc_response, requests_response = Parallel.map(
             [
-              appointments_service.fetch_va_appointments,
-              appointments_service.fetch_cc_appointments,
+              fetch_va_appointments(start_date, end_date),
+              fetch_cc_appointments(start_date, end_date),
               fetch_appointment_requests
             ], in_threads: 3, &:call
           )
@@ -159,12 +155,25 @@ module Mobile
           raise e
         end
 
-        def appointments_service(start_date, end_date)
-          Mobile::V0::Appointments::Service.new(@user, start_date, end_date)
+        def appointments_service
+          Mobile::V0::Appointments::Service.new(@user)
+        end
+
+        def fetch_va_appointments(start_date, end_date)
+          lambda {
+            appointments_service.fetch_va_appointments(start_date, end_date)
+          }
+        end
+
+        def fetch_cc_appointments(start_date, end_date)
+          lambda {
+            appointments_service.fetch_cc_appointments(start_date, end_date)
+          }
         end
 
         def fetch_appointment_requests
           lambda {
+            # we only care about the past 90 days of appointment requests
             end_date = Time.zone.today
             start_date = end_date - 90.days
             service = VAOS::AppointmentRequestsService.new(@user)
