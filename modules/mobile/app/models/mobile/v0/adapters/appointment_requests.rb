@@ -88,12 +88,19 @@ module Mobile
         # setting to 8AM and 12PM because when creating appointment
         # requests on staging all available slots are between 8-4
         def localized_start_date(request)
-          date = request[:option_date1]
           time_zone = time_zone(request) || '+00:00'
-          month, day, year = date.split('/').map(&:to_i)
-          hour = request[:option_time1] == 'AM' ? 8 : 12
+          proposed_times = (1..3).each_with_object([]) do |i, ary|
+            date = request["option_date#{i}"]
+            next if date.in?([nil, 'No Date Selected'])
 
-          DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
+            month, day, year = date.split('/').map(&:to_i)
+            hour = request["option_time#{i}"] == 'AM' ? 8 : 12
+
+            ary << DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
+          end
+          current_time = Time.current.in_time_zone(time_zone)
+          future_times = proposed_times.select { |time| time >= current_time }.sort
+          future_times.any? ? future_times.first : proposed_times.first
         end
 
         def status(request)
