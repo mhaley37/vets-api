@@ -27,6 +27,9 @@ features:
   can_upload_10_10cg_poa:
     actor_type: cookie_id
     description: Allows users to upload POA documentation when completing the 10-10CG.
+  cerner_allow_partial_facilities:
+    actor_type: user
+    description: This will allow cerner facilities to be set to partially cerner or all cerner.
   cerner_override_463:
     actor_type: user
     description: This will show the Cerner facility 463 as `isCerner`.
@@ -73,6 +76,14 @@ features:
   check_in_experience_demographics_confirmation_enabled:
     actor_type: user
     description: Enables the health care pre-check-in experiences to send demographics confirmation.
+    enable_in_development: true
+  check_in_experience_editing_day_of_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the day of check-in experience.
+    enable_in_development: true
+  check_in_experience_editing_pre_check_in_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the pre-check-in experience.
     enable_in_development: true
   check_in_experience_update_information_page_enabled:
     actor_type: user
