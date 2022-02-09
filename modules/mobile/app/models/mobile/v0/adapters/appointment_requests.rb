@@ -21,13 +21,10 @@ module Mobile
               next if created_at < 30.days.ago
             end
 
-            klass = request.key?(:cc_appointment_request) ? CC : VA
-            model = build_appointment_model(request, klass)
-
-            if klass == VA
-              va_appointments << model
+            if request.cc_appointment_request
+              cc_appointments << build_appointment_model(request, CC)
             else
-              cc_appointments << model
+              va_appointments << build_appointment_model(request, VA)
             end
           end
 

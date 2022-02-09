@@ -52,8 +52,9 @@ module Mobile
         def normalize_appointments(responses, start_date, end_date)
           va_appointments = va_appointments_adapter.parse(responses[:va][:response].body)
           cc_appointments = cc_appointments_adapter.parse(responses[:cc][:response].body)
+
           va_appointment_requests, cc_appointment_requests =
-            requests_adapter.parse(responses[:requests][:response].body[:appointment_requests])
+            requests_adapter.parse(responses[:requests])
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected
@@ -111,7 +112,7 @@ module Mobile
             ], in_threads: 3, &:call
           )
 
-          errors = [va_response[:error], cc_response[:error], requests_response[:error]].compact
+          errors = [va_response[:error], cc_response[:error]].compact
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
           { va: va_response, cc: cc_response, requests: requests_response }
@@ -164,8 +165,11 @@ module Mobile
 
         def fetch_appointment_requests
           lambda {
-            service = Mobile::V0::Appointments::AppointmentRequestsService.new(@user)
-            service.get_appointment_requests
+            end_date = Time.zone.today
+            start_date = end_date - 90.days
+            service = VAOS::AppointmentRequestsService.new(@user)
+            response = service.get_requests(start_date, end_date)
+            response[:data]
           }
         end
 
