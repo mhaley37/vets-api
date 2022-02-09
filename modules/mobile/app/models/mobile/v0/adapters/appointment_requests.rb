@@ -85,18 +85,19 @@ module Mobile
         end
 
         # this is used for sorting requests into appointments list
-        # setting to 8AM and 12PM because when creating appointment
-        # requests on staging all available slots are between 8-4
+        # if all proposed times times are in the past, use the first proposed time by entry order
+        # if any proposed times are in the future, use the one that occurs soonest
+        # because we only have date an AM/PM, setting to 8AM and 12PM because when creating appointment
         def localized_start_date(request)
           time_zone = time_zone(request) || '+00:00'
-          proposed_times = (1..3).each_with_object([]) do |i, ary|
+          proposed_times = (1..3).each_with_object([]) do |i, results|
             date = request["option_date#{i}"]
             next if date.in?([nil, 'No Date Selected'])
 
             month, day, year = date.split('/').map(&:to_i)
             hour = request["option_time#{i}"] == 'AM' ? 8 : 12
 
-            ary << DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
+            results << DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
           end
           current_time = Time.current.in_time_zone(time_zone)
           future_times = proposed_times.select { |time| time >= current_time }.sort

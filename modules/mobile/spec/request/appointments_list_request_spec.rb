@@ -977,8 +977,8 @@ RSpec.describe 'appointments', type: :request do
                 },
                 'minutesDuration' => nil,
                 'phoneOnly' => true,
-                'startDateLocal' => '2020-11-01T05:00:00.000-07:00',
-                'startDateUtc' => '2020-11-01T12:00:00.000Z',
+                'startDateLocal' => '2020-10-01T06:00:00.000-06:00',
+                'startDateUtc' => '2020-10-01T12:00:00.000Z',
                 'status' => 'CANCELLED',
                 'statusDetail' => 'CANCELLED BY CLINIC',
                 'timeZone' => 'America/Denver',
@@ -986,9 +986,9 @@ RSpec.describe 'appointments', type: :request do
                 'reason' => 'routine-follow-up',
                 'isCovidVaccine' => nil,
                 'proposedTimes' => {
-                  'optionDate1' => '11/01/2020',
+                  'optionDate1' => '10/01/2020',
                   'optionTime1' => 'PM',
-                  'optionDate2' => '11/02/2020',
+                  'optionDate2' => '10/02/2020',
                   'optionTime2' => 'PM',
                   'optionDate3' => 'No Date Selected',
                   'optionTime3' => 'No Time Selected'
@@ -1038,8 +1038,8 @@ RSpec.describe 'appointments', type: :request do
                 },
                 'minutesDuration' => nil,
                 'phoneOnly' => true,
-                'startDateLocal' => '2020-11-01T01:00:00.000-07:00',
-                'startDateUtc' => '2020-11-01T08:00:00.000Z',
+                'startDateLocal' => '2020-11-02T01:00:00.000-07:00',
+                'startDateUtc' => '2020-11-02T08:00:00.000Z',
                 'status' => 'SUBMITTED',
                 'statusDetail' => nil,
                 'timeZone' => 'America/Denver',
@@ -1047,10 +1047,10 @@ RSpec.describe 'appointments', type: :request do
                 'reason' => 'New Issue',
                 'isCovidVaccine' => nil,
                 'proposedTimes' => {
-                  'optionDate1' => '11/01/2020',
-                  'optionTime1' => 'AM',
-                  'optionDate2' => 'No Date Selected',
-                  'optionTime2' => 'No Time Selected',
+                  'optionDate1' => '10/01/2020',
+                  'optionTime1' => 'PM',
+                  'optionDate2' => '11/02/2020',
+                  'optionTime2' => 'AM',
                   'optionDate3' => 'No Date Selected',
                   'optionTime3' => 'No Time Selected'
                 },
@@ -1075,8 +1075,12 @@ RSpec.describe 'appointments', type: :request do
               a.dig('attributes', 'startDateUtc')
             end
 
-            # these are utc representations of the va and cc appointment request first proprosed dates
-            expect(order_times).to include('2020-11-01T08:00:00.000Z', '2020-11-01T12:00:00.000Z')
+            # appointment request has one other proposed time, but this is the first in the future
+            first_proposed_time_in_future = '2020-11-02T08:00:00.000Z'
+            # request has one other proposed time, but both are past, so it selects the first
+            first_proposed_time_in_past = '2020-10-01T12:00:00.000Z'
+
+            expect(order_times).to include(first_proposed_time_in_future, first_proposed_time_in_past)
             sorted = order_times.map(&:to_datetime).sort { |a, b| a <=> b }
             expect(order_times.map(&:to_datetime)).to eq(sorted)
           end
