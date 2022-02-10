@@ -21,9 +21,9 @@ module Mobile
                  :vetext_id,
                  :reason,
                  :is_covid_vaccine,
+                 :is_pending,
                  :proposed_times,
                  :type_of_care,
-                 :visit_type,
                  :patient_phone_number,
                  :patient_email,
                  :best_time_to_call

@@ -974,7 +974,7 @@ RSpec.describe 'appointments', type: :request do
                   'code' => nil
                 },
                 'minutesDuration' => nil,
-                'phoneOnly' => true,
+                'phoneOnly' => false,
                 'startDateLocal' => '2020-10-01T06:00:00.000-06:00',
                 'startDateUtc' => '2020-10-01T12:00:00.000Z',
                 'status' => 'CANCELLED',
@@ -983,6 +983,7 @@ RSpec.describe 'appointments', type: :request do
                 'vetextId' => nil,
                 'reason' => 'routine-follow-up',
                 'isCovidVaccine' => nil,
+                'isPending' => true,
                 'proposedTimes' => {
                   'optionDate1' => '10/01/2020',
                   'optionTime1' => 'PM',
@@ -992,7 +993,6 @@ RSpec.describe 'appointments', type: :request do
                   'optionTime3' => 'No Time Selected'
                 },
                 'typeOfCare' => 'Optometry (routine eye exam)',
-                'visitType' => 'Office Visit',
                 'patientPhoneNumber' => '(703) 652-0000',
                 'patientEmail' => 'samatha.girla@va.gov',
                 'bestTimeToCall' => %w[Afternoon Evening Morning]
@@ -1035,7 +1035,7 @@ RSpec.describe 'appointments', type: :request do
                   'code' => nil
                 },
                 'minutesDuration' => nil,
-                'phoneOnly' => true,
+                'phoneOnly' => false,
                 'startDateLocal' => '2020-11-02T01:00:00.000-07:00',
                 'startDateUtc' => '2020-11-02T08:00:00.000Z',
                 'status' => 'SUBMITTED',
@@ -1044,6 +1044,7 @@ RSpec.describe 'appointments', type: :request do
                 'vetextId' => nil,
                 'reason' => 'New Issue',
                 'isCovidVaccine' => nil,
+                'isPending' => true,
                 'proposedTimes' => {
                   'optionDate1' => '10/01/2020',
                   'optionTime1' => 'PM',
@@ -1053,7 +1054,6 @@ RSpec.describe 'appointments', type: :request do
                   'optionTime3' => 'No Time Selected'
                 },
                 'typeOfCare' => 'Primary Care',
-                'visitType' => 'Office Visit',
                 'patientPhoneNumber' => '(666) 666-6666',
                 'patientEmail' => 'Vilasini.reddy@va.gov',
                 'bestTimeToCall' => ['Morning']

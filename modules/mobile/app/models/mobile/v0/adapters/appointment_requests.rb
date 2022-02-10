@@ -49,10 +49,10 @@ module Mobile
             time_zone: time_zone(request),
             vetext_id: nil,
             reason: request[:purpose_of_visit],
-            is_covid_vaccine: nil, # unable to find or create test data for this
+            is_covid_vaccine: nil,
+            is_pending: true,
             proposed_times: proposed_times(request),
             type_of_care: request[:appointment_type],
-            visit_type: request[:visit_type],
             patient_phone_number: request[:phone_number],
             patient_email: request[:email],
             best_time_to_call: request[:best_timeto_call]
@@ -61,9 +61,7 @@ module Mobile
         # rubcop:enable Metrics/MethodLength
 
         def phone_only?(request)
-          return false if request[:text_messaging_allowed].nil?
-
-          !request[:text_messaging_allowed]
+          request[:visit_type] == 'Phone Call'
         end
 
         def proposed_times(request)

@@ -61,9 +61,9 @@ module Mobile
       attribute :vetext_id, Types::String.optional
       attribute :reason, Types::String.optional
       attribute :is_covid_vaccine, Types::Bool
+      attribute :is_pending, Types::Bool
       attribute :proposed_times, Types::Hash.optional
       attribute :type_of_care, Types::String.optional
-      attribute :visit_type, Types::String.optional
       attribute :patient_phone_number, Types::String.optional
       attribute :patient_email, Types::String.optional
       attribute :best_time_to_call, Types::Array.optional
