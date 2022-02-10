@@ -2,7 +2,16 @@
 
 require 'rails_helper'
 
-describe 'LGY API' do
+vcr_options = {
+  cassette_name: 'lgy/determine_elibile',
+  match_requests_on: %i[path query]
+}
+
+describe 'LGY API', vcr: vcr_options do
+  before(:all) do
+    get v0_coe_status_url
+  end
+
   context 'when user is signed in' do
     let(:user) { create(:evss_user, :loa3) }
 
@@ -11,31 +20,21 @@ describe 'LGY API' do
     describe 'GET v0/coe/status' do
       context 'when determination is eligible and application is 404' do
         it 'response code is 200' do
-          VCR.use_cassette 'lgy/determination_eligible' do
-            VCR.use_cassette 'lgy/application_not_found' do
-              get '/v0/coe/status'
-              expect(response).to have_http_status(:ok)
-            end
-          end
+          get '/v0/coe/status'
+          expect(response).to have_http_status(:ok)
         end
 
         it 'response is in JSON format' do
-          VCR.use_cassette 'lgy/determination_eligible' do
-            VCR.use_cassette 'lgy/application_not_found' do
-              get '/v0/coe/status'
-              expect(response.content_type).to eq('application/json; charset=utf-8')
-            end
-          end
+          binding.pry
+          get '/v0/coe/status'
+          expect(response.content_type).to eq('application/json; charset=utf-8')
         end
 
         it 'response status key is eligible' do
-          VCR.use_cassette 'lgy/determination_eligible' do
-            VCR.use_cassette 'lgy/application_not_found' do
-              get '/v0/coe/status'
-              json_body = JSON.parse(response.body)
-              expect(json_body['data']['attributes']).to include 'status' => 'eligible'
-            end
-          end
+          get '/v0/coe/status'
+
+          json_body = JSON.parse(response.body)
+          expect(json_body['data']['attributes']).to include 'status' => 'eligible'
         end
       end
     end
