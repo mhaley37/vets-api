@@ -869,7 +869,6 @@ RSpec.describe 'appointments', type: :request do
       let(:cancelled_cc_appt_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
       let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
       let(:resolved_request_id) { '8a48e8db6d7682c3016d88dc21650024' }
-      let(:cancelled_outside_date_range_request_id) { '8a48912a6d02b0fc016d63942b3200ac' }
       let(:get_appointments) do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
@@ -941,8 +940,7 @@ RSpec.describe 'appointments', type: :request do
 
             requested = response.parsed_body['data'].pluck('id')
             expect(requested).to include(submitted_va_appt_request_id, cancelled_cc_appt_request_id)
-            expect(requested).not_to include(booked_request_id, resolved_request_id,
-                                             cancelled_outside_date_range_request_id)
+            expect(requested).not_to include(booked_request_id, resolved_request_id)
           end
 
           # ideally, this should be done with schema matching, but we've had issues with schema matching in this file

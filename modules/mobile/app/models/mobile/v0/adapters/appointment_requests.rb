@@ -5,9 +5,7 @@ module Mobile
     module Adapters
       class AppointmentRequests
         # accepts an array of appointment requests
-        # returns a list of appointments
-        # only returns SUBMITTED appointment requests
-        # and CANCELLED requests that were created in the past 30 days
+        # returns a list of appointments, filtering out any that are not SUBMITTED or CANCELLED
         def parse(requests)
           va_appointments = []
           cc_appointments = []
@@ -15,11 +13,6 @@ module Mobile
           requests.each do |request|
             status = status(request)
             next unless status.in?(%w[CANCELLED SUBMITTED])
-
-            if status == 'CANCELLED'
-              created_at = Date.strptime(request[:created_date], '%m/%d/%Y')
-              next if created_at < 30.days.ago
-            end
 
             if request.cc_appointment_request
               cc_appointments << build_appointment_model(request, CC)
@@ -194,7 +187,7 @@ module Mobile
               id: nil,
               name: practice_name(request),
               address: {
-                street: source.dig(:preferred_providers, 0, :address),
+                street: source.dig(:preferred_providers, 0, :address), # this may not be correct
                 city: source[:preferred_city],
                 state: source[:preferred_state],
                 zip_code: source[:preferred_zip_code]
