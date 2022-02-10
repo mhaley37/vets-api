@@ -8,32 +8,34 @@ module V0
 
     PDF_FORMS = PdfForms.new(Settings.binaries.pdftk)
 
-
-    # If we were unable to submit the user's claim digitally, we allow them to the download
-    # the 10-10CG PDF, pre-filled with their data, for them to mail in.
     def download_pdf
-      # Brakeman will raise a warning if we use a claim's method or attribute in the source file name.
-      # Use an arbitrary uuid for the source file name and don't use the return value of claim#to_pdf
-      # as the source_file_path (to prevent changes in the the filename creating a vunerability in the future).
      # source_file_path = PdfFill::Filler.fill_form(@claim, SecureRandom.uuid, sign: false)
 
-    # Dir[Rails.root.join(‘lib’, ‘tasks’, ‘support’, ‘**‘, ‘*.rb’)]
-     #puts Rails.root 
-      #  PDF_FORMS.fill_form(
-      #   "lib/pdf_fill/forms/pdfs/#{form_id}.pdf",
-      #   file_path,
-      #   new_hash,
-      #   flatten: Rails.env.production?
-      # )
+       PDF_FORMS.fill_form(
+        "lib/pdf_fill/forms/pdfs/f1095b.pdf",
+        "1095B-NEW.pdf",
+        {:"topmostSubform[0].Page1[0].Part1Contents[0].Line1[0].f1_01[0]" => "Hello",
+          :"topmostSubform[0].Page1[0].Part1Contents[0].Line1[0].f1_03[0]" => "World",
+          :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].f1_25[0]" => "Dependent",
+          :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].f1_27[0]" => "One",
+          :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].c1_02[0]" => 1,
+          :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].c1_03[0]" => 1,
+          :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].c1_04[0]" => 1,
+          :"topmostSubform[0].Page1[0].Part1Contents[0].f1_04[0]" => "123-12-1234"
+        },
+        flatten: Rails.env.production?
+      )
      #  base dir "src" as in "vets-api/src/lib/pdf_fill/forms/pdfs/f1095b.pdf"
-      puts Rails.root.join('lib', 'pdf_fill', 'forms', 'pdfs', 'f1095b.pdf')
-    #PDF_FORMS.get_field_names(Rails.root.join('lib', 'pdf_fill', 'forms', 'pdfs', 'f1095b.pdf') 
-     source_file_path = 'lib/pdf_fill/forms/pdfs/f1095b.pdf'
+    field_names = PDF_FORMS.get_field_names('lib/pdf_fill/forms/pdfs/f1095b.pdf') 
+    #puts field_names.inspect
+    
+     source_file_path = '1095B-NEW.pdf'
      #puts source_file_path
       client_file_name = "1095B.pdf"
       file_contents    = File.read(source_file_path)
-
-     # File.delete(source_file_path)
+    
+      #TODO: why do we need this line if its just deleting the pdf reference we need? 
+     # File.delete(source_file_path) 
 
       #auditor.record(:pdf_download)
 
