@@ -22,7 +22,7 @@ RSpec.describe 'appointments', type: :request do
 
   describe 'GET /mobile/v0/appointments' do
     before do
-      Timecop.freeze('2020-11-01T10:30:00Z')
+      Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
     end
 
     after { Timecop.return }
@@ -102,7 +102,7 @@ RSpec.describe 'appointments', type: :request do
         cc_json = File.read(cc_path)
         va_appointments = Mobile::V0::Adapters::VAAppointments.new.parse(
           JSON.parse(va_json, symbolize_names: true)
-        )[0]
+        )
         cc_appointments = Mobile::V0::Adapters::CommunityCareAppointments.new.parse(
           JSON.parse(cc_json, symbolize_names: true)
         )
@@ -125,7 +125,7 @@ RSpec.describe 'appointments', type: :request do
 
           before { get '/mobile/v0/appointments', headers: iam_headers, params: params }
 
-          it 'has 10 items' do
+          it 'has 5 items' do
             expect(response.parsed_body['data'].size).to eq(5)
           end
 

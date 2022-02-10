@@ -81,7 +81,7 @@ module Mobile
         end
 
         unless validated_params[:included]&.include?('pending')
-          appointments.filter! { |appt| appt.status.in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST]) }
+          appointments.filter! { |appt| !appt.status.in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST]) }
         end
         appointments.reverse! if validated_params[:reverse_sort]
 

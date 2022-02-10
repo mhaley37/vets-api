@@ -78,11 +78,15 @@ module Mobile
             ], in_threads: 2, &:call
           )
 
-          va_appointments = []
-          cc_appointments = []
+          errors = [va_response[:error], cc_response[:error]].compact
 
-          va_appointments = va_appointments_adapter.parse(va_response[:response].body) unless va_response[:error]
-          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body) unless cc_response[:error]
+          raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
+
+          va_appointments = va_appointments_adapter.parse(va_response[:response].body)
+          cc_appointments = cc_appointments_adapter.parse(cc_response[:response].body)
+
+          facilities = fetch_facilities(va_appointments)
+          va_appointments = backfill_appointments_with_facilities(va_appointments, facilities)
 
           # There's currently a bug in the underlying Community Care service
           # where date ranges are not being respected
@@ -90,12 +94,7 @@ module Mobile
             appointment.start_date_utc.between?(start_date, end_date)
           end
 
-          appointments = (va_appointments + cc_appointments).sort_by(&:start_date_utc)
-
-          errors = [va_response[:error], cc_response[:error]].compact
-          raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
-
-          appointments
+          (va_appointments + cc_appointments).sort_by(&:start_date_utc)
         end
 
         def fetch_appointments(start_date, end_date)
