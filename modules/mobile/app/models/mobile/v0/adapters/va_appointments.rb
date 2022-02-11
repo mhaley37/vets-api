@@ -160,6 +160,7 @@ module Mobile
           location = {
             id: facility_id,
             name: facility ? facility[:name] : nil,
+            friendly_name: nil,
             address: {
               street: nil,
               city: nil,

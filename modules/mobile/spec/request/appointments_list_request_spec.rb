@@ -957,6 +957,7 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => nil,
                   'name' => 'Test clinic 2',
+                  'friendlyName' => 'CHYSHR-CHEYENNE VAMC',
                   'address' => {
                     'street' => '123 Sesame St.',
                     'city' => 'Cheyenne',
@@ -1018,6 +1019,7 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => '442',
                   'name' => 'Cheyenne VA Medical Center',
+                  'friendlyName' => 'CHYSHR-CHEYENNE VAMC',
                   'address' => {
                     'street' => '2360 East Pershing Boulevard',
                     'city' => 'Cheyenne',

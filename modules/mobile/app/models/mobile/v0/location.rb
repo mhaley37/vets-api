@@ -10,6 +10,7 @@ module Mobile
     class Location < Common::Resource
       attribute :id, Types::String.optional
       attribute :name, Types::String
+      attribute :friendly_name, Types::String.optional
       attribute :address, Address
       attribute :lat, Types::Float.optional
       attribute :long, Types::Float.optional

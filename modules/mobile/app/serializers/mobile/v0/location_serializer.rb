@@ -7,6 +7,7 @@ module Mobile
 
       set_type :location
       attributes :name,
+                 :friendly_name,
                  :address
     end
   end

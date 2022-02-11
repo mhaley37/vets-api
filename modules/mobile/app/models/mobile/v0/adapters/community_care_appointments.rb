@@ -86,6 +86,7 @@ module Mobile
           {
             id: nil,
             name: name,
+            friendly_name: nil,
             address: {
               street: address[:street],
               city: address[:city],

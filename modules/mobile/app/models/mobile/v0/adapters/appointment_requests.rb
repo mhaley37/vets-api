@@ -155,6 +155,7 @@ module Mobile
             {
               id: facility_id,
               name: facility ? facility[:name] : nil,
+              friendly_name: request.dig(:facility, :name),
               address: {
                 street: nil,
                 city: nil,
@@ -209,6 +210,7 @@ module Mobile
             {
               id: nil,
               name: practice_name(request),
+              friendly_name: request.dig(:facility, :name), # unclear if this is required
               address: {
                 street: source[:street],
                 city: source[:city],
