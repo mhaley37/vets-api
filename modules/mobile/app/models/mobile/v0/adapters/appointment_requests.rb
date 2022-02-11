@@ -65,7 +65,7 @@ module Mobile
         def appointment_type(request, klass)
           # this is temporary because test data does not include video type
           unless request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
-            log_message_to_sentry("Unknown appointment request type: #{request[:visit_type]}", :error)
+            log_message_to_sentry('Unknown appointment request type', :error, { visit_type: request[:visit_type] })
           end
           klass::APPOINTMENT_TYPE
         end
@@ -86,7 +86,7 @@ module Mobile
         end
 
         # this is used for sorting requests into appointments list
-        # if all proposed times times are in the past, use the first proposed time by entry order
+        # if all proposed times times are in the past, use the chronologically first proposed time
         # if any proposed times are in the future, use the one that occurs soonest
         # because we only have date an AM/PM, setting to 8AM and 12PM because when creating appointment
         def localized_start_date(request)
@@ -99,9 +99,10 @@ module Mobile
             hour = request["option_time#{i}"] == 'AM' ? 8 : 12
 
             results << DateTime.new(year, month, day, hour, 0).in_time_zone(time_zone)
-          end
+          end.sort
+
           current_time = Time.current.in_time_zone(time_zone)
-          future_times = proposed_times.select { |time| time >= current_time }.sort
+          future_times = proposed_times.select { |time| time >= current_time }
           future_times.any? ? future_times.first : proposed_times.first
         end
 
@@ -112,7 +113,8 @@ module Mobile
         def status_detail(request)
           return nil unless request[:status] == 'Cancelled'
 
-          cancellation_code = request.dig(:appointment_request_detail_code, 0, :detail_code, :code)
+          first_detail = request.dig(:appointment_request_detail_code, 0)
+          cancellation_code = first_detail&.dig(:detail_code, :code)
           return nil unless cancellation_code
 
           case cancellation_code
@@ -123,7 +125,7 @@ module Mobile
           when 'DETCODE24'
             'CANCELLED - OTHER'
           else
-            # log details
+            log_message_to_sentry('Unknown appointment request cancellation code', :error, { detail: first_detail })
             'CANCELLED - OTHER'
           end
         end

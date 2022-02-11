@@ -1082,10 +1082,10 @@ RSpec.describe 'appointments', type: :request do
                 'proposedTimes' => {
                   'optionDate1' => '10/01/2020',
                   'optionTime1' => 'PM',
-                  'optionDate2' => '11/02/2020',
+                  'optionDate2' => '11/03/2020',
                   'optionTime2' => 'AM',
-                  'optionDate3' => 'No Date Selected',
-                  'optionTime3' => 'No Time Selected'
+                  'optionDate3' => '11/02/2020',
+                  'optionTime3' => 'AM'
                 },
                 'typeOfCare' => 'Primary Care',
                 'patientPhoneNumber' => '(666) 666-6666',
