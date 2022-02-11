@@ -8,19 +8,11 @@ describe Mobile::V0::Adapters::VAAppointments do
   end
 
   let(:adapted_appointments) do
-    subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))[0]
-  end
-
-  let(:adapted_facilities) do
-    subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))[1]
+    subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))
   end
 
   it 'returns a list of appointments at the expected size' do
     expect(adapted_appointments.size).to eq(10)
-  end
-
-  it 'returns a set of the facilities for the appointments' do
-    expect(adapted_facilities).to eq(Set.new(%w[442 442GC]))
   end
 
   context 'with a booked VA appointment' do
@@ -51,6 +43,7 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
+          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -131,6 +124,7 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
+          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -207,6 +201,7 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
+          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -275,6 +270,7 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
+          friendly_name: nil,
           address: {
             street: '114 Dewey Ave',
             city: 'Eureka',
@@ -343,6 +339,7 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
+          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -391,7 +388,7 @@ describe Mobile::V0::Adapters::VAAppointments do
     end
 
     let(:adapted_appointments_missing_status) do
-      subject.parse(JSON.parse(appointment_fixtures_missing_status, symbolize_names: true))[0]
+      subject.parse(JSON.parse(appointment_fixtures_missing_status, symbolize_names: true))
     end
 
     context 'with  past appointment' do
@@ -433,7 +430,7 @@ describe Mobile::V0::Adapters::VAAppointments do
     end
 
     let(:adapted_appointments) do
-      subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))[0]
+      subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))
     end
 
     let(:covid_vaccine_va) { adapted_appointments[0] }
@@ -469,7 +466,7 @@ describe Mobile::V0::Adapters::VAAppointments do
     end
 
     let(:appointment_facility_station_ids) do
-      subject.parse(JSON.parse(appointment_facility_station_ids_json, symbolize_names: true))[0]
+      subject.parse(JSON.parse(appointment_facility_station_ids_json, symbolize_names: true))
     end
 
     context 'with an appointment that has different ids' do

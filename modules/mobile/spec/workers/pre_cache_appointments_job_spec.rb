@@ -47,6 +47,7 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
                         healthcare_provider: 'Tes',
                         healthcare_service: 'RR',
                         location: { id: nil,
+                                    friendly_name: nil,
                                     name: 'RR',
                                     address: { street: 'clarksburg', city: 'md', state: 'MD',
                                                zip_code: '22222' },
@@ -64,7 +65,13 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
                         time_zone: 'America/New_York',
                         vetext_id: nil,
                         reason: nil,
-                        is_covid_vaccine: false })
+                        is_covid_vaccine: false,
+                        is_pending: false,
+                        proposed_times: nil,
+                        type_of_care: nil,
+                        patient_phone_number: nil,
+                        patient_email: nil,
+                        best_time_to_call: nil })
             end
           end
         end

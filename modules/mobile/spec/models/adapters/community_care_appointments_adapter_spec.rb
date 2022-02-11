@@ -24,6 +24,7 @@ describe Mobile::V0::Adapters::CommunityCareAppointments do
         {
           id: nil,
           name: 'Atlantic Medical Care',
+          friendly_name: nil,
           address: {
             street: '123 Main Street',
             city: 'Orlando',
