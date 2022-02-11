@@ -297,7 +297,12 @@ http_interactions:
                   "firstName": "Vilasini",
                   "lastName": "Reddy",
                   "practiceName": "Test clinic 2",
-                  "address": {},
+                  "address": {
+                    "street": "123 Sesame St.",
+                    "city": "Cheyenne",
+                    "state": "VA",
+                    "zip_code": "20171"
+                  },
                   "preferredOrder": 0,
                   "objectType": "Provider",
                   "link": []

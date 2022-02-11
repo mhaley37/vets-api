@@ -958,8 +958,8 @@ RSpec.describe 'appointments', type: :request do
                   'id' => nil,
                   'name' => 'Test clinic 2',
                   'address' => {
-                    'street' => {},
-                    'city' => 'her',
+                    'street' => '123 Sesame St.',
+                    'city' => 'Cheyenne',
                     'state' => 'VA',
                     'zipCode' => '20171'
                   },
