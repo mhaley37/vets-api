@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sentry_logging'
+
 module Mobile
   module V0
     module Adapters
@@ -32,7 +34,7 @@ module Mobile
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: klass.appointment_type(request),
+            appointment_type: appointment_type(request, klass),
             cancel_id: nil,
             comment: nil,
             facility_id: klass.facility_id(request),
@@ -59,6 +61,14 @@ module Mobile
           )
         end
         # rubcop:enable Metrics/MethodLength
+
+        def appointment_type(request, klass)
+          # this is temporary because test data does not include video type
+          unless request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
+            log_message_to_sentry("Unknown appointment request type: #{request[:visit_type]}", :error)
+          end
+          klass::APPOINTMENT_TYPE
+        end
 
         def phone_only?(request)
           request[:visit_type] == 'Phone Call'
@@ -128,14 +138,7 @@ module Mobile
         end
 
         class VA
-          def self.appointment_type(request)
-            if request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
-              'VA'
-            else
-              # there should be a video type, need to figure out what it's called
-              # log to sentry
-            end
-          end
+          APPOINTMENT_TYPE = 'VA'
 
           def self.provider_name(_)
             nil
@@ -177,14 +180,7 @@ module Mobile
         # rubocop:enable Metrics/MethodLength
 
         class CC
-          def self.appointment_type(request)
-            if request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
-              'COMMUNITY_CARE'
-            else
-              # there should be a video type, need to figure out what it's called
-              # log to sentry
-            end
-          end
+          APPOINTMENT_TYPE = 'COMMUNITY_CARE'
 
           def self.provider_name(request)
             provider_section = request.dig(:cc_appointment_request, :preferred_providers, 0)
