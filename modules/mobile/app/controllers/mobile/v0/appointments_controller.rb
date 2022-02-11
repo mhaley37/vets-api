@@ -80,9 +80,7 @@ module Mobile
           Rails.logger.info('mobile appointments service fetch', user_uuid: @current_user.uuid)
         end
 
-        unless validated_params[:included]&.include?('pending')
-          appointments.filter! { |appt| !appt.status.in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST]) }
-        end
+        appointments.filter! { |appt| appt.is_pending == false } unless validated_params[:included]&.include?('pending')
         appointments.reverse! if validated_params[:reverse_sort]
 
         appointments

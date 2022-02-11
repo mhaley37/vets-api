@@ -305,7 +305,6 @@ RSpec.describe 'appointments', type: :request do
                   'id' => '442',
                   'name' => 'Cheyenne VA Medical Center',
                   'friendlyName' => nil,
-                  'friendlyName' => nil,
                   'address' => {
                     'street' => '2360 East Pershing Boulevard',
                     'city' => 'Cheyenne',
@@ -929,10 +928,10 @@ RSpec.describe 'appointments', type: :request do
 
           get_appointments
 
-          appointment_requests = response.parsed_body['data'].select do |appts|
-            appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
+          pending = response.parsed_body['data'].select do |appt|
+            appt['attributes']['isPending'] == true
           end
-          expect(appointment_requests).to be_empty
+          expect(pending).to be_empty
         end
       end
 
@@ -951,10 +950,10 @@ RSpec.describe 'appointments', type: :request do
           it 'does not include pending appointments' do
             get_appointments
 
-            requested = response.parsed_body['data'].select do |appts|
-              appts['appointment_type'].in?(%w[COMMUNITY_CARE_REQUEST VA_REQUEST])
+            pending = response.parsed_body['data'].select do |appt|
+              appt['attributes']['isPending'] == true
             end
-            expect(requested).to be_empty
+            expect(pending).to be_empty
           end
         end
 
