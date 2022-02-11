@@ -32,7 +32,7 @@ module Mobile
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: klass::APPOINTMENT_TYPE,
+            appointment_type: klass.appointment_type(request),
             cancel_id: nil,
             comment: nil,
             facility_id: klass.facility_id(request),
@@ -100,11 +100,22 @@ module Mobile
         end
 
         def status_detail(request)
-          cancellation_reason = request.dig(:appointment_request_detail_code, 0, :detail_code, :provider_message)
-          return nil unless cancellation_reason
+          return nil unless request[:status] == 'Cancelled'
 
-          return 'CANCELLED BY CLINIC' if cancellation_reason.start_with?('Cancelled by VA')
-          return 'CANCELLED BY PATIENT' if cancellation_reason.start_with?('Cancelled by Veteran')
+          cancellation_code = request.dig(:appointment_request_detail_code, 0, :detail_code, :code)
+          return nil unless cancellation_code
+
+          case cancellation_code
+          when 'DETCODE22', 'DETCODE8'
+            'CANCELLED BY PATIENT'
+          when 'DETCODE19'
+            'CANCELLED BY CLINIC'
+          when 'DETCODE24'
+            'CANCELLED - OTHER'
+          else
+            # log details
+            'CANCELLED - OTHER'
+          end
         end
 
         # this is not correct for cc appointment requests.
@@ -117,7 +128,14 @@ module Mobile
         end
 
         class VA
-          APPOINTMENT_TYPE = 'VA_REQUEST'
+          def self.appointment_type(request)
+            if request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
+              'VA'
+            else
+              # there should be a video type, need to figure out what it's called
+              # log to sentry
+            end
+          end
 
           def self.provider_name(_)
             nil
@@ -158,7 +176,14 @@ module Mobile
         # rubocop:enable Metrics/MethodLength
 
         class CC
-          APPOINTMENT_TYPE = 'COMMUNITY_CARE_REQUEST'
+          def self.appointment_type(request)
+            if request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
+              'COMMUNITY_CARE'
+            else
+              # there should be a video type, need to figure out what it's called
+              # log to sentry
+            end
+          end
 
           def self.provider_name(request)
             provider_section = request.dig(:cc_appointment_request, :preferred_providers, 0)

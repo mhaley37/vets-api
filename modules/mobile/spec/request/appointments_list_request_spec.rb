@@ -949,7 +949,7 @@ RSpec.describe 'appointments', type: :request do
               'id' => '8a48912a6d02b0fc016d20b4ccb9001a',
               'type' => 'appointment',
               'attributes' => {
-                'appointmentType' => 'COMMUNITY_CARE_REQUEST',
+                'appointmentType' => 'COMMUNITY_CARE',
                 'cancelId' => nil,
                 'comment' => nil,
                 'healthcareProvider' => 'Vilasini Reddy',
@@ -1010,7 +1010,7 @@ RSpec.describe 'appointments', type: :request do
               'id' => '8a48e8db6d70a38a016d72b354240002',
               'type' => 'appointment',
               'attributes' => {
-                'appointmentType' => 'VA_REQUEST',
+                'appointmentType' => 'VA',
                 'cancelId' => nil,
                 'comment' => nil,
                 'healthcareProvider' => nil,
