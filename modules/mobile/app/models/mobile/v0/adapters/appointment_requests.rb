@@ -57,7 +57,8 @@ module Mobile
             type_of_care: request[:appointment_type],
             patient_phone_number: request[:phone_number],
             patient_email: request[:email],
-            best_time_to_call: request[:best_timeto_call]
+            best_time_to_call: request[:best_timeto_call],
+            friendly_location_name: request[:friendly_location_name]
           )
         end
         # rubcop:enable Metrics/MethodLength
@@ -160,7 +161,6 @@ module Mobile
             {
               id: facility_id,
               name: facility ? facility[:name] : nil,
-              friendly_name: request.dig(:facility, :name),
               address: {
                 street: nil,
                 city: nil,
@@ -208,7 +208,6 @@ module Mobile
             {
               id: nil,
               name: practice_name(request),
-              friendly_name: request.dig(:facility, :name), # unclear if this is required
               address: {
                 street: source[:street],
                 city: source[:city],

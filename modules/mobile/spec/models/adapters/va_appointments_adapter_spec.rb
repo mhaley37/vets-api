@@ -43,7 +43,6 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
-          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -124,7 +123,6 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
-          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -201,7 +199,6 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
-          friendly_name: nil,
           address: {
             street: nil,
             city: nil,
@@ -270,7 +267,6 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
-          friendly_name: nil,
           address: {
             street: '114 Dewey Ave',
             city: 'Eureka',
@@ -339,7 +335,6 @@ describe Mobile::V0::Adapters::VAAppointments do
         {
           id: '442',
           name: 'CHEYENNE VAMC',
-          friendly_name: nil,
           address: {
             street: nil,
             city: nil,

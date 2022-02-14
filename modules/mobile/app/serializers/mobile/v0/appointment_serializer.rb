@@ -26,7 +26,8 @@ module Mobile
                  :type_of_care,
                  :patient_phone_number,
                  :patient_email,
-                 :best_time_to_call
+                 :best_time_to_call,
+                 :friendly_location_name
     end
   end
 end

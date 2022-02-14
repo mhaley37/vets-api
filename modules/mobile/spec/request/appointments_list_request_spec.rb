@@ -304,7 +304,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => '442',
                   'name' => 'Cheyenne VA Medical Center',
-                  'friendlyName' => nil,
                   'address' => {
                     'street' => '2360 East Pershing Boulevard',
                     'city' => 'Cheyenne',
@@ -336,7 +335,9 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => nil,
                 'patientPhoneNumber' => nil,
                 'patientEmail' => nil,
-                'bestTimeToCall' => nil
+                'bestTimeToCall' => nil,
+                'friendlyLocationName' => nil
+
               }
             }
           )
@@ -360,7 +361,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => nil,
                   'name' => 'Atlantic Medical Care',
-                  'friendlyName' => nil,
                   'address' => {
                     'street' => '123 Main Street',
                     'city' => 'Orlando',
@@ -392,7 +392,8 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => nil,
                 'patientPhoneNumber' => nil,
                 'patientEmail' => nil,
-                'bestTimeToCall' => nil
+                'bestTimeToCall' => nil,
+                'friendlyLocationName' => nil
               }
             }
           )
@@ -445,7 +446,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => '442',
                   'name' => 'Cheyenne VA Medical Center',
-                  'friendlyName' => nil,
                   'address' => {
                     'street' => '2360 East Pershing Boulevard',
                     'city' => 'Cheyenne',
@@ -477,7 +477,8 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => nil,
                 'patientPhoneNumber' => nil,
                 'patientEmail' => nil,
-                'bestTimeToCall' => nil
+                'bestTimeToCall' => nil,
+                'friendlyLocationName' => nil
               }
             }
           )
@@ -501,7 +502,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => nil,
                   'name' => 'Atlantic Medical Care',
-                  'friendlyName' => nil,
                   'address' => {
                     'street' => '123 Main Street',
                     'city' => 'Orlando',
@@ -533,7 +533,8 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => nil,
                 'patientPhoneNumber' => nil,
                 'patientEmail' => nil,
-                'bestTimeToCall' => nil
+                'bestTimeToCall' => nil,
+                'friendlyLocationName' => nil
               }
             }
           )
@@ -634,7 +635,6 @@ RSpec.describe 'appointments', type: :request do
           {
             'id' => '442',
             'name' => 'Fort Collins VA Clinic',
-            'friendlyName' => nil,
             'address' => {
               'street' => '2509 Research Boulevard',
               'city' => 'Fort Collins',
@@ -659,7 +659,6 @@ RSpec.describe 'appointments', type: :request do
           {
             'id' => '442',
             'name' => 'Cheyenne VA Medical Center',
-            'friendlyName' => nil,
             'address' => {
               'street' => '2360 East Pershing Boulevard',
               'city' => 'Cheyenne',
@@ -702,7 +701,6 @@ RSpec.describe 'appointments', type: :request do
           {
             'id' => '442',
             'name' => 'Cheyenne VA Medical Center',
-            'friendlyName' => nil,
             'address' => {
               'street' => '2360 East Pershing Boulevard',
               'city' => 'Cheyenne',
@@ -742,7 +740,6 @@ RSpec.describe 'appointments', type: :request do
           {
             'id' => '442',
             'name' => 'Cheyenne VA Medical Center',
-            'friendlyName' => nil,
             'address' => {
               'street' => '2360 East Pershing Boulevard',
               'city' => 'Cheyenne',
@@ -989,7 +986,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => nil,
                   'name' => 'Test clinic 2',
-                  'friendlyName' => 'CHYSHR-CHEYENNE VAMC',
                   'address' => {
                     'street' => '123 Sesame St.',
                     'city' => 'Cheyenne',
@@ -1028,7 +1024,8 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => 'Optometry (routine eye exam)',
                 'patientPhoneNumber' => '(703) 652-0000',
                 'patientEmail' => 'samatha.girla@va.gov',
-                'bestTimeToCall' => %w[Afternoon Evening Morning]
+                'bestTimeToCall' => %w[Afternoon Evening Morning],
+                'friendlyLocationName' => 'CHYSHR-Cheyenne VA Medical Center'
               }
             }
 
@@ -1051,7 +1048,6 @@ RSpec.describe 'appointments', type: :request do
                 'location' => {
                   'id' => '442',
                   'name' => 'Cheyenne VA Medical Center',
-                  'friendlyName' => 'CHYSHR-CHEYENNE VAMC',
                   'address' => {
                     'street' => '2360 East Pershing Boulevard',
                     'city' => 'Cheyenne',
@@ -1090,7 +1086,8 @@ RSpec.describe 'appointments', type: :request do
                 'typeOfCare' => 'Primary Care',
                 'patientPhoneNumber' => '(666) 666-6666',
                 'patientEmail' => 'Vilasini.reddy@va.gov',
-                'bestTimeToCall' => ['Morning']
+                'bestTimeToCall' => ['Morning'],
+                'friendlyLocationName' => 'DAYTSHR -Dayton VA Medical Center'
               }
             }
 
