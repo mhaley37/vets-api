@@ -104,10 +104,10 @@ module FastTrack
     end
 
     def add_medications_intro
-      return @pdf unless medications?
-
       @pdf.text "\n", size: 11
       @pdf.text 'Active Prescriptions', size: 16
+
+      return @pdf unless medications?
 
       med_search_window = 'VHA records searched for medication prescriptions active as of ' \
                           "#{Time.zone.today.strftime('%m/%d/%Y')}"
@@ -123,15 +123,17 @@ module FastTrack
     end
 
     def add_medications_list
-      return @pdf unless medications?
-
-      @medications.each do |medication|
-        @pdf.text medication['description'], size: 11, style: :bold
-        @pdf.text "Prescribed on: #{medication['authoredOn'][0, 10].to_date.strftime('%m/%d/%Y')}"
-        if medication['dosageInstructions'].present?
-          @pdf.text "Dosage instructions: #{medication['dosageInstructions'].join('; ')}"
+      if medications?
+        @medications.each do |medication|
+          @pdf.text medication['description'], size: 11, style: :bold
+          @pdf.text "Prescribed on: #{medication['authoredOn'][0, 10].to_date.strftime('%m/%d/%Y')}"
+          if medication['dosageInstructions'].present?
+            @pdf.text "Dosage instructions: #{medication['dosageInstructions'].join('; ')}"
+          end
+          @pdf.text "\n", size: 8
         end
-        @pdf.text "\n", size: 8
+      else
+        @pdf.text "No active medications were found in the last year", size: 8
       end
     end
 

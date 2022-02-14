@@ -34,6 +34,11 @@ RSpec.describe FastTrack::HypertensionPdfGenerator, :vcr do
     PDF::Inspector::Text.analyze(pdf.render).strings
   end
 
+  let!(:pdf_no_meds) do
+    pdf = FastTrack::HypertensionPdfGenerator.new(patient_name, parsed_bp_data, []).generate
+    PDF::Inspector::Text.analyze(pdf.render).strings
+  end
+
   describe '#generate', :vcr do
     it 'includes the veterans name' do
       expect(pdf).to include 'Cat Marie Power, Jr.'
@@ -51,6 +56,14 @@ RSpec.describe FastTrack::HypertensionPdfGenerator, :vcr do
       end.compact
 
       expect(pdf).to include(*dosages)
+    end
+
+    it 'shows message when no medications are present' do
+      expect(pdf_no_meds).to include('No active medications were found in the last year')
+    end
+
+    it 'shows the active prescriptions header even if no meds present' do
+      expect(pdf_no_meds).to include('Active Prescriptions')
     end
   end
 end
