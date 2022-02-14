@@ -52,7 +52,6 @@ module Mobile
         def normalize_appointments(responses, start_date, end_date)
           va_appointments = va_appointments_adapter.parse(responses[:va][:response].body)
           cc_appointments = cc_appointments_adapter.parse(responses[:cc][:response].body)
-
           va_appointment_requests, cc_appointment_requests = requests_adapter.parse(responses[:requests])
 
           # There's currently a bug in the underlying Community Care service

@@ -70,7 +70,8 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
                         type_of_care: nil,
                         patient_phone_number: nil,
                         patient_email: nil,
-                        best_time_to_call: nil })
+                        best_time_to_call: nil,
+                        friendly_location_name: nil })
             end
           end
         end

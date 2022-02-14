@@ -80,7 +80,6 @@ module Mobile
           name_hash.values.join(' ').strip
         end
 
-        # rubocop:disable Metrics/MethodLength
         def location(name, address, phone)
           # captures area code \((\d{3})\) number (after space) \s(\d{3}-\d{4})
           # and extension (until the end of the string) (\S*)\z
@@ -88,7 +87,6 @@ module Mobile
           {
             id: nil,
             name: name,
-            friendly_name: nil,
             address: {
               street: address[:street],
               city: address[:city],
@@ -106,7 +104,6 @@ module Mobile
             code: nil
           }
         end
-        # rubocop:enable Metrics/MethodLength
 
         def start_date(appointment_time, time_zone)
           time_zone_split = time_zone.split
