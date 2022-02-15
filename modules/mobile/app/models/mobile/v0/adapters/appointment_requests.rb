@@ -77,12 +77,12 @@ module Mobile
 
         def proposed_times(request)
           {
-            option_date1: request[:option_date1],
-            option_time1: request[:option_time1],
-            option_date2: request[:option_date2],
-            option_time2: request[:option_time2],
-            option_date3: request[:option_date3],
-            option_time3: request[:option_time3]
+            option_date1: request[:option_date1] == 'No Date Selected' ? nil : request[:option_date1],
+            option_time1: request[:option_time1] == 'No Time Selected' ? nil : request[:option_time1],
+            option_date2: request[:option_date2] == 'No Date Selected' ? nil : request[:option_date2],
+            option_time2: request[:option_time2] == 'No Time Selected' ? nil : request[:option_time2],
+            option_date3: request[:option_date3] == 'No Date Selected' ? nil : request[:option_date3],
+            option_time3: request[:option_time3] == 'No Time Selected' ? nil : request[:option_time3]
           }
         end
 

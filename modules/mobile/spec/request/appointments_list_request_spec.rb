@@ -1018,8 +1018,8 @@ RSpec.describe 'appointments', type: :request do
                   'optionTime1' => 'PM',
                   'optionDate2' => '10/02/2020',
                   'optionTime2' => 'PM',
-                  'optionDate3' => 'No Date Selected',
-                  'optionTime3' => 'No Time Selected'
+                  'optionDate3' => nil,
+                  'optionTime3' => nil
                 },
                 'typeOfCare' => 'Optometry (routine eye exam)',
                 'patientPhoneNumber' => '(703) 652-0000',
