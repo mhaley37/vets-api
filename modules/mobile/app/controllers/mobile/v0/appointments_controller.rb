@@ -75,7 +75,6 @@ module Mobile
             start_date: [validated_params[:start_date], one_year_ago].min,
             end_date: [validated_params[:end_date], one_year_from_now].max
           )
-
           Mobile::V0::Appointment.set_cached(@current_user, appointments)
           Rails.logger.info('mobile appointments service fetch', user_uuid: @current_user.uuid)
         end
@@ -92,7 +91,6 @@ module Mobile
             validated_params[:start_date].beginning_of_day, validated_params[:end_date].end_of_day
           )
         end
-
         url = request.base_url + request.path
         Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
       end

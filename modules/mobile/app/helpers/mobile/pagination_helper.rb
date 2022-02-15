@@ -69,7 +69,7 @@ module Mobile
           query_strings << "#{camelized}=#{validated_params[key]}"
         end
 
-        query_strings << 'included[]=pending' if validated_params['included']&.include?('pending')
+        query_strings << 'included[]=pending' if validated_params[:included]&.include?('pending')
         query_strings << "page[size]=#{page_size}"
 
         "#{url}?#{query_strings.join('&')}"
