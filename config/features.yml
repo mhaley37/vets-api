@@ -27,6 +27,9 @@ features:
   can_upload_10_10cg_poa:
     actor_type: cookie_id
     description: Allows users to upload POA documentation when completing the 10-10CG.
+  cerner_allow_partial_facilities:
+    actor_type: user
+    description: This will allow cerner facilities to be set to partially cerner or all cerner.
   cerner_override_463:
     actor_type: user
     description: This will show the Cerner facility 463 as `isCerner`.
@@ -74,10 +77,22 @@ features:
     actor_type: user
     description: Enables the health care pre-check-in experiences to send demographics confirmation.
     enable_in_development: true
+  check_in_experience_editing_day_of_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the day of check-in experience.
+    enable_in_development: true
+  check_in_experience_editing_pre_check_in_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the pre-check-in experience.
+    enable_in_development: true
   check_in_experience_update_information_page_enabled:
     actor_type: user
     description: Enables the Update Information question in the health care check-in experience application
     enable_in_development: false
+  check_in_experience_logging_enabled:
+    actor_type: user
+    description: Enables additional logging before and after an action.
+    enable_in_development: true
   coe_access:
     actor_type: user
     description: Feature gates the certificate of eligibility application
@@ -133,6 +148,9 @@ features:
   decision_review_hlr_email:
     actor_type: user
     description: Send email notification for successful HLR submission
+  decision_review_nod_email:
+    actor_type: user
+    description: Send email notification for successful NOD submission
   decision_review_sc_email:
     actor_type: user
     description: Send email notification for successful SC submission
@@ -172,6 +190,10 @@ features:
   education_reports_cleanup:
     actor_type: user
     description: Updates to the daily education reports to remove old data that isn't needed in the new fiscal year
+    enable_in_development: true
+  enrollment_verification:
+    actor_type: user
+    description: Enables access to the Enrollment Verification app
     enable_in_development: true
   evss_upload_limit_150mb:
     actor_type: user
@@ -245,17 +267,9 @@ features:
     actor_type: user
     description: Display new field operationalHoursSpecialInstructions for VA facilities
     enable_in_development: true
-  find_forms_first_flag:
+  find_forms_show_pdf_modal:
     actor_type: user
-    description: Enhances Find A Forms Flag 1.
-    enable_in_development: true
-  find_forms_second_flag:
-    actor_type: user
-    description: Enhances Find A Forms Flag 2.
-    enable_in_development: true
-  find_forms_third_flag:
-    actor_type: user
-    description: Enhances Find A Forms Flag 3.
+    description: Shows the PDF modal for the Find VA Forms page.
     enable_in_development: true
   file_upload_short_workflow_enabled:
     actor_type: user
@@ -284,10 +298,6 @@ features:
   gibct_school_ratings:
     actor_type: user
     description: Show/Hide the school ratings section of the Comparison Tool School Profile Page.
-  gi_sandbox_comparison_tool_toggle:
-    actor_type: user
-    description: Shows gi-bill-comparison-tool-sandbox CT if active else shows the gi-bill-comparison-tool CT.
-    enable_in_development: true
   hlr_v2:
     actor_type: user
     description: Enable showing Higher-Level Review v2
@@ -311,10 +321,6 @@ features:
     actor_type: cookie_id
     description: Enables/disables the Login.gov button for MyVAHealth (VSP Identity)
     enable_in_development: true
-  login_old_design:
-    actor_type: cookie_id
-    description: Enables/disables the new Sign in design (VSP Identity)
-    enable_in_development: true
   loop_pages:
     actor_type: user
     description: Enable new list loop pattern
@@ -327,6 +333,10 @@ features:
     actor_type: user
     description: Separates mobile mega menu from desktop mega menu
     enable_in_development: true
+  mhv_to_logingov_account_transition:
+    actor_type: cookie_id
+    description: Enables/disables MHV to Login.gov account transfer experience
+    enable_in_development: false
   mobile_api:
     actor_type: user
     description: API endpoints consumed by the VA Mobile App (iOS/Android)
@@ -360,6 +370,14 @@ features:
   profile_show_address_change_modal:
     actor_type: user
     description: Shows a modal that allows addresses to be duplicated from home to mailing and vice versa
+    enable_in_development: true
+  profile_show_fax_number:
+    actor_type: user
+    description: Show/hide the fax number UI on the profile page
+    enable_in_development: true
+  profile_show_gender:
+    actor_type: user
+    description: Show/hide the gender field UI on the profile page
     enable_in_development: true
   profile_show_receive_text_notifications:
     actor_type: user
@@ -508,10 +526,6 @@ features:
     actor_type: user
     description: Set up toggle in anticipation of the next iteration of facility selection, version 2.2.
     enable_in_development: true
-  va_online_scheduling_homepage_refresh:
-    actor_type: user
-    description: Set up toggle in anticipation of the next iteration of the homepage and appointment cards.
-    enable_in_development: true
   va_online_scheduling_requests:
     actor_type: user
     description: Allows veterans to submit requests for VA appointments
@@ -574,3 +588,6 @@ features:
   show_payment_and_debt_section:
     actor_type: user
     description: Enables payment and debt section
+  show_dashboard_notifications:
+    actor_type: user
+    description: Enables on-site notifications

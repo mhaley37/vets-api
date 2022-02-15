@@ -5,11 +5,11 @@ require 'dgi/automation/service'
 require 'dgi/status/service'
 require 'dgi/submission/service'
 require 'dgi/letters/service'
+require 'dgi/enrollment/service'
 
 module MebApi
   module V0
     class EducationBenefitsController < MebApi::V0::BaseController
-      # disabling checks while we serve big mock JSON objects. Check will be reinstated when we integrate with DGIB
       def claimant_info
         response = automation_service.get_claimant_info
 
@@ -17,9 +17,14 @@ module MebApi
       end
 
       def eligibility
-        response = eligibility_service.get_eligibility
+        automation_response = automation_service.get_claimant_info
+        claimant_id = automation_response['claimant']['claimant_id']
+        eligibility_response = eligibility_service.get_eligibility(claimant_id)
 
-        render json: response, serializer: EligibilitySerializer
+        response = automation_response.status == 201 ? eligibility_response : automation_response
+        serializer = automation_response.status == 201 ? EligibilitySerializer : AutomationSerializer
+
+        render json: response, serializer: serializer
       end
 
       def claim_status
@@ -47,10 +52,10 @@ module MebApi
       end
 
       def submit_claim
-        response = submission_service.submit_claim(params)
+        response = submission_service.submit_claim(params[:education_benefit].except(:form_id))
 
-        # @NOTE: Need front end to send in_progress_form_id as well as claimant_id to clear form for front end
-        # Add serializer for response to the front end when the sending data back
+        clear_saved_form(params[:form_id]) if params[:form_id]
+
         render json: {
           data: {
             'status': response.status
@@ -58,10 +63,25 @@ module MebApi
         }
       end
 
+      def enrollment
+        response = enrollment_service.get_enrollment(params[:claimant_id])
+
+        render json: response, serializer: EnrollmentSerializer
+      end
+
+      def submit_enrollment_verification
+        # Just mocking return value until data structure is confirmed
+        render json: {
+          data: {
+            status: 200
+          }
+        }
+      end
+
       private
 
       def eligibility_service
-        MebApi::DGI::Eligibility::Service.new @current_user
+        MebApi::DGI::Eligibility::Service.new(@current_user)
       end
 
       def automation_service
@@ -78,6 +98,10 @@ module MebApi
 
       def claim_letters_service
         MebApi::DGI::Letters::Service.new(@current_user)
+      end
+
+      def enrollment_service
+        MebApi::DGI::Enrollment::Service.new(@current_user)
       end
     end
   end

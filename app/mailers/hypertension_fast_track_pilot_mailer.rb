@@ -14,7 +14,7 @@ class HypertensionFastTrackPilotMailer < ApplicationMailer
     template = File.read('app/mailers/views/hypertension_fast_track_pilot_mailer.erb.html')
 
     mail(
-      to: 'emily.theis@va.gov, zachary.goldfine@va.gov, Julia.Allen1@va.gov, paul.shute@va.gov',
+      to: Settings.rrd.event_tracking.recipients,
       subject: subject,
       body: ERB.new(template).result(binding)
     )

@@ -16,31 +16,45 @@ module AppealsApi
         end
 
         # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/AbcSize
         def form_fill
           options = {
-            # Section I: Vet's ID
+            # Vet's ID
             # Veteran name is filled out through autosize text box, not pdf fields
-            form_fields.middle_initial => form_data.middle_initial,
-            form_fields.first_three_ssn => form_data.first_three_ssn,
-            form_fields.second_two_ssn => form_data.second_two_ssn,
-            form_fields.last_four_ssn => form_data.last_four_ssn,
-            form_fields.file_number => form_data.file_number,
-            form_fields.birth_month => form_data.birth_mm,
-            form_fields.birth_day => form_data.birth_dd,
-            form_fields.birth_year => form_data.birth_yyyy,
-            form_fields.insurance_policy_number => form_data.insurance_policy_number,
-            form_fields.mailing_address_state => form_data.state_code,
-            form_fields.mailing_address_country => form_data.country_code,
+            form_fields.middle_initial => form_data.veteran.middle_initial,
+            form_fields.ssn_first_three => form_data.veteran.ssn_first_three,
+            form_fields.ssn_second_two => form_data.veteran.ssn_second_two,
+            form_fields.ssn_last_four => form_data.veteran.ssn_last_four,
+            form_fields.file_number => form_data.veteran.file_number,
+            form_fields.birth_month => form_data.veteran.birth_month,
+            form_fields.birth_day => form_data.veteran.birth_day,
+            form_fields.birth_year => form_data.veteran.birth_year,
+            form_fields.insurance_policy_number => form_data.veteran.insurance_policy_number,
+            form_fields.mailing_address_state => form_data.veteran.state_code,
+            form_fields.mailing_address_country => form_data.veteran.country_code,
             form_fields.veteran_homeless => form_data.veteran_homeless,
-            form_fields.veteran_phone_area_code => form_data.veteran_phone_area_code,
-            form_fields.veteran_phone_prefix => form_data.veteran_phone_prefix,
-            form_fields.veteran_phone_line_number => form_data.veteran_phone_line_number,
-            form_fields.veteran_phone_international_number => form_data.veteran_phone_international_number,
+            form_fields.veteran_phone_area_code => form_data.veteran.area_code,
+            form_fields.veteran_phone_prefix => form_data.veteran.phone_prefix,
+            form_fields.veteran_phone_line_number => form_data.veteran.phone_line_number,
+            form_fields.veteran_phone_international_number => form_data.veteran.international_number,
 
-            # Section II: Claimant's ID
-            # NOT YET SUPPORTED
+            # Claimant
+            # Claimant name is filled out through autosize text box, not pdf fields
+            form_fields.claimant_middle_initial => form_data.claimant.middle_initial,
+            form_fields.claimant_first_three_ssn => form_data.claimant.ssn_first_three,
+            form_fields.claimant_second_two_ssn => form_data.claimant.ssn_second_two,
+            form_fields.claimant_last_four_ssn => form_data.claimant.ssn_last_four,
+            form_fields.claimant_birth_month => form_data.claimant.birth_month,
+            form_fields.claimant_birth_day => form_data.claimant.birth_day,
+            form_fields.claimant_birth_year => form_data.claimant.birth_year,
+            form_fields.claimant_mailing_address_state => form_data.claimant.state_code,
+            form_fields.claimant_mailing_address_country => form_data.claimant.country_code,
+            form_fields.claimant_phone_area_code => form_data.claimant.area_code,
+            form_fields.claimant_phone_prefix => form_data.claimant.phone_prefix,
+            form_fields.claimant_phone_line_number => form_data.claimant.phone_line_number,
+            form_fields.claimant_phone_international_number => form_data.claimant.international_number,
 
-            # Section III: Benefit Type
+            # Benefit Type
             form_fields.benefit_type(0) => form_data.benefit_type('education'),
             form_fields.benefit_type(1) => form_data.benefit_type('nationalCemeteryAdministration'),
             form_fields.benefit_type(2) => form_data.benefit_type('veteransHealthAdministration'),
@@ -51,7 +65,7 @@ module AppealsApi
             form_fields.benefit_type(7) => form_data.benefit_type('pensionSurvivorsBenefits'),
             form_fields.benefit_type(8) => form_data.benefit_type('compensation'),
 
-            # Section IV: Optional Informal Conference
+            # Optional Informal Conference
             form_fields.informal_conference => form_data.informal_conference,
             form_fields.conference_8_to_12 => form_data.informal_conference_time('veteran', '800-1200 ET'),
             form_fields.conference_12_to_1630 => form_data.informal_conference_time('veteran', '1200-1630 ET'),
@@ -71,9 +85,9 @@ module AppealsApi
             # Issue text is filled out through autosize text boxes.
 
             # Section VII: Cert & Sig
-            form_fields.date_signed_month => form_data.date_signed_mm,
-            form_fields.date_signed_day => form_data.date_signed_dd,
-            form_fields.date_signed_year => form_data.date_signed_yyyy
+            form_fields.date_signed_month => form_data.date_signed_v2_mm,
+            form_fields.date_signed_day => form_data.date_signed_v2_dd,
+            form_fields.date_signed_year => form_data.date_signed_v2_yyyy
 
             # Section VIII: Authorized Rep Sig
             # NOT YET SUPPORTED
@@ -82,6 +96,7 @@ module AppealsApi
           fill_contestable_issues_dates!(options)
         end
         # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/AbcSize
 
         def insert_overlaid_pages(form_fill_path)
           pdftk = PdfForms.new(Settings.binaries.pdftk)
@@ -141,30 +156,44 @@ module AppealsApi
 
         private
 
+        # rubocop:disable Metrics/MethodLength
         def fill_autosize_fields
           tmp_path = "/#{::Common::FileHelpers.random_file_path}.pdf"
           Prawn::Document.generate(tmp_path) do |pdf|
             pdf.font 'Courier'
 
-            whiteout_line pdf, :first_name
-            whiteout_line pdf, :last_name
-            whiteout_line pdf, :number_and_street
-            whiteout_line pdf, :city
-            whiteout_line pdf, :zip_code
-            whiteout_line pdf, :veteran_email, text_override: 'See attached page for veteran email'
+            fill_text pdf, :veteran_first_name
+            fill_text pdf, :veteran_last_name
+            fill_text pdf, :veteran_number_and_street
+            fill_text pdf, :veteran_city
+            fill_text pdf, :veteran_zip_code
+            fill_text pdf, :veteran_email,
+                      long_text_override: 'See attached page for veteran email'
+
+            fill_text pdf, :claimant_first_name
+            fill_text pdf, :claimant_last_name
+            fill_text pdf, :claimant_number_and_street
+            fill_text pdf, :claimant_city
+            fill_text pdf, :claimant_zip_code
+            fill_text pdf, :claimant_email,
+                      long_text_override: 'See attached page for claimant email'
+
             pdf.start_new_page
 
-            whiteout_line pdf, :rep_first_name
-            whiteout_line pdf, :rep_last_name
-            whiteout_line pdf, :rep_email, text_override: 'See attached page for representative email'
-            whiteout_line pdf, :rep_international_number
-            whiteout_line pdf, :rep_domestic_ext
+            fill_text pdf, :rep_first_name
+            fill_text pdf, :rep_last_name
+            fill_text pdf, :rep_email,
+                      long_text_override: 'See attached page for representative email'
+            fill_text pdf, :rep_international_number
+            fill_text pdf, :rep_domestic_ext
+
             fill_contestable_issues_text pdf
-            pdf.text_box form_data.signature,
-                         default_text_opts.merge(form_fields.boxes[:signature])
+            pdf.text_box form_data.signature_v2,
+                         default_text_opts.merge(form_fields.boxes[:signature_v2])
           end
           tmp_path
         end
+        # rubocop:enable Metrics/MethodLength
 
         attr_accessor :higher_level_review
 
@@ -187,7 +216,13 @@ module AppealsApi
         end
 
         def any_long_emails?
-          form_data.veteran_email.length > SHORT_EMAIL_LENGTH || form_data.rep_email.length > SHORT_EMAIL_LENGTH
+          veteran_email = form_data.veteran.email || ''
+          claimant_email = form_data.claimant.email || ''
+          rep_email = form_data.rep_email || ''
+
+          [veteran_email, claimant_email, rep_email].any? do |e|
+            e.length > SHORT_EMAIL_LENGTH
+          end
         end
 
         def fill_contestable_issues_dates!(options)
@@ -244,14 +279,16 @@ module AppealsApi
           pdf.fill_color '000000'
         end
 
-        def whiteout_line(pdf, attr, text_override: nil, length_for_override: SHORT_EMAIL_LENGTH)
-          text_opts = form_fields.boxes[attr].merge(default_text_opts).merge(
-            height: 13
-          )
+        def fill_text(pdf, attr, long_text_override: nil, length_for_override: SHORT_EMAIL_LENGTH)
+          text = form_data.send(attr)
+
+          return if text.blank?
+
+          text = long_text_override if long_text_override.present? && text.length > length_for_override
+          text_opts = form_fields.boxes[attr].merge(default_text_opts).merge(height: 13)
+
           whiteout pdf, form_fields.boxes[attr]
 
-          text = form_data.send(attr)
-          text = text_override if text_override.present? && text.length > length_for_override
           pdf.text_box text, text_opts
         end
       end
