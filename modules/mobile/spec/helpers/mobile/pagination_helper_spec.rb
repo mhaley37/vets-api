@@ -56,21 +56,6 @@ RSpec.describe Mobile::PaginationHelper, type: :model do
       expect(meta[:links]).to eq(expected_links)
     end
 
-    it 'adds "included[]=pending" when requested while ignoring any other "included" params' do
-      params = Mobile::V0::Contracts::GetPaginatedList.new.call({ included: ['pending', 'not pending'] })
-      _resources, meta = described_class.paginate(list: list, validated_params: params, url: url)
-
-      expected_links = {
-        self: "#{url}?included[]=pending&page[size]=10&page[number]=1",
-        first: "#{url}?included[]=pending&page[size]=10&page[number]=1",
-        prev: nil,
-        next: "#{url}?included[]=pending&page[size]=10&page[number]=2",
-        last: "#{url}?included[]=pending&page[size]=10&page[number]=2"
-      }
-
-      expect(meta[:links]).to eq(expected_links)
-    end
-
     it 'adds any provided errors to the meta' do
       params = Mobile::V0::Contracts::GetPaginatedList.new.call({})
       error_message = 'Yeah, you can\'t do that'
