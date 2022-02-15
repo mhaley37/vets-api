@@ -321,6 +321,14 @@ features:
     actor_type: cookie_id
     description: Enables/disables the Login.gov button for MyVAHealth (VSP Identity)
     enable_in_development: true
+  login_mobile_occ:
+    actor_type: cookie_id
+    description: Enables/disables the USiP being able to handle mobile authentication logic for VA OCC mobile app
+    enable_in_development: true
+  login_mobile_flagship:
+    actor_type: cookie_id
+    description: Enables/disables the USiP being able to handle mobile authentication logic for VA Flagshig mobile app
+    enable_in_development: true
   loop_pages:
     actor_type: user
     description: Enable new list loop pattern
