@@ -1113,6 +1113,19 @@ RSpec.describe 'appointments', type: :request do
             sorted = order_times.map(&:to_datetime).sort { |a, b| a <=> b }
             expect(order_times.map(&:to_datetime)).to eq(sorted)
           end
+
+          it 'forms navigation links with query params' do
+            get_appointments
+            expect(response.parsed_body['links']).to eq(
+              {
+                'self' => 'http://www.example.com/mobile/v0/appointments?startDate=2020-08-01T10:30:00+00:00&endDate=2021-02-01T10:30:00+00:00&useCache=true&included[]=pending&page[size]=100&page[number]=1',
+                'first' => 'http://www.example.com/mobile/v0/appointments?startDate=2020-08-01T10:30:00+00:00&endDate=2021-02-01T10:30:00+00:00&useCache=true&included[]=pending&page[size]=100&page[number]=1',
+                'prev' => nil,
+                'next' => nil,
+                'last' => 'http://www.example.com/mobile/v0/appointments?startDate=2020-08-01T10:30:00+00:00&endDate=2021-02-01T10:30:00+00:00&useCache=true&included[]=pending&page[size]=100&page[number]=1'
+              }
+            )
+          end
         end
 
         context 'when the appointments request service fails' do
