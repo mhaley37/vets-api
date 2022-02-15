@@ -147,3 +147,24 @@ properties:
       isCovidVaccine:
         type: boolean
         example: false
+      isPending:
+        type: boolean
+        example: false
+      proposedTimes:
+        type: hash
+        example: { optionDate1: "10/01/2020", optionTime1: "AM" }
+      typeOfCare:
+        type: string
+        example: "Primary Care"
+      patientPhoneNumber:
+        type: string
+        example: "123-456-7890"
+      patientEmail:
+        type: string
+        example: "someone@example.com"
+      bestTimeToCall:
+        type: array
+        example: ["Morning", "Afternoon", "Evening"]
+      friendlyLocationName:
+        type: string
+        example: "CHYSHR-Cheyenne VA Medical Center"
