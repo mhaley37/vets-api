@@ -1,4 +1,4 @@
-name: Code Checks #TEST COMMIT
+name: Code Checks
 on: [push]
 permissions:
   contents: read
