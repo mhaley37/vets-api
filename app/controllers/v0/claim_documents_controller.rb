@@ -28,7 +28,7 @@ module V0
         PersistentAttachments::DependencyClaim
       when '26-1880'
         LGY::TagSentry.tag_sentry
-        PersistentAttachments::LgyClaim
+        PersistentAttachments::CoeClaim
       end
     end
 
