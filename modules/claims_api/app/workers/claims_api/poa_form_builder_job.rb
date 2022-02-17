@@ -22,6 +22,7 @@ module ClaimsApi
     rescue Errno::ENOENT
       rescue_file_not_found(power_of_attorney)
     rescue ClaimsApi::StampSignatureError => e
+      binding.pry
       power_of_attorney.update(signature_errors: e.detail)
     end
 
@@ -38,14 +39,15 @@ module ClaimsApi
     #
     # @return [Hash] All data to be inserted into pdf
     def data(power_of_attorney)
-      power_of_attorney.form_data.deep_merge({
-                                               'veteran' => {
-                                                 'firstName' => power_of_attorney.auth_headers['va_eauth_firstName'],
-                                                 'lastName' => power_of_attorney.auth_headers['va_eauth_lastName'],
-                                                 'ssn' => power_of_attorney.auth_headers['va_eauth_pnid'],
-                                                 'birthdate' => power_of_attorney.auth_headers['va_eauth_birthdate']
-                                               }
-                                             })
+      power_of_attorney.form_data.deep_merge(
+        {
+          'veteran' => {
+            'firstName' => power_of_attorney.auth_headers['va_eauth_firstName'],
+            'lastName' => power_of_attorney.auth_headers['va_eauth_lastName'],
+            'ssn' => power_of_attorney.auth_headers['va_eauth_pnid'],
+            'birthdate' => power_of_attorney.auth_headers['va_eauth_birthdate']
+        }
+      })
     end
 
     def poa_code_in_organization?(poa_code)

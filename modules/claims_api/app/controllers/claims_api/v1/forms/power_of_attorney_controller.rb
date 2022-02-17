@@ -37,6 +37,8 @@ module ClaimsApi
               current_poa: current_poa_code,
               header_md5: header_md5
             }
+            # Any request using CCG tokens doesn't utilize the concept of current_user, so
+            # it doesn't make sense to merge source_data in that scenario
             attributes.merge!({ source_data: source_data }) unless token.client_credentials_token?
 
             power_of_attorney = ClaimsApi::PowerOfAttorney.create(attributes)
@@ -46,8 +48,8 @@ module ClaimsApi
 
             power_of_attorney.save!
           end
-
-          # This job only occurs when a Veteran submits a POA request, they are not required to submit a document.
+          binding.pry
+          # This job only occurs when a Veteran submits a POA request, since they are not required to submit a document.
           ClaimsApi::PoaUpdater.perform_async(power_of_attorney.id) unless header_request?
           if enable_vbms_access?
             ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id,

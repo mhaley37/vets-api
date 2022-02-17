@@ -24,6 +24,7 @@ class OpenidApplicationController < ApplicationController
   end
 
   def authenticate_token
+    binding.pry
     # First call to token instantiates it
     return false if token.blank?
 
