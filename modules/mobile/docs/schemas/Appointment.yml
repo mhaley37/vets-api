@@ -152,8 +152,8 @@ properties:
         type: boolean
         example: false
       proposedTimes:
-        type: hash
-        example: { optionDate1: "10/01/2020", optionTime1: "AM" }
+        type: array
+        example: [{ date: "10/01/2020", time: "AM" }, { date: "10/01/2020", time: "PM" }, { date: null, time: null }]
       typeOfCare:
         type: string
         example: "Primary Care"
