@@ -891,6 +891,44 @@ RSpec.describe 'appointments', type: :request do
       end
     end
 
+    context 'when no va appointments are returned' do
+      before do
+        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
+      end
+
+      after { Timecop.return }
+
+      it 'returns 200' do
+        VCR.use_cassette('appointments/get_cc_appointments', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_appointments_empty', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments', headers: iam_headers, params: nil
+
+            expect(response.status).to eq 200
+          end
+        end
+      end
+    end
+
+    context 'when no cc appointments are returned' do
+      before do
+        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
+      end
+
+      after { Timecop.return }
+
+      it 'returns 200' do
+        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_cc_appointments_empty', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/appointments', headers: iam_headers, params: nil
+
+              expect(response.status).to eq 200
+            end
+          end
+        end
+      end
+    end
+
     describe 'pending appointments' do
       let(:start_date) { (Time.now.utc - 3.months).iso8601 }
       let(:end_date) { (Time.now.utc + 3.months).iso8601 }
