@@ -32,7 +32,7 @@ data:
       statusDetail: null
       timeZone: America/Los_Angeles
       vetextId: 308;20210106.140000
-      reason: VAR Res 4.20.10 Aarathi
+      reason: "Follow-up/Routine: Reason 1"
       is_covid_vaccine: false
       is_pending: false
       proposed_times: null
