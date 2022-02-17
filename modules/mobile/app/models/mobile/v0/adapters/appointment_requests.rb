@@ -76,14 +76,19 @@ module Mobile
         end
 
         def proposed_times(request)
-          {
-            option_date1: request[:option_date1] == 'No Date Selected' ? nil : request[:option_date1],
-            option_time1: request[:option_time1] == 'No Time Selected' ? nil : request[:option_time1],
-            option_date2: request[:option_date2] == 'No Date Selected' ? nil : request[:option_date2],
-            option_time2: request[:option_time2] == 'No Time Selected' ? nil : request[:option_time2],
-            option_date3: request[:option_date3] == 'No Date Selected' ? nil : request[:option_date3],
-            option_time3: request[:option_time3] == 'No Time Selected' ? nil : request[:option_time3]
-          }
+          [
+            { date: proposed_date(request[:option_date1]), time: proposed_time(request[:option_time1]) },
+            { date: proposed_date(request[:option_date2]), time: proposed_time(request[:option_time2]) },
+            { date: proposed_date(request[:option_date3]), time: proposed_time(request[:option_time3]) }
+          ]
+        end
+
+        def proposed_date(date)
+          date == 'No Date Selected' ? nil : date
+        end
+
+        def proposed_time(time)
+          time == 'No Time Selected' ? nil : time
         end
 
         # this is used for sorting requests into appointments list
