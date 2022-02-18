@@ -2,16 +2,21 @@
 
 require 'rails_helper'
 
-describe Mobile::V0::Adapters::VAAppointments do
+describe Mobile::V0::Adapters::AppointmentRequests do
   let(:appointment_fixtures) do
-    File.read(Rails.root.join('modules', 'mobile', 'spec', 'support', 'fixtures', 'get_appointment_requests.json'))
+    File.read(Rails.root.join('modules', 'mobile', 'spec', 'support', 'fixtures', 'appointment_requests.json'))
+  end
+  let(:data) do
+    parsed = JSON.parse(appointment_fixtures, symbolize_names: true)
+    parsed.map { |request| OpenStruct.new(request) }
   end
 
-  let(:adapted_appointments) do
-    subject.parse(JSON.parse(appointment_fixtures, symbolize_names: true))
+  let(:adapted_appointment_requests) do
+    subject.parse(data)
   end
 
   it 'returns a list of appointment requests of the expected size' do
+    expect(adapted_appointment_requests.count).to eq(2)
   end
 
   describe 'is_pending' do
