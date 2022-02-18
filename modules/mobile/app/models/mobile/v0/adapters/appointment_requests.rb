@@ -191,9 +191,9 @@ module Mobile
 
           def self.provider_name(request)
             provider_section = request.dig(:cc_appointment_request, :preferred_providers, 0)
-            if provider_section.nil? || (provider_section[:first_name].nil? && provider_section[:last_name].nil?)
-              return nil
-            end
+            return nil if provider_section.nil?
+
+            return nil if provider_section[:first_name].blank? && provider_section[:last_name].blank?
 
             "#{provider_section[:first_name]} #{provider_section[:last_name]}".strip
           end
