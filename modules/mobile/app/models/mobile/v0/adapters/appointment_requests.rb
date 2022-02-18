@@ -7,7 +7,7 @@ module Mobile
     module Adapters
       class AppointmentRequests
         # accepts an array of appointment requests
-        # returns a list of appointments, filtering out any that are not SUBMITTED or CANCELLED
+        # returns a list of appointments (as open structs), filtering out any that are not SUBMITTED or CANCELLED
         def parse(requests)
           va_appointments = []
           cc_appointments = []

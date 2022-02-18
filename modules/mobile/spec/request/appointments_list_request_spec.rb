@@ -1010,7 +1010,6 @@ RSpec.describe 'appointments', type: :request do
             expect(requested).not_to include(booked_request_id, resolved_request_id)
           end
 
-          # ideally, this should be done with schema matching, but we've had issues with schema matching in this file
           it 'includes cc data for cc appointments' do
             expected_response = {
               'id' => '8a48912a6d02b0fc016d20b4ccb9001a',
@@ -1142,9 +1141,9 @@ RSpec.describe 'appointments', type: :request do
               a.dig('attributes', 'startDateUtc')
             end
 
-            # appointment request has one other proposed time, but this is the first in the future
+            # appointment request has one other proposed time, but this is the chronologically first in the future
             first_proposed_time_in_future = '2020-11-02T08:00:00.000Z'
-            # request has one other proposed time, but both are past, so it selects the first
+            # request has one other proposed time, but both are past, so it selects the first chronologically
             first_proposed_time_in_past = '2020-10-01T12:00:00.000Z'
 
             expect(order_times).to include(first_proposed_time_in_future, first_proposed_time_in_past)
