@@ -136,9 +136,7 @@ module Mobile
           end
         end
 
-        # this is not correct for cc appointment requests.
-        # the more accurate way would be to base it on preferred_zip_code
-        # if we can find a mechanism for conversion
+        # this is not correct for cc appointment requests, but it's the best approximation we can do at this time
         def time_zone(request)
           facility_id = request.dig(:facility, :parent_site_code)
           facility = Mobile::VA_FACILITIES_BY_ID["dfn-#{facility_id}"]
