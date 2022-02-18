@@ -10,13 +10,19 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     parsed = JSON.parse(appointment_fixtures, symbolize_names: true)
     parsed.map { |request| OpenStruct.new(request) }
   end
-
+  let(:submitted_va_appt_request) { data.find { |d| d.appointment_request_id == '8a48e8db6d70a38a016d72b354240002' } }
+  let(:cancelled_cc_appt_request) { data.find { |d| d.appointment_request_id == '8a48912a6d02b0fc016d20b4ccb9001a' } }
+  let(:booked_request) { data.find { |d| d.appointment_request_id == '8a48dea06c84a667016c866de87c000b' } }
+  let(:resolved_request) { data.find { |d| d.appointment_request_id == '8a48e8db6d7682c3016d88dc21650024' } }
   let(:adapted_appointment_requests) do
     subject.parse(data)
   end
+  let(:va_appointment_requests) { adapted_appointment_requests[0] }
+  let(:cc_appointment_requests) { adapted_appointment_requests[1] }
 
-  it 'returns a list of appointment requests of the expected size' do
-    expect(adapted_appointment_requests.count).to eq(2)
+  it 'returns lists of va and cc appointment requests' do
+    returned_ids = va_appointment_requests.map(&:id) + cc_appointment_requests.map(&:id)
+    expect(returned_ids).to eq([submitted_va_appt_request.appointment_request_id, cancelled_cc_appt_request.appointment_request_id])
   end
 
   describe 'is_pending' do
