@@ -77,6 +77,14 @@ features:
     actor_type: user
     description: Enables the health care pre-check-in experiences to send demographics confirmation.
     enable_in_development: true
+  check_in_experience_editing_day_of_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the day of check-in experience.
+    enable_in_development: true
+  check_in_experience_editing_pre_check_in_enabled:
+    actor_type: user
+    description: Enables editing of demographics for the pre-check-in experience.
+    enable_in_development: true
   check_in_experience_update_information_page_enabled:
     actor_type: user
     description: Enables the Update Information question in the health care check-in experience application
@@ -182,6 +190,10 @@ features:
   education_reports_cleanup:
     actor_type: user
     description: Updates to the daily education reports to remove old data that isn't needed in the new fiscal year
+    enable_in_development: true
+  enrollment_verification:
+    actor_type: user
+    description: Enables access to the Enrollment Verification app
     enable_in_development: true
   evss_upload_limit_150mb:
     actor_type: user

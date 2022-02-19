@@ -7,7 +7,7 @@ RSpec.describe MebApi::DGI::Enrollment::Service do
   let(:user) { FactoryBot.create(:user, :loa3) }
   let(:service) { MebApi::DGI::Enrollment::Service.new(user) }
 
-  describe '#enrollment' do
+  describe '#get_enrollment' do
     let(:faraday_response) { double('faraday_connection') }
 
     before do
@@ -17,8 +17,9 @@ RSpec.describe MebApi::DGI::Enrollment::Service do
     context 'when successful' do
       it 'returns a status of 200' do
         VCR.use_cassette('dgi/enrollment') do
-          response = service.get_enrollment
-          expect(response).to eq(true)
+          response = service.get_enrollment(1)
+          expect(response.enrollment).to eq([{ 'enrollment_id' => 11 }, { 'enrollment_id' => 22 },
+                                             { 'enrollment_id' => 33 }])
         end
       end
     end
