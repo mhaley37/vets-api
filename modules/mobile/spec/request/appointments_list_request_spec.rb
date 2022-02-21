@@ -1034,7 +1034,10 @@ RSpec.describe 'appointments', type: :request do
           it 'returns cancelled and submitted requests in the date range and omits other statuses' do
             get_appointments
 
-            requested = response.parsed_body['data'].pluck('id')
+            pending = response.parsed_body['data'].select do |appt|
+              appt['attributes']['isPending'] == true
+            end
+            requested = pending.pluck('id')
             expect(requested).to include(submitted_va_appt_request_id, cancelled_cc_appt_request_id)
             expect(requested).not_to include(booked_request_id, resolved_request_id)
           end
