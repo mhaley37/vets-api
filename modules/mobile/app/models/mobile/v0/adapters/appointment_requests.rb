@@ -123,7 +123,7 @@ module Mobile
           when 'DETCODE24'
             'CANCELLED - OTHER'
           else
-            log_message_to_sentry('Unknown appointment request cancellation code', :error, { detail: first_detail })
+            Rails.logger.error('Unknown appointment request cancellation code', :error, { detail: first_detail })
             'CANCELLED - OTHER'
           end
         end

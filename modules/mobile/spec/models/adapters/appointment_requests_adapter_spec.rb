@@ -10,13 +10,16 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     parsed = JSON.parse(appointment_fixtures, symbolize_names: true)
     parsed.map { |request| OpenStruct.new(request) }
   end
+  let(:adapted_appointment_requests) do
+    subject.parse(data)
+  end
+  let(:va_appointment_requests) { adapted_appointment_requests[0] }
+  let(:cc_appointment_requests) { adapted_appointment_requests[1] }
+  let(:all_appointment_requests) { [va_appointment_requests + cc_appointment_requests].flatten }
   let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
   let(:resolved_request_id) { '8a48e8db6d7682c3016d88dc21650024' }
   let(:va_request_id) { '8a48e8db6d70a38a016d72b354240002' }
   let(:cc_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
-  let(:va_appointment_requests) { adapted_appointment_requests[0] }
-  let(:cc_appointment_requests) { adapted_appointment_requests[1] }
-  let(:all_appointment_requests) { [va_appointment_requests + cc_appointment_requests].flatten }
   let(:va_request_data) do
     data.find { |d| d.appointment_request_id == va_request_id }
   end
@@ -29,12 +32,11 @@ describe Mobile::V0::Adapters::AppointmentRequests do
   let(:adapted_cc_appt_request) do
     cc_appointment_requests.find { |request| request.id == cc_request_id }
   end
-  let(:adapted_appointment_requests) do
-    subject.parse(data)
-  end
 
-  it 'returns lists of va and cc appointment requests' do
-    expect(adapted_appointment_requests).to eq([[adapted_va_appt_request], [adapted_cc_appt_request]])
+  describe '#parse' do
+    it 'returns lists of va and cc appointment requests' do
+      expect(adapted_appointment_requests).to eq([[adapted_va_appt_request], [adapted_cc_appt_request]])
+    end
   end
 
   describe 'is_pending' do
@@ -59,7 +61,9 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'phone_only' do
     it 'is true when visit type is "Phone Call"' do
-      # need test data
+      va_request_data.visit_type = 'Phone Call'
+      va_results, _ = subject.parse([va_request_data])
+      expect(va_results.first.phone_only).to eq(true)
     end
 
     it 'is false for all other visit types' do
@@ -96,8 +100,8 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
     it 'converts AM to 8AM and PM to 12PM' do
       Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
-        expect(adapted_va_appt_request.start_date_utc.hour).to eq(8)
-        expect(adapted_cc_appt_request.start_date_utc.hour).to eq(12)
+        expect(adapted_va_appt_request.start_date_local.utc.hour).to eq(8)
+        expect(adapted_cc_appt_request.start_date_local.utc.hour).to eq(12)
       end
     end
 
@@ -139,8 +143,9 @@ describe Mobile::V0::Adapters::AppointmentRequests do
       booked_request = data.find { |d| d.appointment_request_id == booked_request_id }
       resolved_request = data.find { |d| d.appointment_request_id == resolved_request_id }
 
-      expect(booked_request).not_to be_nil
-      expect(resolved_request).not_to be_nil
+      # verifying test setup
+      expect(booked_request.status).to eq('Booked')
+      expect(resolved_request.status).to eq('Resolved')
 
       adapted_booked_request = all_appointment_requests.find { |r| r.id == booked_request_id }
       adapted_resolved_request = all_appointment_requests.find { |r| r.id == resolved_request_id }
@@ -151,7 +156,47 @@ describe Mobile::V0::Adapters::AppointmentRequests do
   end
 
   describe 'status_detail' do
-    # based on detail code
+    context 'when status is not cancelled' do
+      it 'is nil' do
+        expect(adapted_va_appt_request.status_detail).to be_nil
+      end
+    end
+
+    context 'when detail code is DETCODE22 or DETCODE8' do
+      it 'is CANCELLED BY PATIENT' do
+        cc_request_data[:appointment_request_detail_code][0][:detail_code][:code] = 'DETCODE22'
+        _, results = subject.parse([cc_request_data])
+        expect(results.first.status_detail).to eq('CANCELLED BY PATIENT')
+        cc_request_data[:appointment_request_detail_code][0][:detail_code][:code] = 'DETCODE8'
+        _, results = subject.parse([cc_request_data])
+        expect(results.first.status_detail).to eq('CANCELLED BY PATIENT')
+      end
+    end
+
+    context 'when detail code is DETCODE19' do
+      it 'is CANCELLED BY CLINIC' do
+        # this request detail code is DETCODE19
+        expect(adapted_cc_appt_request.status_detail).to eq('CANCELLED BY CLINIC')
+      end
+    end
+
+    context 'when detail code is DETCODE24' do
+      it 'is CANCELLED - OTHER' do
+        cc_request_data[:appointment_request_detail_code][0][:detail_code][:code] = 'DETCODE24'
+        _, results = subject.parse([cc_request_data])
+        expect(results.first.status_detail).to eq('CANCELLED - OTHER')
+      end
+    end
+
+    context 'when detail code is anything else' do
+      it 'is CANCELLED - OTHER and logs error' do
+        cc_request_data[:appointment_request_detail_code][0][:detail_code][:code] = 'DETCODE9000'
+
+        expect(Rails.logger).to receive(:error)
+        _, results = subject.parse([cc_request_data])
+        expect(results.first.status_detail).to eq('CANCELLED - OTHER')
+      end
+    end
   end
 
   context 'VA appointment requests' do
