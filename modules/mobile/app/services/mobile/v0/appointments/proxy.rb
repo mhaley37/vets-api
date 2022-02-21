@@ -61,7 +61,6 @@ module Mobile
           end
 
           facilities = fetch_facilities(va_appointments + va_appointment_requests)
-
           va_appointments = backfill_appointments_with_facilities(va_appointments, facilities)
           va_appointment_requests = backfill_appointments_with_facilities(va_appointment_requests, facilities)
 
@@ -107,6 +106,7 @@ module Mobile
             ], in_threads: 3, &:call
           )
 
+          # appointment requests are fetched by a service that raises on error
           errors = [va_response[:error], cc_response[:error]].compact
           raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error' if errors.size.positive?
 
@@ -173,9 +173,10 @@ module Mobile
           }
         end
 
+        # fetches all appointment requests created in the past 90 days
+        # this mimics the behavior of the web app
         def fetch_appointment_requests
           lambda {
-            # we only care about the past 90 days of appointment requests
             end_date = Time.zone.today
             start_date = end_date - 90.days
             service = VAOS::AppointmentRequestsService.new(@user)
