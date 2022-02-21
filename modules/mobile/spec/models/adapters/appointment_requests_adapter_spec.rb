@@ -62,7 +62,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
   describe 'phone_only' do
     it 'is true when visit type is "Phone Call"' do
       va_request_data.visit_type = 'Phone Call'
-      va_results, _ = subject.parse([va_request_data])
+      va_results, = subject.parse([va_request_data])
       expect(va_results.first.phone_only).to eq(true)
     end
 
@@ -87,19 +87,21 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'time_zone' do
     it 'is based on facility zip code' do
-      time_zones = all_appointment_requests.collect { |request| request.time_zone }.uniq
+      time_zones = all_appointment_requests.collect(&:time_zone).uniq
       expect(time_zones).to eq(['America/Denver'])
     end
   end
 
   describe 'start_date_local' do
+    let(:test_time) { Time.zone.parse('2020-11-01T10:30:00Z') }
+
     it 'uses the time zone' do
       expect(adapted_va_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
       expect(adapted_cc_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
     end
 
     it 'converts AM to 8AM and PM to 12PM' do
-      Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+      Timecop.freeze(test_time) do
         expect(adapted_va_appt_request.start_date_local.utc.hour).to eq(8)
         expect(adapted_cc_appt_request.start_date_local.utc.hour).to eq(12)
       end
@@ -107,7 +109,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
     context 'when all proposed dates are past' do
       it 'is based on the chronologically first proposed date' do
-        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+        Timecop.freeze(test_time) do
           first_time_in_past = '2020-10-01 06:00:00 -0600'
           expect(adapted_cc_appt_request.start_date_local.to_s).to eq(first_time_in_past)
         end
@@ -116,7 +118,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
     context 'when any proposed date is in the future' do
       it 'is based on the chronologically first proposed date in the future' do
-        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+        Timecop.freeze(test_time) do
           first_appointment_in_future = '2020-11-02 01:00:00 -0700'
           expect(adapted_va_appt_request.start_date_local.to_s).to eq(first_appointment_in_future)
         end
@@ -207,26 +209,26 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
       it 'is VA for phone call visits' do
         va_request_data.visit_type = 'Phone Call'
-        va_results, _ = subject.parse([va_request_data])
+        va_results, = subject.parse([va_request_data])
         expect(va_results.first.appointment_type).to eq('VA')
       end
 
       it 'is VA for express care visits' do
         va_request_data.visit_type = 'Express Care'
-        va_results, _ = subject.parse([va_request_data])
+        va_results, = subject.parse([va_request_data])
         expect(va_results.first.appointment_type).to eq('VA')
       end
 
       it 'is VA_VIDEO_CONNECT_HOME for video conference visits' do
         va_request_data.visit_type = 'Video Conference'
-        va_results, _ = subject.parse([va_request_data])
+        va_results, = subject.parse([va_request_data])
         expect(va_results.first.appointment_type).to eq('VA_VIDEO_CONNECT_HOME')
       end
 
       it 'is VA and logs to sentry for any other visit type' do
         va_request_data.visit_type = 'Unexpected type'
         expect(Rails.logger).to receive(:error)
-        va_results, _ = subject.parse([va_request_data])
+        va_results, = subject.parse([va_request_data])
         expect(va_results.first.appointment_type).to eq('VA')
       end
     end

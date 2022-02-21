@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sentry_logging'
-
 module Mobile
   module V0
     module Adapters
@@ -123,7 +121,8 @@ module Mobile
           when 'DETCODE24'
             'CANCELLED - OTHER'
           else
-            Rails.logger.error('Unknown appointment request cancellation code', :error, { detail: first_detail })
+            Rails.logger.error('Unknown appointment request cancellation code', :error,
+                               { appointment_request_id: request[:appointment_request_id], detail: first_detail })
             'CANCELLED - OTHER'
           end
         end
@@ -145,7 +144,8 @@ module Mobile
             else
               Rails.logger.error(
                 'Unknown appointment request type',
-                { appointment_type: 'VA', visit_type: request[:visit_type] }
+                { appointment_request_id: request[:appointment_request_id], appointment_type: 'VA',
+                  visit_type: request[:visit_type] }
               )
               'VA'
             end
