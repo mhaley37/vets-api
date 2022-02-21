@@ -34,7 +34,7 @@ module Mobile
 
           Mobile::V0::Appointment.new(
             id: request[:appointment_request_id],
-            appointment_type: appointment_type(request, klass),
+            appointment_type: klass.appointment_type(request),
             cancel_id: nil,
             comment: nil,
             facility_id: klass.facility_id(request),
@@ -62,14 +62,6 @@ module Mobile
           )
         end
         # rubcop:enable Metrics/MethodLength
-
-        def appointment_type(request, klass)
-          # this is temporary because test data does not include video type
-          unless request[:visit_type].in?(['Office Visit', 'Express Care', 'Phone Call'])
-            log_message_to_sentry('Unknown appointment request type', :error, { visit_type: request[:visit_type] })
-          end
-          klass::APPOINTMENT_TYPE
-        end
 
         def phone_only?(request)
           request[:visit_type] == 'Phone Call'
@@ -144,7 +136,20 @@ module Mobile
         end
 
         class VA
-          APPOINTMENT_TYPE = 'VA'
+          def self.appointment_type(request)
+            case request[:visit_type]
+            when 'Office Visit', 'Express Care', 'Phone Call'
+              'VA'
+            when 'Video Conference'
+              'VA_VIDEO_CONNECT_HOME'
+            else
+              Rails.logger.error(
+                'Unknown appointment request type',
+                { appointment_type: 'VA', visit_type: request[:visit_type] }
+              )
+              'VA'
+            end
+          end
 
           def self.provider_name(_)
             nil
@@ -185,7 +190,16 @@ module Mobile
         # rubocop:enable Metrics/MethodLength
 
         class CC
-          APPOINTMENT_TYPE = 'COMMUNITY_CARE'
+          def self.appointment_type(request)
+            # if cc video conferences are possible, they will need a new appointment type
+            unless request[:visit_type].in?(['Office Visit', 'Phone Call'])
+              Rails.logger.error(
+                'Unknown appointment request type',
+                { appointment_type: 'COMMUNITY_CARE', visit_type: request[:visit_type] }
+              )
+            end
+            'COMMUNITY_CARE'
+          end
 
           def self.provider_name(request)
             provider_section = request.dig(:cc_appointment_request, :preferred_providers, 0)

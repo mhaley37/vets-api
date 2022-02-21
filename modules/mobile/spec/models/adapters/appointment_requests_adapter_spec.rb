@@ -12,23 +12,29 @@ describe Mobile::V0::Adapters::AppointmentRequests do
   end
   let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
   let(:resolved_request_id) { '8a48e8db6d7682c3016d88dc21650024' }
-  let(:submitted_va_request_id) { '8a48e8db6d70a38a016d72b354240002' }
-  let(:cancelled_cc_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
-  let(:submitted_va_appt_request) do
-    va_appointment_requests.find { |request| request.id == submitted_va_request_id }
+  let(:va_request_id) { '8a48e8db6d70a38a016d72b354240002' }
+  let(:cc_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
+  let(:va_appointment_requests) { adapted_appointment_requests[0] }
+  let(:cc_appointment_requests) { adapted_appointment_requests[1] }
+  let(:all_appointment_requests) { [va_appointment_requests + cc_appointment_requests].flatten }
+  let(:va_request_data) do
+    data.find { |d| d.appointment_request_id == va_request_id }
   end
-  let(:cancelled_cc_appt_request) do
-    cc_appointment_requests.find { |request| request.id == cancelled_cc_request_id }
+  let(:cc_request_data) do
+    data.find { |d| d.appointment_request_id == cc_request_id }
+  end
+  let(:adapted_va_appt_request) do
+    va_appointment_requests.find { |request| request.id == va_request_id }
+  end
+  let(:adapted_cc_appt_request) do
+    cc_appointment_requests.find { |request| request.id == cc_request_id }
   end
   let(:adapted_appointment_requests) do
     subject.parse(data)
   end
-  let(:va_appointment_requests) { adapted_appointment_requests[0] }
-  let(:cc_appointment_requests) { adapted_appointment_requests[1] }
-  let(:all_appointment_requests) { [va_appointment_requests + cc_appointment_requests].flatten }
 
   it 'returns lists of va and cc appointment requests' do
-    expect(adapted_appointment_requests).to eq([[submitted_va_appt_request], [cancelled_cc_appt_request]])
+    expect(adapted_appointment_requests).to eq([[adapted_va_appt_request], [adapted_cc_appt_request]])
   end
 
   describe 'is_pending' do
@@ -57,18 +63,18 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     end
 
     it 'is false for all other visit types' do
-      expect(submitted_va_appt_request[:phone_only]).to eq(false)
-      expect(cancelled_cc_appt_request[:phone_only]).to eq(false)
+      expect(adapted_va_appt_request[:phone_only]).to eq(false)
+      expect(adapted_cc_appt_request[:phone_only]).to eq(false)
     end
   end
 
   describe 'proposed_times' do
     it 'returns an array of date/time pairs in the order of the option dates/time in the source data' do
-      expect(submitted_va_appt_request.proposed_times).to eq(
+      expect(adapted_va_appt_request.proposed_times).to eq(
         [{ date: '10/01/2020', time: 'PM' }, { date: '11/03/2020', time: 'AM' },
          { date: '11/02/2020', time: 'AM' }]
       )
-      expect(cancelled_cc_appt_request.proposed_times).to eq(
+      expect(adapted_cc_appt_request.proposed_times).to eq(
         [{ date: '10/01/2020', time: 'PM' }, { date: '10/02/2020', time: 'PM' },
          { date: nil, time: nil }]
       )
@@ -82,18 +88,16 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     end
   end
 
-
-
   describe 'start_date_local' do
     it 'uses the time zone' do
-      expect(submitted_va_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
-      expect(cancelled_cc_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
+      expect(adapted_va_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
+      expect(adapted_cc_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
     end
 
     it 'converts AM to 8AM and PM to 12PM' do
       Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
-        expect(submitted_va_appt_request.start_date_utc.hour).to eq(8)
-        expect(cancelled_cc_appt_request.start_date_utc.hour).to eq(12)
+        expect(adapted_va_appt_request.start_date_utc.hour).to eq(8)
+        expect(adapted_cc_appt_request.start_date_utc.hour).to eq(12)
       end
     end
 
@@ -101,7 +105,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
       it 'is based on the chronologically first proposed date' do
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
           first_time_in_past = '2020-10-01 06:00:00 -0600'
-          expect(cancelled_cc_appt_request.start_date_local.to_s).to eq(first_time_in_past)
+          expect(adapted_cc_appt_request.start_date_local.to_s).to eq(first_time_in_past)
         end
       end
     end
@@ -110,7 +114,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
       it 'is based on the chronologically first proposed date in the future' do
         Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
           first_appointment_in_future = '2020-11-02 01:00:00 -0700'
-          expect(submitted_va_appt_request.start_date_local.to_s).to eq(first_appointment_in_future)
+          expect(adapted_va_appt_request.start_date_local.to_s).to eq(first_appointment_in_future)
         end
       end
     end
@@ -118,17 +122,17 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'start_date_utc' do
     it 'is start_date_local in utc' do
-      expect(submitted_va_appt_request.start_date_local.utc).to eq(submitted_va_appt_request.start_date_utc)
+      expect(adapted_va_appt_request.start_date_local.utc).to eq(adapted_va_appt_request.start_date_utc)
     end
   end
 
   describe 'status' do
     it 'is SUBMITTED for submitted requests' do
-      expect(submitted_va_appt_request.status).to eq('SUBMITTED')
+      expect(adapted_va_appt_request.status).to eq('SUBMITTED')
     end
 
     it 'is CANCELLED for cancelled requests' do
-      expect(cancelled_cc_appt_request.status).to eq('CANCELLED')
+      expect(adapted_cc_appt_request.status).to eq('CANCELLED')
     end
 
     it 'is skipped for any other request type' do
@@ -152,26 +156,51 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   context 'VA appointment requests' do
     describe 'appointment_type' do
-      it 'is VA for office visits and phone calls'
+      it 'is VA for office visits' do
+        expect(adapted_va_appt_request.appointment_type).to eq('VA')
+      end
 
-      it 'is VA_VIDEO_CONNECT_HOME for video conference visits'
+      it 'is VA for phone call visits' do
+        va_request_data.visit_type = 'Phone Call'
+        va_results, _ = subject.parse([va_request_data])
+        expect(va_results.first.appointment_type).to eq('VA')
+      end
+
+      it 'is VA for express care visits' do
+        va_request_data.visit_type = 'Express Care'
+        va_results, _ = subject.parse([va_request_data])
+        expect(va_results.first.appointment_type).to eq('VA')
+      end
+
+      it 'is VA_VIDEO_CONNECT_HOME for video conference visits' do
+        va_request_data.visit_type = 'Video Conference'
+        va_results, _ = subject.parse([va_request_data])
+        expect(va_results.first.appointment_type).to eq('VA_VIDEO_CONNECT_HOME')
+      end
+
+      it 'is VA and logs to sentry for any other visit type' do
+        va_request_data.visit_type = 'Unexpected type'
+        expect(Rails.logger).to receive(:error)
+        va_results, _ = subject.parse([va_request_data])
+        expect(va_results.first.appointment_type).to eq('VA')
+      end
     end
 
     describe 'healthcare_provider' do
       it 'is nil' do
-        expect(submitted_va_appt_request.healthcare_provider).to be_nil
+        expect(adapted_va_appt_request.healthcare_provider).to be_nil
       end
     end
 
     describe 'healthcare_service' do
       it 'is nil' do
-        expect(submitted_va_appt_request.healthcare_service).to be_nil
+        expect(adapted_va_appt_request.healthcare_service).to be_nil
       end
     end
 
     describe 'facility_id' do
       it 'is set to the facility code' do
-        expect(submitted_va_appt_request.facility_id).to eq('442')
+        expect(adapted_va_appt_request.facility_id).to eq('442')
       end
     end
 
@@ -187,32 +216,60 @@ describe Mobile::V0::Adapters::AppointmentRequests do
           url: nil,
           code: nil
         }
-        expect(submitted_va_appt_request.location.to_h).to eq(expected_location)
+        expect(adapted_va_appt_request.location.to_h).to eq(expected_location)
       end
     end
   end
 
   context 'CC appointment requests' do
     describe 'appointment_type' do
-      it 'is COMMUNITY_CARE' do
+      it 'is COMMUNITY_CARE for office visits' do
+        expect(adapted_cc_appt_request.appointment_type).to eq('COMMUNITY_CARE')
+      end
+
+      it 'is COMMUNITY_CARE for phone call visits' do
+        cc_request_data.visit_type = 'Phone Call'
+        _, cc_results = subject.parse([cc_request_data])
+        expect(cc_results.first.appointment_type).to eq('COMMUNITY_CARE')
+      end
+
+      it 'is COMMUNITY_CARE and logs for express care visits' do
+        cc_request_data.visit_type = 'Express Care'
+        expect(Rails.logger).to receive(:error)
+        _, cc_results = subject.parse([cc_request_data])
+        expect(cc_results.first.appointment_type).to eq('COMMUNITY_CARE')
+      end
+
+      it 'is COMMUNITY_CARE and logs for video conference visits' do
+        cc_request_data.visit_type = 'Video Conference'
+        expect(Rails.logger).to receive(:error)
+        _, cc_results = subject.parse([cc_request_data])
+        expect(cc_results.first.appointment_type).to eq('COMMUNITY_CARE')
+      end
+
+      it 'is COMMUNITY_CARE and logs to sentry for any other visit type' do
+        cc_request_data.visit_type = 'Unexpected type'
+        expect(Rails.logger).to receive(:error)
+        _, cc_results = subject.parse([cc_request_data])
+        expect(cc_results.first.appointment_type).to eq('COMMUNITY_CARE')
       end
     end
 
     describe 'healthcare_provider' do
       it "is the healthcare provider's first and last name" do
-        expect(cancelled_cc_appt_request.healthcare_provider).to eq('Vilasini Reddy')
+        expect(adapted_cc_appt_request.healthcare_provider).to eq('Vilasini Reddy')
       end
     end
 
     describe 'healthcare_service' do
       it "is the preferred provider's practice name" do
-        expect(cancelled_cc_appt_request.healthcare_service).to eq('Test clinic 2')
+        expect(adapted_cc_appt_request.healthcare_service).to eq('Test clinic 2')
       end
     end
 
     describe 'facility_id' do
       it 'is nil' do
-        expect(cancelled_cc_appt_request.facility_id).to be_nil
+        expect(adapted_cc_appt_request.facility_id).to be_nil
       end
     end
 
@@ -228,7 +285,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
           url: nil,
           code: nil
         }
-        expect(cancelled_cc_appt_request.location.to_h).to eq(expected_location)
+        expect(adapted_cc_appt_request.location.to_h).to eq(expected_location)
       end
     end
   end
