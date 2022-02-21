@@ -1079,14 +1079,20 @@ RSpec.describe 'appointments', type: :request do
                 'reason' => 'routine-follow-up',
                 'isCovidVaccine' => nil,
                 'isPending' => true,
-                'proposedTimes' => {
-                  'optionDate1' => '10/01/2020',
-                  'optionTime1' => 'PM',
-                  'optionDate2' => '10/02/2020',
-                  'optionTime2' => 'PM',
-                  'optionDate3' => nil,
-                  'optionTime3' => nil
-                },
+                'proposedTimes' => [
+                  {
+                    'date' => '10/01/2020',
+                    'time' => 'PM'
+                  },
+                  {
+                    'date' => '10/02/2020',
+                    'time' => 'PM'
+                  },
+                  {
+                    'date' => nil,
+                    'time' => nil
+                  }
+                ],
                 'typeOfCare' => 'Optometry (routine eye exam)',
                 'patientPhoneNumber' => '(703) 652-0000',
                 'patientEmail' => 'samatha.girla@va.gov',
@@ -1141,14 +1147,20 @@ RSpec.describe 'appointments', type: :request do
                 'reason' => 'New Issue',
                 'isCovidVaccine' => nil,
                 'isPending' => true,
-                'proposedTimes' => {
-                  'optionDate1' => '10/01/2020',
-                  'optionTime1' => 'PM',
-                  'optionDate2' => '11/03/2020',
-                  'optionTime2' => 'AM',
-                  'optionDate3' => '11/02/2020',
-                  'optionTime3' => 'AM'
-                },
+                'proposedTimes' => [
+                  {
+                    'date' => '10/01/2020',
+                    'time' => 'PM'
+                  },
+                  {
+                    'date' => '11/03/2020',
+                    'time' => 'AM'
+                  },
+                  {
+                    'date' => '11/02/2020',
+                    'time' => 'AM'
+                  }
+                ],
                 'typeOfCare' => 'Primary Care',
                 'patientPhoneNumber' => '(666) 666-6666',
                 'patientEmail' => 'Vilasini.reddy@va.gov',

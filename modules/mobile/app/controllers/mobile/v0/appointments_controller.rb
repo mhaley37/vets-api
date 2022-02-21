@@ -29,7 +29,7 @@ module Mobile
 
         appointments = fetch_cached_or_service(validated_params)
         page_appointments, page_meta_data = paginate(appointments, validated_params)
-        if validated_params[:included].include?('pending')
+        if validated_params[:included]&.include?('pending')
           page_meta_data[:links] = include_pending_in_links(page_meta_data[:links])
         end
 
