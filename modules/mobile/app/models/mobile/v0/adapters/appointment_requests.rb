@@ -206,16 +206,16 @@ module Mobile
 
           # rubocop:disable Metrics/MethodLength
           def self.location(request)
-            source = request.dig(:cc_appointment_request, :preferred_providers, 0, :address) || {}
+            address = request.dig(:cc_appointment_request, :preferred_providers, 0, :address) || {}
             phone_captures = phone_captures(request)
             {
               id: nil,
               name: practice_name(request),
               address: {
-                street: source[:street],
-                city: source[:city],
-                state: source[:state],
-                zip_code: source[:zip_code]
+                street: address[:street],
+                city: address[:city],
+                state: address[:state],
+                zip_code: address[:zip_code]
               },
               lat: nil,
               long: nil,

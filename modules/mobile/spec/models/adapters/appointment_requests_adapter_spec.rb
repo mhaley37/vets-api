@@ -10,14 +10,16 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     parsed = JSON.parse(appointment_fixtures, symbolize_names: true)
     parsed.map { |request| OpenStruct.new(request) }
   end
+  let(:booked_request_id) { '8a48dea06c84a667016c866de87c000b' }
+  let(:resolved_request_id) { '8a48e8db6d7682c3016d88dc21650024' }
+  let(:submitted_va_request_id) { '8a48e8db6d70a38a016d72b354240002' }
+  let(:cancelled_cc_request_id) { '8a48912a6d02b0fc016d20b4ccb9001a' }
   let(:submitted_va_appt_request) do
-    va_appointment_requests.find { |request| request.id == '8a48e8db6d70a38a016d72b354240002' }
+    va_appointment_requests.find { |request| request.id == submitted_va_request_id }
   end
   let(:cancelled_cc_appt_request) do
-    cc_appointment_requests.find { |request| request.id == '8a48912a6d02b0fc016d20b4ccb9001a' }
+    cc_appointment_requests.find { |request| request.id == cancelled_cc_request_id }
   end
-  # let(:booked_request) { data.find { |d| d.appointment_request_id == '8a48dea06c84a667016c866de87c000b' } }
-  # let(:resolved_request) { data.find { |d| d.appointment_request_id == '8a48e8db6d7682c3016d88dc21650024' } }
   let(:adapted_appointment_requests) do
     subject.parse(data)
   end
@@ -62,24 +64,61 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'proposed_times' do
     it 'returns an array of date/time pairs in the order of the option dates/time in the source data' do
+      expect(submitted_va_appt_request.proposed_times).to eq(
+        [{ date: '10/01/2020', time: 'PM' }, { date: '11/03/2020', time: 'AM' },
+         { date: '11/02/2020', time: 'AM' }]
+      )
+      expect(cancelled_cc_appt_request.proposed_times).to eq(
+        [{ date: '10/01/2020', time: 'PM' }, { date: '10/02/2020', time: 'PM' },
+         { date: nil, time: nil }]
+      )
     end
   end
 
   describe 'time_zone' do
     it 'is based on facility zip code' do
+      time_zones = all_appointment_requests.collect { |request| request.time_zone }.uniq
+      expect(time_zones).to eq(['America/Denver'])
     end
   end
 
-  describe 'start_date_local/start_date_utc' do
+
+
+  describe 'start_date_local' do
     it 'uses the time zone' do
+      expect(submitted_va_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
+      expect(cancelled_cc_appt_request.start_date_local.time_zone.name).to end_with('America/Denver')
+    end
+
+    it 'converts AM to 8AM and PM to 12PM' do
+      Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+        expect(submitted_va_appt_request.start_date_utc.hour).to eq(8)
+        expect(cancelled_cc_appt_request.start_date_utc.hour).to eq(12)
+      end
     end
 
     context 'when all proposed dates are past' do
-      it 'is based on the chronologically first proposed date'
+      it 'is based on the chronologically first proposed date' do
+        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+          first_time_in_past = '2020-10-01 06:00:00 -0600'
+          expect(cancelled_cc_appt_request.start_date_local.to_s).to eq(first_time_in_past)
+        end
+      end
     end
 
     context 'when any proposed date is in the future' do
-      it 'is based on the chronologically first proposed date in the future'
+      it 'is based on the chronologically first proposed date in the future' do
+        Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z')) do
+          first_appointment_in_future = '2020-11-02 01:00:00 -0700'
+          expect(submitted_va_appt_request.start_date_local.to_s).to eq(first_appointment_in_future)
+        end
+      end
+    end
+  end
+
+  describe 'start_date_utc' do
+    it 'is start_date_local in utc' do
+      expect(submitted_va_appt_request.start_date_local.utc).to eq(submitted_va_appt_request.start_date_utc)
     end
   end
 
@@ -93,7 +132,17 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     end
 
     it 'is skipped for any other request type' do
-      # pending
+      booked_request = data.find { |d| d.appointment_request_id == booked_request_id }
+      resolved_request = data.find { |d| d.appointment_request_id == resolved_request_id }
+
+      expect(booked_request).not_to be_nil
+      expect(resolved_request).not_to be_nil
+
+      adapted_booked_request = all_appointment_requests.find { |r| r.id == booked_request_id }
+      adapted_resolved_request = all_appointment_requests.find { |r| r.id == resolved_request_id }
+
+      expect(adapted_booked_request).to be_nil
+      expect(adapted_resolved_request).to be_nil
     end
   end
 
@@ -121,11 +170,9 @@ describe Mobile::V0::Adapters::AppointmentRequests do
     end
 
     describe 'facility_id' do
-      it 'returns the facility id matching the facility code' do
+      it 'is set to the facility code' do
         expect(submitted_va_appt_request.facility_id).to eq('442')
       end
-
-      it 'returns nil when no facility id matches the facility code'
     end
 
     describe 'location' do
@@ -184,17 +231,5 @@ describe Mobile::V0::Adapters::AppointmentRequests do
         expect(cancelled_cc_appt_request.location.to_h).to eq(expected_location)
       end
     end
-  end
-
-  context 'Office request' do
-  end
-
-  context 'Phone request' do
-  end
-
-  context 'Video request' do
-  end
-
-  context 'Unknown type' do
   end
 end
