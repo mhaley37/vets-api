@@ -29,6 +29,9 @@ module Mobile
 
         appointments = fetch_cached_or_service(validated_params)
         page_appointments, page_meta_data = paginate(appointments, validated_params)
+        if validated_params[:included]&.include?('pending')
+          page_meta_data[:links] = include_pending_in_links(page_meta_data[:links])
+        end
 
         render json: Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
       end
@@ -93,6 +96,12 @@ module Mobile
         end
         url = request.base_url + request.path
         Mobile::PaginationHelper.paginate(list: appointments, validated_params: validated_params, url: url)
+      end
+
+      def include_pending_in_links(links)
+        links.transform_values do |v|
+          v.nil? ? nil : "#{v}&included[]=pending"
+        end
       end
 
       def appointments_proxy
