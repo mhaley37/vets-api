@@ -6,6 +6,20 @@ module ClaimsApi
   module VBMSSidekiq
     include SentryLogging
 
+    def upload_to_vbms(power_of_attorney, path)
+      uploader = VBMSUploader.new(
+        filepath: path,
+        file_number: power_of_attorney.auth_headers['va_eauth_pnid'],
+        doc_type: '295'
+      )
+      upload_response = uploader.upload!
+      power_of_attorney.update(
+        status: ClaimsApi::PowerOfAttorney::UPLOADED,
+        vbms_new_document_version_ref_id: upload_response[:vbms_new_document_version_ref_id],
+        vbms_document_series_ref_id: upload_response[:vbms_document_series_ref_id]
+      )
+    end
+
     def rescue_file_not_found(power_of_attorney)
       power_of_attorney.update(
         status: ClaimsApi::PowerOfAttorney::ERRORED,
@@ -31,20 +45,6 @@ module ClaimsApi
         vbms_error_message: error_message
       )
       log_message_to_sentry(self.class.name, :warning, body: error_message)
-    end
-
-    def upload_to_vbms(power_of_attorney, path)
-      uploader = VBMSUploader.new(
-        filepath: path,
-        file_number: power_of_attorney.auth_headers['va_eauth_pnid'],
-        doc_type: '295'
-      )
-      upload_response = uploader.upload!
-      power_of_attorney.update(
-        status: ClaimsApi::PowerOfAttorney::UPLOADED,
-        vbms_new_document_version_ref_id: upload_response[:vbms_new_document_version_ref_id],
-        vbms_document_series_ref_id: upload_response[:vbms_document_series_ref_id]
-      )
     end
   end
 end
