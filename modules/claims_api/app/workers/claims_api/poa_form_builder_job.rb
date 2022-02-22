@@ -11,10 +11,17 @@ module ClaimsApi
     include Sidekiq::Worker
     include ClaimsApi::VBMSSidekiq
 
-    def perform(power_of_attorney_id)
+    # Generate a 21-22 or 21-22a form for a given POA request.
+    # Uploads the generated form to VBMS.
+    # 
+    # @param power_of_attorney_id [String] Unique identifier of the submitted POA
+    # @param poa_code [String] POA code associated with the POA request. This is required because the
+    # current POA code is not guaranteed to be in sync with the POA code for the form builder, since 
+    # PoaUpdater is another separate asynchronous background job.
+    def perform(power_of_attorney_id, poa_code)
       power_of_attorney = ClaimsApi::PowerOfAttorney.find(power_of_attorney_id)
 
-      output_path = pdf_constructor(power_of_attorney).construct(data(power_of_attorney), id: power_of_attorney.id)
+      output_path = pdf_constructor(power_of_attorney, poa_code).construct(data(power_of_attorney), id: power_of_attorney.id)
 
       upload_to_vbms(power_of_attorney, output_path)
     rescue VBMS::Unknown
@@ -26,7 +33,7 @@ module ClaimsApi
     end
 
     def pdf_constructor(power_of_attorney)
-      return ClaimsApi::PoaPdfConstructor::Organization.new if poa_code_in_organization?(power_of_attorney.current_poa)
+      return ClaimsApi::PoaPdfConstructor::Organization.new if poa_code_in_organization?(poa_code)
 
       ClaimsApi::PoaPdfConstructor::Individual.new
     end
