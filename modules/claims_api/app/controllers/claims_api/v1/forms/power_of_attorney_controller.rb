@@ -48,10 +48,10 @@ module ClaimsApi
           end
 
           if enable_vbms_access?
-            ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id,
-              target_veteran.participant_id)
-            end
-            data = power_of_attorney.form_data
+            ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id, target_veteran.participant_id)
+          end
+
+          data = power_of_attorney.form_data
 
           if data['signatures'].present?
             # Autogenerate a 21-22 form from the request body and upload it to VBMS
