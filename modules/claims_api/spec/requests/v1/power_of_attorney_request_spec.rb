@@ -128,11 +128,11 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 expect(ClaimsApi::PoaFormBuilderJob).to receive(:perform_async)
                 expect(ClaimsApi::PoaUpdater).to receive(:perform_async)
 
-                post path, params: params.to_json, headers: headers.merge(auth_header)    
+                post path, params: params.to_json, headers: headers.merge(auth_header)
               end
             end
           end
-    
+
           context 'when a request doesn\'t include signatures' do
             it 'Doesn\'t update POA in BGS or generate a 21-22 form to upload to VBMS' do
               with_okta_user(scopes) do |auth_header|

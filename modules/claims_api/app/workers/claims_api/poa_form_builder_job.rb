@@ -13,15 +13,15 @@ module ClaimsApi
 
     # Generate a 21-22 or 21-22a form for a given POA request.
     # Uploads the generated form to VBMS.
-    # 
+    #
     # @param power_of_attorney_id [String] Unique identifier of the submitted POA
     # @param poa_code [String] POA code associated with the POA request. This is required because the
-    # current POA code is not guaranteed to be in sync with the POA code for the form builder, since 
+    # current POA code is not guaranteed to be in sync with the POA code for the form builder, since
     # PoaUpdater is another separate asynchronous background job.
     def perform(power_of_attorney_id, poa_code)
       power_of_attorney = ClaimsApi::PowerOfAttorney.find(power_of_attorney_id)
 
-      output_path = pdf_constructor(power_of_attorney, poa_code).construct(data(power_of_attorney), id: power_of_attorney.id)
+      output_path = pdf_constructor(poa_code).construct(data(power_of_attorney), id: power_of_attorney.id)
 
       upload_to_vbms(power_of_attorney, output_path)
     rescue VBMS::Unknown
@@ -32,10 +32,12 @@ module ClaimsApi
       power_of_attorney.update(signature_errors: e.detail)
     end
 
-    def pdf_constructor(power_of_attorney)
-      return ClaimsApi::PoaPdfConstructor::Organization.new if poa_code_in_organization?(poa_code)
-
-      ClaimsApi::PoaPdfConstructor::Individual.new
+    def pdf_constructor(poa_code)
+      if poa_code_in_organization?(poa_code)
+        ClaimsApi::PoaPdfConstructor::Organization.new
+      else
+        ClaimsApi::PoaPdfConstructor::Individual.new
+      end
     end
 
     #
