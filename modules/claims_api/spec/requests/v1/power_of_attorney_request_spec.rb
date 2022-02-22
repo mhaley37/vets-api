@@ -208,7 +208,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
 
       it 'return the status of a POA based on GUID' do
         with_okta_user(scopes) do |auth_header|
-          get("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+          get("#{path}/#{power_of_attorney.id}",
               params: nil, headers: headers.merge(auth_header))
           parsed = JSON.parse(response.body)
           expect(parsed['data']['type']).to eq('claims_api_power_of_attorneys')
@@ -236,7 +236,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
             .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
           allow_any_instance_of(ClaimsApi::PowerOfAttorneyUploader).to receive(:store!)
           expect(power_of_attorney.file_data).to be_nil
-          put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+          put("#{path}/#{power_of_attorney.id}",
               params: binary_params, headers: headers.merge(auth_header))
           power_of_attorney.reload
           expect(power_of_attorney.file_data).not_to be_nil
@@ -250,7 +250,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
             .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
           allow_any_instance_of(ClaimsApi::PowerOfAttorneyUploader).to receive(:store!)
           expect(power_of_attorney.file_data).to be_nil
-          put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+          put("#{path}/#{power_of_attorney.id}",
               params: base64_params, headers: headers.merge(auth_header))
           power_of_attorney.reload
           expect(power_of_attorney.file_data).not_to be_nil
@@ -265,7 +265,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
               allow_any_instance_of(BGS::PersonWebService)
                 .to receive(:find_by_ssn).and_raise(BGS::ShareError.new('HelloWorld'))
               expect(power_of_attorney.file_data).to be_nil
-              put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+              put("#{path}/#{power_of_attorney.id}",
                   params: base64_params, headers: headers.merge(auth_header))
               power_of_attorney.reload
               parsed = JSON.parse(response.body)
@@ -288,7 +288,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 allow_any_instance_of(BGS::PersonWebService)
                   .to receive(:find_by_ssn).and_return(nil)
                 expect(power_of_attorney.file_data).to be_nil
-                put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+                put("#{path}/#{power_of_attorney.id}",
                     params: base64_params, headers: headers.merge(auth_header))
                 power_of_attorney.reload
                 parsed = JSON.parse(response.body)
@@ -306,7 +306,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 allow_any_instance_of(BGS::PersonWebService)
                   .to receive(:find_by_ssn).and_return({ file_nbr: nil })
                 expect(power_of_attorney.file_data).to be_nil
-                put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+                put("#{path}/#{power_of_attorney.id}",
                     params: base64_params, headers: headers.merge(auth_header))
                 power_of_attorney.reload
                 parsed = JSON.parse(response.body)
@@ -324,7 +324,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 allow_any_instance_of(BGS::PersonWebService)
                   .to receive(:find_by_ssn).and_return({ file_nbr: '' })
                 expect(power_of_attorney.file_data).to be_nil
-                put("/services/claims/v1/forms/2122/#{power_of_attorney.id}",
+                put("#{path}/#{power_of_attorney.id}",
                     params: base64_params, headers: headers.merge(auth_header))
                 power_of_attorney.reload
                 parsed = JSON.parse(response.body)
@@ -389,8 +389,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
           with_okta_user(scopes) do |auth_header|
             allow(BGS::PowerOfAttorneyVerifier).to receive(:new).and_return(bgs_poa_verifier)
             expect(bgs_poa_verifier).to receive(:current_poa).and_return(nil)
-            get('/services/claims/v1/forms/2122/active',
-                params: nil, headers: headers.merge(auth_header))
+            get("#{path}/active", params: nil, headers: headers.merge(auth_header))
             expect(response.status).to eq(404)
           end
         end
@@ -417,8 +416,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
             expect_any_instance_of(
               ClaimsApi::V1::Forms::PowerOfAttorneyController
             ).to receive(:build_representative_info).and_return(representative_info)
-            get('/services/claims/v1/forms/2122/active',
-                params: nil, headers: headers.merge(auth_header))
+            get("#{path}/active", params: nil, headers: headers.merge(auth_header))
 
             parsed = JSON.parse(response.body)
             expect(response.status).to eq(200)
@@ -441,7 +439,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                   expect_any_instance_of(
                     ClaimsApi::V1::Forms::PowerOfAttorneyController
                   ).to receive(:build_representative_info).and_return(representative_info)
-                  get '/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header)
+                  get "#{path}/active", params: nil, headers: headers.merge(auth_header)
                   expect(response.status).to eq(200)
                 end
               end
@@ -456,7 +454,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                   allow_any_instance_of(TokenValidation::V2::Client).to receive(:token_valid?).and_return(false)
 
                   with_settings(Settings.claims_api.token_validation, api_key: 'some_value') do
-                    get '/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header)
+                    get "#{path}/active", params: nil, headers: headers.merge(auth_header)
                     expect(response.status).to eq(403)
                   end
                 end
@@ -469,8 +467,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
       context 'when a non-accredited representative and non-veteran request active power of attorney' do
         it 'returns a 403' do
           with_okta_user(scopes) do |auth_header|
-            get('/services/claims/v1/forms/2122/active',
-                params: nil, headers: headers.merge(auth_header))
+            get("#{path}/active", params: nil, headers: headers.merge(auth_header))
             expect(response.status).to eq(403)
           end
         end
@@ -495,7 +492,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 OpenStruct.new(name: 'Some Great Organization', phone: '555-555-5555')
               ).twice
 
-              get('/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header))
+              get("#{path}/active", params: nil, headers: headers.merge(auth_header))
 
               parsed = JSON.parse(response.body)
 
@@ -531,7 +528,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 ]
               )
 
-              get('/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header))
+              get("#{path}/active", params: nil, headers: headers.merge(auth_header))
 
               parsed = JSON.parse(response.body)
 
@@ -559,7 +556,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
               allow(::Veteran::Service::Organization).to receive(:find_by).and_return(nil)
               allow(::Veteran::Service::Representative).to receive(:where).and_return([])
 
-              get('/services/claims/v1/forms/2122/active', params: nil, headers: headers.merge(auth_header))
+              get("#{path}/active", params: nil, headers: headers.merge(auth_header))
 
               expect(response.status).to eq(404)
             end
