@@ -52,6 +52,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
         }
       },
       serviceOrganization: {
+        poaCode: "#{poa_code}",
         organizationName: 'I Help Vets LLC',
         address: {
           numberAndStreet: '2719 Hyperion Ave',
@@ -74,7 +75,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
       it 'generates the pdf to match example' do
         expect(ClaimsApi::PoaPdfConstructor::Individual).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Individual).to receive(:construct).and_call_original
-        subject.new.perform(power_of_attorney.id, poa_code)
+        subject.new.perform(power_of_attorney.id)
       end
     end
 
@@ -87,7 +88,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
       it 'generates the pdf to match example' do
         expect(ClaimsApi::PoaPdfConstructor::Organization).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Organization).to receive(:construct).and_call_original
-        subject.new.perform(power_of_attorney.id, poa_code)
+        subject.new.perform(power_of_attorney.id)
       end
     end
   end

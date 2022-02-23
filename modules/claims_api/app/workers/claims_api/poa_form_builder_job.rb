@@ -15,10 +15,11 @@ module ClaimsApi
     # Uploads the generated form to VBMS.
     #
     # @param power_of_attorney_id [String] Unique identifier of the submitted POA
-    def perform(power_of_attorney_id, poa_code)
+    def perform(power_of_attorney_id)
       power_of_attorney = ClaimsApi::PowerOfAttorney.find(power_of_attorney_id)
+      poa_code = power_of_attorney.form_data['serviceOrganization']['poaCode']
 
-      output_path = pdf_constructor(poa_code).construct(data(power_of_attorney), poa_form.form_data['serviceOrganization']['poaCode'])
+      output_path = pdf_constructor(poa_code).construct(data(power_of_attorney))
 
       upload_to_vbms(power_of_attorney, output_path)
     rescue VBMS::Unknown
