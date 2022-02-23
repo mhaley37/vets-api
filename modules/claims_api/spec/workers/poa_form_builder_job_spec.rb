@@ -52,7 +52,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
         }
       },
       serviceOrganization: {
-        poaCode: "#{poa_code}",
+        poaCode: poa_code.to_s,
         organizationName: 'I Help Vets LLC',
         address: {
           numberAndStreet: '2719 Hyperion Ave',
