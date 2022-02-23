@@ -19,9 +19,11 @@ RSpec.describe 'payment_history', type: :request do
   describe 'GET /mobile/v0/payment-history' do
     context 'with successful response with the default (no) parameters' do
       before do
-        VCR.use_cassette('payment_history/retrieve_payment_summary_with_bdn', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/payment-history', headers: iam_headers, params: nil
-        end
+        expect do
+          VCR.use_cassette('payment_history/retrieve_payment_summary_with_bdn', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/payment-history', headers: iam_headers, params: nil
+          end
+        end.to trigger_statsd_increment('mobile.payment_history.index.success', times: 1)
       end
 
       it 'returns 200' do
@@ -111,9 +113,11 @@ RSpec.describe 'payment_history', type: :request do
       let(:params) { { page: { number: 'one', size: 'ten' } } }
 
       before do
-        VCR.use_cassette('payment_history/retrieve_payment_summary_with_bdn', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/payment-history', headers: iam_headers, params: params
-        end
+        expect do
+          VCR.use_cassette('payment_history/retrieve_payment_summary_with_bdn', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/payment-history', headers: iam_headers, params: params
+          end
+        end.to trigger_statsd_increment('mobile.payment_history.index.failure', times: 1)
       end
 
       it 'returns a 422' do
@@ -234,6 +238,26 @@ RSpec.describe 'payment_history', type: :request do
 
       it 'returns an empty list' do
         expect(response.parsed_body['data'].size).to eq(0)
+      end
+    end
+
+    context 'with an invalid date in payment history' do
+      before do
+        allow(Rails.logger).to receive(:warn)
+        VCR.use_cassette('payment_history/retrieve_payment_summary_with_bdn_blank_date',
+                         match_requests_on: %i[method uri]) do
+          get '/mobile/v0/payment-history', headers: iam_headers
+        end
+      end
+
+      it 'returns a 200' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'logs that a payment with no date was found' do
+        expect(Rails.logger).to have_received(:warn).at_least(:once).with(
+          'mobile payment history record found with no date', { payment_id: '11213114', user_icn: '1008596379V859838' }
+        )
       end
     end
   end

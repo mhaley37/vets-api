@@ -221,7 +221,8 @@ module Mobile
           # rubocop:disable Metrics/MethodLength
           def self.location(request)
             address = request.dig(:cc_appointment_request, :preferred_providers, 0, :address) || {}
-            phone_captures = phone_captures(request)
+            phone_captures = phone_captures(request) || []
+
             {
               id: nil,
               name: practice_name(request),
