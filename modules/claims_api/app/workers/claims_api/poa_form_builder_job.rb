@@ -12,7 +12,8 @@ module ClaimsApi
     include ClaimsApi::VBMSSidekiq
 
     # Generate a 21-22 or 21-22a form for a given POA request.
-    # Uploads the generated form to VBMS.
+    # Uploads the generated form to VBMS. If successfully uploaded,
+    # it queues a job to update the POA code in BGS, as well.
     #
     # @param power_of_attorney_id [String] Unique identifier of the submitted POA
     def perform(power_of_attorney_id)
@@ -22,6 +23,7 @@ module ClaimsApi
       output_path = pdf_constructor(poa_code).construct(data(power_of_attorney))
 
       upload_to_vbms(power_of_attorney, output_path)
+      ClaimsApi::PoaUpdater.perform_async(power_of_attorney.id)
     rescue VBMS::Unknown
       rescue_vbms_error(power_of_attorney)
     rescue Errno::ENOENT

@@ -118,7 +118,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
           end
 
           context 'when a request includes signatures' do
-            it 'Updates POA in BGS and generates a form to submit to VBMS' do
+            it 'Generates a 21-22 or 21-22a form to submit to VBMS' do
               with_okta_user(scopes) do |auth_header|
                 params = JSON.parse data
                 base64_signature = File.read("#{::Rails.root}/modules/claims_api/spec/fixtures/signature_b64.txt")
@@ -126,7 +126,6 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 params['data']['attributes']['signatures'] = signatures
 
                 expect(ClaimsApi::PoaFormBuilderJob).to receive(:perform_async)
-                expect(ClaimsApi::PoaUpdater).to receive(:perform_async)
 
                 post path, params: params.to_json, headers: headers.merge(auth_header)
               end
@@ -134,10 +133,9 @@ RSpec.describe 'Power of Attorney ', type: :request do
           end
 
           context 'when a request doesn\'t include signatures' do
-            it 'Doesn\'t update POA in BGS or generate a 21-22 form to upload to VBMS' do
+            it 'Doesn\'t generate a 21-22 or 21-22a form to upload to VBMS' do
               with_okta_user(scopes) do |auth_header|
                 expect(ClaimsApi::PoaFormBuilderJob).not_to receive(:perform_async)
-                expect(ClaimsApi::PoaUpdater).not_to receive(:perform_async)
 
                 post path, params: data, headers: headers.merge(auth_header)
               end
