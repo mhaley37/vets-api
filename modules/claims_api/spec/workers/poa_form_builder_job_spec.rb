@@ -6,11 +6,11 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
   subject { described_class }
 
   let(:power_of_attorney) { create(:power_of_attorney, :with_full_headers) }
+  let(:poa_code) { 'ABC' }
 
   before do
     Sidekiq::Worker.clear_all
     b64_image = File.read('modules/claims_api/spec/fixtures/signature_b64.txt')
-    power_of_attorney.current_poa = 'ABC'
     power_of_attorney.form_data = {
       recordConcent: true,
       consentAddressChange: true,
@@ -68,26 +68,26 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
   describe 'generating the filled and signed pdf' do
     context 'when representative is an individual' do
       before do
-        Veteran::Service::Representative.new(representative_id: '12345', poa_codes: ['ABC']).save!
+        Veteran::Service::Representative.new(representative_id: '12345', poa_codes: [poa_code.to_s]).save!
       end
 
       it 'generates the pdf to match example' do
         expect(ClaimsApi::PoaPdfConstructor::Individual).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Individual).to receive(:construct).and_call_original
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, poa_code)
       end
     end
 
     context 'when representative is part of an organization' do
       before do
-        Veteran::Service::Representative.new(representative_id: '67890', poa_codes: ['ABC']).save!
+        Veteran::Service::Representative.new(representative_id: '67890', poa_codes: [poa_code.to_s]).save!
         Veteran::Service::Organization.create(poa: 'ABC', name: 'Some org')
       end
 
       it 'generates the pdf to match example' do
         expect(ClaimsApi::PoaPdfConstructor::Organization).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Organization).to receive(:construct).and_call_original
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, poa_code)
       end
     end
   end
