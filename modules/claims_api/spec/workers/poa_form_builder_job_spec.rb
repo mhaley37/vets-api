@@ -74,8 +74,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
       end
 
       it 'generates the pdf to match example' do
-        allow_any_instance_of(BGS::PersonWebService)
-          .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
+        allow_any_instance_of(BGS::PersonWebService).to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
         expect(ClaimsApi::PoaPdfConstructor::Individual).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Individual).to receive(:construct).and_call_original
         subject.new.perform(power_of_attorney.id)
@@ -90,6 +89,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
 
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token).and_return(token_response)
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:upload_document).and_return(document_response)
+        allow_any_instance_of(BGS::PersonWebService).to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
 
         expect(ClaimsApi::PoaUpdater).to receive(:perform_async)
 
@@ -104,8 +104,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
       end
 
       it 'generates the pdf to match example' do
-        allow_any_instance_of(BGS::PersonWebService)
-          .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
+        allow_any_instance_of(BGS::PersonWebService).to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
         expect(ClaimsApi::PoaPdfConstructor::Organization).to receive(:new).and_call_original
         expect_any_instance_of(ClaimsApi::PoaPdfConstructor::Organization).to receive(:construct).and_call_original
         subject.new.perform(power_of_attorney.id)
@@ -120,6 +119,7 @@ RSpec.describe ClaimsApi::PoaFormBuilderJob, type: :job do
 
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token).and_return(token_response)
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:upload_document).and_return(document_response)
+        allow_any_instance_of(BGS::PersonWebService).to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
 
         expect(ClaimsApi::PoaUpdater).to receive(:perform_async)
 
