@@ -20,7 +20,7 @@ module ClaimsApi
       power_of_attorney = ClaimsApi::PowerOfAttorney.find(power_of_attorney_id)
       poa_code = power_of_attorney.form_data['serviceOrganization']['poaCode']
 
-      output_path = pdf_constructor(poa_code).construct(data(power_of_attorney))
+      output_path = pdf_constructor(poa_code).construct(data(power_of_attorney), id: power_of_attorney.id)
 
       upload_to_vbms(power_of_attorney, output_path)
       ClaimsApi::PoaUpdater.perform_async(power_of_attorney.id)

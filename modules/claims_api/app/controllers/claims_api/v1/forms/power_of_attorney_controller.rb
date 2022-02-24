@@ -56,7 +56,7 @@ module ClaimsApi
           if data.dig('signatures', 'veteran').present? && data.dig('signatures', 'representative').present?
             # Autogenerate a 21-22 form from the request body and upload it to VBMS.
             # If upload is successful, then the PoaUpater job is also called to update the code in BGS.
-            ClaimsApi::PoaFormBuilderJob.perform_async(power_of_attorney.id, poa_code)
+            ClaimsApi::PoaFormBuilderJob.perform_async(power_of_attorney.id)
           end
 
           render json: power_of_attorney, serializer: ClaimsApi::PowerOfAttorneySerializer

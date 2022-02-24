@@ -10,7 +10,7 @@ module ClaimsApi
     include ClaimsApi::VBMSSidekiq
 
     # Uploads a 21-22 or 21-22a form for a given POA request to VBMS.
-    # If successfully uploaded, it queues a job to update the POA code in BGS, as.
+    # If successfully uploaded, it queues a job to update the POA code in BGS, as well.
     #
     # @param power_of_attorney_id [String] Unique identifier of the submitted POA
     def perform(power_of_attorney_id)
