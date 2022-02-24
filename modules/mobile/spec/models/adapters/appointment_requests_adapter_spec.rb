@@ -41,19 +41,19 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'is_pending' do
     it 'is always true' do
-      is_pending = all_appointment_requests.collect(&:is_pending).uniq
+      is_pending = all_appointment_requests.map(&:is_pending).uniq
       expect(is_pending).to eq([true])
     end
   end
 
   describe 'unused fields' do
     it 'returns them as nils' do
-      cancel_id = all_appointment_requests.collect(&:cancel_id).uniq
-      comment = all_appointment_requests.collect(&:comment).uniq
-      sta6aid = all_appointment_requests.collect(&:sta6aid).uniq
-      minutes_duration = all_appointment_requests.collect(&:minutes_duration).uniq
-      vetext_id = all_appointment_requests.collect(&:vetext_id).uniq
-      is_covid_vaccine = all_appointment_requests.collect(&:is_covid_vaccine).uniq
+      cancel_id = all_appointment_requests.map(&:cancel_id).uniq
+      comment = all_appointment_requests.map(&:comment).uniq
+      sta6aid = all_appointment_requests.map(&:sta6aid).uniq
+      minutes_duration = all_appointment_requests.map(&:minutes_duration).uniq
+      vetext_id = all_appointment_requests.map(&:vetext_id).uniq
+      is_covid_vaccine = all_appointment_requests.map(&:is_covid_vaccine).uniq
 
       expect([cancel_id, comment, sta6aid, minutes_duration, vetext_id, is_covid_vaccine]).to all(eq([nil]))
     end
@@ -87,7 +87,7 @@ describe Mobile::V0::Adapters::AppointmentRequests do
 
   describe 'time_zone' do
     it 'is based on facility zip code' do
-      time_zones = all_appointment_requests.collect(&:time_zone).uniq
+      time_zones = all_appointment_requests.map(&:time_zone).uniq
       expect(time_zones).to eq(['America/Denver'])
     end
   end
