@@ -5,8 +5,6 @@ data:
       appointmentType: COMMUNITY_CARE
       cancelId: null
       comment: Please arrive 20 minutes before the start of your appointment
-      clinicId: ~
-      facilityId: ~
       healthcareProvider: John Smith
       healthcareService: null
       location:

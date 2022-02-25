@@ -5,8 +5,6 @@ data:
       appointmentType: va
       cancelId: MzA4OzIwMjAxMTAzLjA5MDAwMDs0NDI7Q0hZIFBDIEtJTFBBVFJJQ0s=
       comment: Please arrive 20 minutes before the start of your appointment
-      clinicId: "308"
-      facilityId: "442"
       healthcareProvider: null
       healthcareService: Blind Rehabilitation Center
       location:
