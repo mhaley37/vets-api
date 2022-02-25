@@ -21,13 +21,14 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
 
   describe 'uploading a file to vbms' do
     let(:power_of_attorney) { create(:power_of_attorney) }
+    let(:participant_id) { '12345' }
 
     it 'responds properly when there is a 500 error' do
       VCR.use_cassette('vbms/document_upload_500') do
         allow_any_instance_of(BGS::PersonWebService)
           .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
 
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, participant_id)
         power_of_attorney.reload
         expect(power_of_attorney.vbms_upload_failure_count).to eq(1)
       end
@@ -39,7 +40,7 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
           .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
         expect(ClaimsApi::PoaUpdater).not_to receive(:perform_async)
         expect do
-          subject.new.perform(power_of_attorney.id)
+          subject.new.perform(power_of_attorney.id, participant_id)
         end.to change(subject.jobs, :size).by(1)
       end
     end
@@ -52,7 +53,7 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
 
         power_of_attorney.update(vbms_upload_failure_count: 4)
         expect do
-          subject.new.perform(power_of_attorney.id)
+          subject.new.perform(power_of_attorney.id, participant_id)
         end.to change(subject.jobs, :size).by(0)
       end
     end
@@ -72,7 +73,7 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
       VCR.use_cassette('vbms/document_upload_success') do
         expect(ClaimsApi::PoaUpdater).to receive(:perform_async)
 
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, participant_id)
         power_of_attorney.reload
 
         expect(power_of_attorney.status).to eq('uploaded')
@@ -93,7 +94,7 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
           .to receive(:find_by_ssn).and_return({ file_nbr: '123456789' })
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token).and_return(token_response)
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:upload_document).and_raise(Errno::ENOENT)
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, participant_id)
         power_of_attorney.reload
         expect(power_of_attorney.status).to eq('errored')
       end
@@ -106,7 +107,9 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token)
           .and_raise(VBMS::FilenumberDoesNotExist.new(500, 'HelloWorld'))
 
-        expect { subject.new.perform(power_of_attorney.id) }.to raise_error(VBMS::FilenumberDoesNotExist)
+        expect do
+          subject.new.perform(power_of_attorney.id, participant_id)
+        end.to raise_error(VBMS::FilenumberDoesNotExist)
         power_of_attorney.reload
 
         expect(power_of_attorney.status).to eq('errored')
@@ -129,7 +132,7 @@ RSpec.describe ClaimsApi::VBMSUploadJob, type: :job do
         allow_any_instance_of(ClaimsApi::VBMSUploader).to receive(:fetch_upload_token).and_return(token_response)
         allow_any_instance_of(VBMS::Client).to receive(:send_request).and_return(response)
         allow(VBMS::Requests::UploadDocument).to receive(:new).and_return({})
-        subject.new.perform(power_of_attorney.id)
+        subject.new.perform(power_of_attorney.id, participant_id)
         power_of_attorney.reload
         expect(power_of_attorney.status).to eq('uploaded')
       end
