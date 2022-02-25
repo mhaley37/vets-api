@@ -47,16 +47,12 @@ module ClaimsApi
             power_of_attorney.save!
           end
 
-          if enable_vbms_access?
-            ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id, target_veteran.participant_id)
-          end
-
           data = power_of_attorney.form_data
 
           if data.dig('signatures', 'veteran').present? && data.dig('signatures', 'representative').present?
             # Autogenerate a 21-22 form from the request body and upload it to VBMS.
             # If upload is successful, then the PoaUpater job is also called to update the code in BGS.
-            ClaimsApi::PoaFormBuilderJob.perform_async(power_of_attorney.id)
+            ClaimsApi::PoaFormBuilderJob.perform_async(power_of_attorney.id, target_veteran.participant_id)
           end
 
           render json: power_of_attorney, serializer: ClaimsApi::PowerOfAttorneySerializer
@@ -78,7 +74,7 @@ module ClaimsApi
           @power_of_attorney.reload
 
           # If upload is successful, then the PoaUpater job is also called to update the code in BGS.
-          ClaimsApi::VBMSUploadJob.perform_async(@power_of_attorney.id)
+          ClaimsApi::VBMSUploadJob.perform_async(@power_of_attorney.id, target_veteran.participant_id)
 
           render json: @power_of_attorney, serializer: ClaimsApi::PowerOfAttorneySerializer
         end
@@ -138,10 +134,6 @@ module ClaimsApi
         end
 
         private
-
-        def enable_vbms_access?
-          form_attributes['recordConsent'] && form_attributes['consentLimits'].blank?
-        end
 
         def current_poa_begin_date
           return nil if current_poa.try(:begin_date).blank?

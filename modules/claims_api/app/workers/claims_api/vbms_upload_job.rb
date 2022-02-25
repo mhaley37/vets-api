@@ -13,13 +13,21 @@ module ClaimsApi
     # If successfully uploaded, it queues a job to update the POA code in BGS, as well.
     #
     # @param power_of_attorney_id [String] Unique identifier of the submitted POA
-    def perform(power_of_attorney_id)
+    def perform(power_of_attorney_id, participant_id)
       power_of_attorney = ClaimsApi::PowerOfAttorney.find(power_of_attorney_id)
       uploader = ClaimsApi::PowerOfAttorneyUploader.new(power_of_attorney_id)
+
       uploader.retrieve_from_store!(power_of_attorney.file_data['filename'])
+
       file_path = fetch_file_path(uploader)
       upload_to_vbms(power_of_attorney, file_path)
+
+      # Once the form is successfully uploaded, update the BIRLS record with the new POA code
       ClaimsApi::PoaUpdater.perform_async(power_of_attorney.id)
+
+      if power_of_attorney.form_data['recordConsent'] && power_of_attorney.form_data['consentLimits'].blank?
+        ClaimsApi::VBMSUpdater.perform_async(power_of_attorney.id, participant_id)
+      end
     rescue VBMS::Unknown
       rescue_vbms_error(power_of_attorney)
     rescue Errno::ENOENT
