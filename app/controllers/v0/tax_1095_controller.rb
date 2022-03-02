@@ -23,7 +23,7 @@ module V0
           :"topmostSubform[0].Page1[0].Table1_Part4[0].Row23[0].c1_04[0]" => 1,
           :"topmostSubform[0].Page1[0].Part1Contents[0].f1_04[0]" => "123-12-1234"
         },
-        flatten: Rails.env.production?
+        flatten: true
       )
      #  base dir "src" as in "vets-api/src/lib/pdf_fill/forms/pdfs/f1095b.pdf"
     field_names = PDF_FORMS.get_field_names('lib/pdf_fill/forms/pdfs/f1095b.pdf') 
