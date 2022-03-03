@@ -22,6 +22,8 @@ saml_ssoe:
   response_signing: false
   response_encryption: false
   identity_slack_webhook: ~
+  mock: false
+  mock_user_file: ~
 
 ssoe_eauth_cookie:
   name: vagov_saml_request_localhost

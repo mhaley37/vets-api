@@ -31,8 +31,9 @@ module V1
     # For more details see SAML::SSOeSettingsService and SAML::URLService
     def new
       type = params[:type]
-
-      if type == 'slo'
+      if Settings.saml_ssoe.mock
+        mock_user_login
+      elsif type == 'slo'
         Rails.logger.info("SessionsController version:v1 LOGOUT of type #{type}", sso_logging_info)
         reset_session
         url = url_service.ssoe_slo_url
@@ -128,6 +129,14 @@ module V1
         redirect_to url_service.login_redirect_url
         login_stats(:success)
       end
+    end
+
+    def mock_user_login
+      mock_service = Login::MockUserSessionForm.new
+      @current_user, @session_object = mock_service.persist
+      set_cookies
+      after_login_actions
+      redirect_to url_service.login_redirect_url
     end
 
     def render_login(type)
