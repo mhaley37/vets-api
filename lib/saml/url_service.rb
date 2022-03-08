@@ -77,21 +77,21 @@ module SAML
     end
 
     # SIGN ON URLS
-    def login_url(type, authn_context, identity_provider = AuthnContext::ID_ME, authn_con_compare = AuthnContext::EXACT)
+    def login_url(type, authn_context, csp_method, authn_con_compare = AuthnContext::EXACT)
       @type = type
-      build_sso_url(build_authn_context(authn_context, identity_provider), authn_con_compare)
+      build_sso_url(build_authn_context(authn_context, csp_method), authn_con_compare)
     end
 
     def idme_signup_url(authn_context)
       @type = 'signup'
       @query_params[:op] = 'signup'
-      build_sso_url(build_authn_context(authn_context))
+      build_sso_url(build_authn_context(authn_context, 'IDME'))
     end
 
     def logingov_signup_url(authn_context)
       @type = 'signup'
       build_sso_url(
-        build_authn_context(authn_context, AuthnContext::LOGIN_GOV)
+        build_authn_context(authn_context, 'LOGINGOV')
       )
     end
 
@@ -109,13 +109,13 @@ module SAML
       link_authn_context =
         case authn_context
         when LOA::IDME_LOA1_VETS, 'multifactor'
-          build_authn_context(@loa3_context)
+          build_authn_context(@loa3_context, 'IDME')
         when IAL::LOGIN_GOV_IAL1
-          build_authn_context([IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2], AuthnContext::LOGIN_GOV)
+          build_authn_context([IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2], 'LOGINGOV')
         when 'myhealthevet', 'myhealthevet_multifactor'
-          build_authn_context('myhealthevet_loa3')
+          build_authn_context('myhealthevet_loa3', 'IDME_MHV')
         when 'dslogon', 'dslogon_multifactor'
-          build_authn_context('dslogon_loa3')
+          build_authn_context('dslogon_loa3', 'IDME_DSL')
         when SAML::UserAttributes::SSOe::INBOUND_AUTHN_CONTEXT
           "#{@user.identity.sign_in[:service_name]}_loa3"
         end
@@ -127,7 +127,7 @@ module SAML
       link_authn_context =
         case type
         when 'logingov'
-          build_authn_context([IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2], AuthnContext::LOGIN_GOV)
+          build_authn_context([IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2], 'LOGINGOV')
         when 'mhv'
           build_authn_context('myhealthevet_loa3')
         when 'dslogon'
@@ -182,9 +182,16 @@ module SAML
       saml_auth_request.create(new_url_settings, query_params)
     end
 
-    def build_authn_context(assurance_level_url, identity_provider = AuthnContext::ID_ME)
+    def build_authn_context(authn_context, csp_method)
+      require 'pry'; binding.pry
       assurance_level_url = [assurance_level_url] unless assurance_level_url.is_a?(Array)
-      assurance_level_url.push(identity_provider)
+      assurance_level_url.push(build_csp_url(csp_method))
+    end
+
+    def build_csp_url(csp_method)
+      raise unless AuthnContext::CSP_METHODS.include?(csp_method)
+
+      AuthnContext::CSP_URL.dup.concat(csp_method)
     end
 
     def relay_state_params
