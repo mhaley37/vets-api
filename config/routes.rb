@@ -338,7 +338,9 @@ Rails.application.routes.draw do
     namespace :coe do
       get 'status'
       get 'download_coe'
+      get 'documents'
       post 'submit_coe_claim'
+      post 'document_upload'
     end
   end
 
