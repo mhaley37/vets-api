@@ -28,7 +28,7 @@ RSpec.describe SignInController, type: :controller do
       end
     end
 
-    describe 'POST callback' do
+    describe 'GET callback' do
       %w[logingov].each do |type|
         let(:ssl_key) { OpenSSL::PKey::RSA.new(File.read("spec/fixtures/sign_in/#{type}.key")) }
         let(:ssl_cert) { OpenSSL::X509::Certificate.new(File.read("spec/fixtures/sign_in/#{type}.crt")) }
