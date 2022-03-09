@@ -89,21 +89,21 @@ RSpec.describe V1::SessionsController, type: :controller do
             let(:authn) do
               case type
               when 'mhv'
-                ['myhealthevet', AuthnContext::ID_ME]
+                ['myhealthevet', 'https://eauth.va.gov/csp/IDME_MHV']
               when 'mhv_verified'
                 ['myhealthevet_loa3', AuthnContext::ID_ME]
               when 'idme'
-                [LOA::IDME_LOA1_VETS, AuthnContext::ID_ME]
+                [LOA::IDME_LOA1_VETS, 'https://eauth.va.gov/csp/IDME']
               when 'idme_verified'
                 [LOA::IDME_LOA3, AuthnContext::ID_ME]
               when 'dslogon'
-                ['dslogon', AuthnContext::ID_ME]
+                ['dslogon', 'https://eauth.va.gov/csp/IDME_DSL']
               when 'dslogon_verified'
                 ['dslogon_loa3', AuthnContext::ID_ME]
               when 'logingov'
                 [IAL::LOGIN_GOV_IAL1,
                  AAL::LOGIN_GOV_AAL2,
-                 AuthnContext::LOGIN_GOV]
+                 'https://eauth.va.gov/csp/LOGINGOV']
               when 'logingov_verified'
                 [IAL::LOGIN_GOV_IAL2,
                  AAL::LOGIN_GOV_AAL2,

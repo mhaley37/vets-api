@@ -182,10 +182,13 @@ module SAML
       saml_auth_request.create(new_url_settings, query_params)
     end
 
-    def build_authn_context(authn_context, csp_method)
-      require 'pry'; binding.pry
-      assurance_level_url = [assurance_level_url] unless assurance_level_url.is_a?(Array)
-      assurance_level_url.push(build_csp_url(csp_method))
+    def build_authn_context(authn_context, csp_method = AuthnContext::ID_ME)
+      authn_context = [authn_context] unless authn_context.is_a?(Array)
+      if csp_method == AuthnContext::ID_ME || csp_method == AuthnContext::LOGIN_GOV
+        authn_context.push(csp_method)
+      else
+        authn_context.push(build_csp_url(csp_method))
+      end
     end
 
     def build_csp_url(csp_method)
