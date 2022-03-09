@@ -129,9 +129,9 @@ module SAML
         when 'logingov'
           build_authn_context([IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2], 'LOGINGOV')
         when 'mhv'
-          build_authn_context('myhealthevet_loa3')
+          build_authn_context('myhealthevet_loa3', 'IDME_MHV')
         when 'dslogon'
-          build_authn_context('dslogon_loa3')
+          build_authn_context('dslogon_loa3', 'IDME_DSL')
         end
 
       build_sso_url(link_authn_context)
@@ -184,7 +184,7 @@ module SAML
 
     def build_authn_context(authn_context, csp_method = AuthnContext::ID_ME)
       authn_context = [authn_context] unless authn_context.is_a?(Array)
-      if csp_method == AuthnContext::ID_ME || csp_method == AuthnContext::LOGIN_GOV
+      if csp_method == AuthnContext::ID_ME
         authn_context.push(csp_method)
       else
         authn_context.push(build_csp_url(csp_method))

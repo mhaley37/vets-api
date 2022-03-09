@@ -171,15 +171,15 @@ module V1
       when 'mhv'
         url_service.login_url('mhv', 'myhealthevet', 'IDME_MHV')
       when 'mhv_verified'
-        url_service.login_url('mhv', 'myhealthevet_loa3', AuthnContext::ID_ME)
+        url_service.login_url('mhv', 'myhealthevet_loa3', 'IDME_MHV')
       when 'dslogon'
         url_service.login_url('dslogon', 'dslogon', 'IDME_DSL')
       when 'dslogon_verified'
-        url_service.login_url('dslogon', 'dslogon_loa3', AuthnContext::ID_ME)
+        url_service.login_url('dslogon', 'dslogon_loa3', 'IDME_DSL')
       when 'idme'
         url_service.login_url('idme', LOA::IDME_LOA1_VETS, 'IDME', AuthnContext::MINIMUM)
       when 'idme_verified'
-        url_service.login_url('idme', LOA::IDME_LOA3, AuthnContext::ID_ME, AuthnContext::MINIMUM)
+        url_service.login_url('idme', LOA::IDME_LOA3, 'IDME')
       when 'idme_signup'
         url_service.idme_signup_url(LOA::IDME_LOA1_VETS)
       when 'idme_signup_verified'
@@ -195,8 +195,7 @@ module V1
         url_service.login_url(
           'logingov',
           [IAL::LOGIN_GOV_IAL2, AAL::LOGIN_GOV_AAL2],
-          AuthnContext::LOGIN_GOV,
-          AuthnContext::MINIMUM
+          'LOGINGOV'
         )
       when 'logingov_signup'
         url_service.logingov_signup_url([IAL::LOGIN_GOV_IAL1, AAL::LOGIN_GOV_AAL2])
