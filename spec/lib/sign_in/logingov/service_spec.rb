@@ -6,7 +6,7 @@ require 'sign_in/logingov/service'
 describe SignIn::Logingov::Service do
   let(:code) { '6805c923-9f37-4b47-a5c9-214391ddffd5' }
   let(:token) do
-    { 
+    {
       access_token: 'AmCGxDQzUAr5rPZ4NgFvUQ',
       token_type: 'Bearer',
       expires_in: 900,
@@ -23,7 +23,7 @@ describe SignIn::Logingov::Service do
       family_name: 'User',
       birthdate: '1993-01-01',
       social_security_number: '999-11-9999',
-      verified_at: 1635465286 
+      verified_at: 1_635_465_286
     }
   end
   let(:success_callback_url) { 'http://localhost:3001/auth/login/callback?type=logingov' }
@@ -31,7 +31,7 @@ describe SignIn::Logingov::Service do
 
   describe '#token' do
     it 'returns an access token' do
-      VCR.use_cassette("identity/logingov_200_responses") do
+      VCR.use_cassette('identity/logingov_200_responses') do
         expect(subject.token(code)).to eq(token)
       end
     end
@@ -39,12 +39,12 @@ describe SignIn::Logingov::Service do
 
   describe '#user_info' do
     it 'returns a user attributes' do
-      VCR.use_cassette("identity/logingov_200_responses") do
+      VCR.use_cassette('identity/logingov_200_responses') do
         expect(subject.user_info(token)).to eq(user_info)
       end
     end
   end
-  
+
   describe '#login_redirect_url' do
     context 'successful authentication' do
       it 'redirects to frontend login landing page' do
