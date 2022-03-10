@@ -65,7 +65,8 @@ RSpec.describe 'V2::SessionsController', type: :request do
         {
           'permissions' => 'read.full',
           'status' => 'success',
-          'uuid' => uuid
+          'uuid' => uuid,
+          'env' => 'This is being called from the vets-api review environment'
         }
       end
       let(:session_params) do
@@ -204,6 +205,15 @@ RSpec.describe 'V2::SessionsController', type: :request do
     end
 
     context 'when JWT token and Redis entries are present' do
+      let(:resp) do
+        {
+          'permissions' => 'read.full',
+          'status' => 'success',
+          'uuid' => uuid,
+          'env' => 'This is being called from the vets-api review environment'
+        }
+      end
+
       it 'returns a success response' do
         allow_any_instance_of(CheckIn::V2::Session).to receive(:redis_session_prefix).and_return('check_in_lorota_v2')
         allow_any_instance_of(CheckIn::V2::Session).to receive(:jwt).and_return('jwt-123-1bc')

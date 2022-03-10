@@ -168,7 +168,8 @@ RSpec.describe CheckIn::V2::Session do
       {
         permissions: 'read.full',
         status: 'success',
-        uuid: 'd602d9eb-9a31-484f-9637-13ab0b507e0d'
+        uuid: 'd602d9eb-9a31-484f-9637-13ab0b507e0d',
+        env: 'This is being called from the vets-api review environment'
       }
     end
 
