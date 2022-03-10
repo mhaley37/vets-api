@@ -21,20 +21,15 @@ reports:
 logingov:
   client_id: urn:gov:gsa:openidconnect.profiles:sp:sso:va:dev_signin
   redirect_uri: http://localhost:3000/sign_in/logingov/callback
-<<<<<<< HEAD
   client_cert_path: spec/fixtures/sign_in/logingov.crt
   client_key_path: spec/fixtures/sign_in/logingov.key
-=======
-  client_cert_path: ~
-  client_key_path: ~
->>>>>>> Changes from huddle feedback
   oauth_url: https://idp.int.identitysandbox.gov
 
 idme:
   client_id: dde0b5b8bfc023a093830e64ef83f148
   redirect_uri: http://localhost:3000/sign_in/idme/callback
-  client_cert_path: ~
-  client_key_path: ~
+  client_cert_path: spec/fixtures/sign_in/idme.crt
+  client_key_path: spec/fixtures/sign_in/idme.key
   oauth_url: https://api.idmelabs.com
 
 saml:
