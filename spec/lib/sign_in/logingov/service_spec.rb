@@ -38,6 +38,18 @@ describe SignIn::Logingov::Service do
     allow_any_instance_of(SignIn::Logingov::Configuration).to receive(:ssl_cert).and_return(ssl_cert)
   end
 
+  describe '#render_auth' do
+    let(:response) { subject.render_auth.to_s }
+
+    it 'renders the logingov_get_form template' do
+      expect(response).to include('form id="logingov-form"')
+    end
+
+    it 'directs to the Login.gov OAuth authorization page' do
+      expect(response).to include('action="https://idp.int.identitysandbox.gov/openid_connect/authorize"')
+    end
+  end
+
   describe '#token' do
     it 'returns an access token' do
       VCR.use_cassette('identity/logingov_200_responses') do
