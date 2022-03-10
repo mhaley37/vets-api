@@ -30,13 +30,6 @@ describe SignIn::Logingov::Service do
   end
   let(:success_callback_url) { 'http://localhost:3001/auth/login/callback?type=logingov' }
   let(:failure_callback_url) { 'http://localhost:3001/auth/login/callback?auth=fail&code=007' }
-  let(:ssl_key) { OpenSSL::PKey::RSA.new(File.read('spec/fixtures/sign_in/logingov.key')) }
-  let(:ssl_cert) { OpenSSL::X509::Certificate.new(File.read('spec/fixtures/sign_in/logingov.crt')) }
-
-  before do
-    allow_any_instance_of(SignIn::Logingov::Configuration).to receive(:ssl_key).and_return(ssl_key)
-    allow_any_instance_of(SignIn::Logingov::Configuration).to receive(:ssl_cert).and_return(ssl_cert)
-  end
 
   describe '#render_auth' do
     let(:response) { subject.render_auth.to_s }
