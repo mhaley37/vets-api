@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get '/sign_in/:type/callback',
       to: 'sign_in#callback',
       constraints: ->(request) { SignInController::REDIRECT_URLS.include?(request.path_parameters[:type]) }
+  post '/sign_in/refresh', to: 'sign_in#refresh'
 
   namespace :v0, defaults: { format: 'json' } do
     resources :onsite_notifications, only: %i[create index update]
