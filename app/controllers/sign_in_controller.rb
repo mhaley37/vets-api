@@ -20,7 +20,40 @@ class SignInController < ApplicationController
     handle_callback_error(e, :failure, :error)
   end
 
+  def refresh
+    refresh_token = refresh_params[:refresh_token]
+    anti_csrf_token = refresh_params[:anti_csrf_token]
+
+    raise SignIn::Errors::MalformedParamsError unless refresh_token && anti_csrf_token
+
+    session_container = refresh_session(refresh_token, anti_csrf_token)
+    encrypted_refresh_token = SignIn::RefreshTokenEncryptor.new(refresh_token: session_container.refresh_token).perform
+    encoded_access_token = SignIn::AccessTokenJwtEncoder.new(access_token: session_container.access_token).perform
+
+    render json: refresh_json_response(encoded_access_token,
+                                       encrypted_refresh_token,
+                                       session_container.anti_csrf_token), status: :ok
+  rescue => e
+    render json: { errors: e }, status: :unauthorized
+  end
+
   private
+
+  def refresh_json_response(access_token, refresh_token, anti_csrf_token)
+    {
+      data:
+        {
+          access_token: access_token,
+          refresh_token: refresh_token,
+          anti_csrf_token: anti_csrf_token
+        }
+    }
+  end
+
+  def refresh_session(refresh_token, anti_csrf_token)
+    decrypted_refresh_token = SignIn::RefreshTokenDecryptor.new(encrypted_refresh_token: refresh_token).perform
+    SignIn::SessionRefresher.new(refresh_token: decrypted_refresh_token, anti_csrf_token: anti_csrf_token).perform
+  end
 
   def handle_callback_error(err, _status, level = :error, code = SignIn::Errors::ERROR_CODES[:unknown])
     message = err&.message || ''
@@ -76,5 +109,9 @@ class SignInController < ApplicationController
 
   def logingov_auth_service
     @logingov_auth_service ||= SignIn::Logingov::Service.new
+  end
+
+  def refresh_params
+    params.permit(:refresh_token, :anti_csrf_token)
   end
 end

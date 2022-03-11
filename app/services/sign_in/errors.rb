@@ -15,5 +15,6 @@ module SignIn
     class AntiCSRFMismatchError < StandardError; end
     class SessionNotAuthorizedError < StandardError; end
     class TokenTheftDetectedError < StandardError; end
+    class MalformedParamsError < StandardError; end
   end
 end
