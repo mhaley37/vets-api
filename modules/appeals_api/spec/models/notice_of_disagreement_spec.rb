@@ -273,7 +273,7 @@ describe AppealsApi::NoticeOfDisagreement, type: :model do
     end
 
     describe '#appellant_local_time' do
-      it { expect(notice_of_disagreement_v2.appellant_local_time.strftime('%Z')).to eq 'CST' }
+      it { expect(notice_of_disagreement_v2.appellant_local_time.strftime('%Z')).to match(/CST|CDT/) }
     end
 
     describe '#extension_request?' do

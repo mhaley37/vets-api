@@ -381,7 +381,7 @@ describe AppealsApi::HigherLevelReview, type: :model do
       end
 
       describe '#appellant_local_time' do
-        it { expect(higher_level_review_v2.appellant_local_time.strftime('%Z')).to eq 'EST' }
+        it { expect(higher_level_review_v2.appellant_local_time.strftime('%Z')).to match(/EST|EDT/) }
       end
     end
   end
