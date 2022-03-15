@@ -16,5 +16,17 @@ module SignIn
     class SessionNotAuthorizedError < StandardError; end
     class TokenTheftDetectedError < StandardError; end
     class MalformedParamsError < StandardError; end
+    class CodeChallengeMethodMismatchError < StandardError; end
+    class CodeChallengeMismatchError < StandardError; end
+    class CodeChallengeMalformedError < StandardError; end
+    class GrantTypeValueError < StandardError; end
+    class CodeInvalidError < StandardError; end
+    class TokenSessionMismatch < StandardError; end
+    class AuthorizeInvalidType < StandardError; end
+    class CallbackInvalidType < StandardError; end
+    class StateMismatchError < StandardError; end
+    class CodeVerifierMalformedError < StandardError; end
+    class UserAccountNotFound < StandardError; end
+    class UserAttributesMalformedError < StandardError; end
   end
 end
