@@ -26,4 +26,8 @@ describe VRE::Submit1900Job do
       expect(claim).to receive(:send_to_vre).with(user)
     end
   end
+
+  it 'acts like a job' do
+    expect { described_class.perform_async }.to change { described_class.jobs.size }.by(1)
+  end
 end
