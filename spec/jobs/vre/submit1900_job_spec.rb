@@ -14,16 +14,14 @@ describe VRE::Submit1900Job do
       allow(SavedClaim::VeteranReadinessEmploymentClaim).to receive(:find).and_return(claim)
     end
 
-    after do
-      subject
-    end
-
     it 'calls claim.add_claimant_info' do
       expect(claim).to receive(:add_claimant_info).with(user)
+      subject
     end
 
     it 'calls claim.send_to_vre' do
       expect(claim).to receive(:send_to_vre).with(user)
+      subject
     end
   end
 
