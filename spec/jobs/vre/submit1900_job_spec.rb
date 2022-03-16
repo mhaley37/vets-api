@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 describe VRE::Submit1900Job do
+  it 'acts like a job' do
+    expect { described_class.perform_async }.to change { described_class.jobs.size }.by(1)
+  end
+
   describe '#perform' do
     subject { described_class.new.perform(claim.id, user.uuid) }
 
@@ -23,9 +27,5 @@ describe VRE::Submit1900Job do
       expect(claim).to receive(:send_to_vre).with(user)
       subject
     end
-  end
-
-  it 'acts like a job' do
-    expect { described_class.perform_async }.to change { described_class.jobs.size }.by(1)
   end
 end
