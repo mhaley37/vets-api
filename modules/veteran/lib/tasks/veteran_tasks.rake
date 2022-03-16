@@ -5,6 +5,7 @@ namespace :veteran do
   task reload_vso_data: :environment do
     puts 'Loading VSO data from OGC'
     Veteran::VSOReloader.perform_async
+    # TODO this task is called asynchronously and takes a while, so the puts statements aren't accurate
     puts "#{Veteran::Service::Organization.count} Organizations loaded"
     puts "#{Veteran::Service::Representative.count} Representatives loaded"
   end
