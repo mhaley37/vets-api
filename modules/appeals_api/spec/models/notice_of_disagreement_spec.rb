@@ -273,7 +273,12 @@ describe AppealsApi::NoticeOfDisagreement, type: :model do
     end
 
     describe '#appellant_local_time' do
-      it { expect(notice_of_disagreement_v2.appellant_local_time.strftime('%Z')).to eq 'CST' }
+      it do
+        appellant_local_time = notice_of_disagreement_v2.appellant_local_time
+        created_at = notice_of_disagreement_v2.created_at
+
+        expect(appellant_local_time).to eq created_at.in_time_zone('America/Chicago')
+      end
     end
 
     describe '#extension_request?' do
@@ -292,7 +297,7 @@ describe AppealsApi::NoticeOfDisagreement, type: :model do
       let(:auth_headers) { fixture_as_json 'valid_10182_headers.json', version: 'v2' }
       let(:form_data) { fixture_as_json 'valid_10182_minimum.json', version: 'v2' }
       let(:invalid_notice_of_disagreement) do
-        build(:minimal_notice_of_disagreement_v2, form_data: form_data, auth_headers: auth_headers, api_version: 'V2')
+        build(:minimal_notice_of_disagreement_v2, form_data: form_data, auth_headers: auth_headers, api_version: 'v2')
       end
 
       context 'when extension reason provided, but extension request is false' do

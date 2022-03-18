@@ -9,8 +9,12 @@ module RapidReadyForDecision
     def processor_class
       return nil unless rrd_enabled?
 
-      if hypertension_enabled? && single_issue_claim_applicable?(DiagnosticCodes::HYPERTENSION)
+      if rrd_enabled_disability?('hypertension') && single_issue_claim_applicable?(DiagnosticCodes::HYPERTENSION)
         return RapidReadyForDecision::DisabilityCompensationJob
+      end
+
+      if rrd_enabled_disability?('asthma') && single_issue_claim_applicable?(DiagnosticCodes::ASTHMA)
+        return RapidReadyForDecision::Form526AsthmaJob
       end
 
       nil
@@ -32,8 +36,11 @@ module RapidReadyForDecision
       true
     end
 
-    def hypertension_enabled?
-      Flipper.enabled?(:disability_hypertension_compensation_fast_track)
+    # @return [Boolean] Is the specified disability RRD-enabled according to Flipper settings
+    def rrd_enabled_disability?(disability)
+      # Todo later: Remove old RRD-related Flipper keys "disability_#{disability.downcase}_compensation_fast_track"
+      Flipper.enabled?("rrd_#{disability.downcase}_compensation".to_sym) ||
+        Flipper.enabled?("disability_#{disability.downcase}_compensation_fast_track".to_sym)
     end
 
     def form_disabilities

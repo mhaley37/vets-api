@@ -6,6 +6,10 @@ require 'common/exceptions'
 module AppealsApi
   class NoticeOfDisagreement < ApplicationRecord
     include NodStatus
+    include PdfOutputPrep
+
+    attr_readonly :auth_headers
+    attr_readonly :form_data
 
     scope :pii_expunge_policy, lambda {
       where(
@@ -295,12 +299,16 @@ module AppealsApi
     end
 
     def version_2?
-      pii_present? && api_version == 'V2'
+      pii_present? && api_version == 'v2'
     end
 
     # After expunging pii, form_data is nil, update will fail unless validation skipped
     def pii_present?
       proc { |a| a.form_data.present? }
+    end
+
+    def clear_memoized_values
+      @veteran = @claimant = nil
     end
   end
 end

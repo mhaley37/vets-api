@@ -753,6 +753,41 @@ RSpec.describe FormProfile, type: :model do
     }
   end
 
+  let(:v26_1880_expected) do
+    {
+      'fullName' => {
+        'first' => user.first_name&.capitalize,
+        'middle' => user.middle_name&.capitalize,
+        'last' => user.last_name&.capitalize,
+        'suffix' => user.suffix
+      },
+      'dateOfBirth' => '1809-02-12',
+      'applicantAddress' => {
+        'street' => street_check[:street],
+        'street2' => street_check[:street2],
+        'city' => user.address[:city],
+        'state' => user.address[:state],
+        'country' => user.address[:country],
+        'postal_code' => user.address[:zip][0..4]
+      },
+      'contactPhone' => us_phone,
+      'contactEmail' => user.pciu_email,
+      'periodsOfService' => [
+        {
+          'serviceBranch' => 'Air Force',
+          'dateRange' => {
+            'from' => '2007-04-01',
+            'to' => '2016-06-01'
+          }
+        }
+      ],
+      'currentlyActiveDuty' => {
+        'yes' => true
+      },
+      'activeDuty' => true
+    }
+  end
+
   let(:v28_8832_expected) do
     {
       'claimantAddress' => {
@@ -1121,6 +1156,7 @@ RSpec.describe FormProfile, type: :model do
           686C-674
           28-8832
           28-1900
+          26-1880
         ].each do |form_id|
           it "returns prefilled #{form_id}" do
             expect_prefilled(form_id)

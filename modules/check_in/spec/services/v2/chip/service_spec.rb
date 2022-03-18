@@ -209,58 +209,6 @@ describe V2::Chip::Service do
     end
   end
 
-  describe '#demographic_confirmations' do
-    Timecop.freeze(Time.zone.now) do
-      let(:result) do
-        {
-          demographicConfirmations: {
-            demographicsNeedsUpdate: true,
-            demographicsConfirmedAt: Time.zone.now.iso8601,
-            nextOfKinNeedsUpdate: true,
-            nextOfConfirmedAt: Time.zone.now.iso8601,
-            emergencyContactNeedsUpdate: true,
-            emergencyContactConfirmedAt: Time.zone.now.iso8601
-          }
-        }
-      end
-
-      context 'with check_in_experience_chip_service_nok_confirmation_update_enabled turned off' do
-        before do
-          allow(Flipper).to receive(:enabled?)
-            .with(:check_in_experience_chip_service_nok_confirmation_update_enabled).and_return(false)
-        end
-
-        it 'returns a hash which includes the key nextOfConfirmedAt' do
-          expect(subject.build(check_in: valid_check_in, params: {}).demographic_confirmations).to eq(result)
-        end
-      end
-
-      context 'with check_in_experience_chip_service_nok_confirmation_update_enabled turned on' do
-        let(:result) do
-          {
-            demographicConfirmations: {
-              demographicsNeedsUpdate: true,
-              demographicsConfirmedAt: Time.zone.now.iso8601,
-              nextOfKinNeedsUpdate: true,
-              nextOfKinConfirmedAt: Time.zone.now.iso8601,
-              emergencyContactNeedsUpdate: true,
-              emergencyContactConfirmedAt: Time.zone.now.iso8601
-            }
-          }
-        end
-
-        before do
-          allow(Flipper).to receive(:enabled?)
-            .with(:check_in_experience_chip_service_nok_confirmation_update_enabled).and_return(true)
-        end
-
-        it 'returns a hash which includes the key nextOfKinConfirmedAt' do
-          expect(subject.build(check_in: valid_check_in, params: {}).demographic_confirmations).to eq(result)
-        end
-      end
-    end
-  end
-
   describe '#confirm_demographics' do
     let(:params) do
       {
@@ -268,7 +216,7 @@ describe V2::Chip::Service do
           demographicsNeedsUpdate: false,
           demographicsConfirmedAt: '2021-11-30T20:45:03.779Z',
           nextOfKinNeedsUpdate: false,
-          nextOfConfirmedAt: '2021-11-30T20:45:03.779Z',
+          nextOfKinConfirmedAt: '2021-11-30T20:45:03.779Z',
           emergencyContactNeedsUpdate: true,
           emergencyContactConfirmedAt: '2021-11-30T20:45:03.779Z'
         },
@@ -337,6 +285,55 @@ describe V2::Chip::Service do
       it 'returns unauthorized message' do
         expect(subject.build(check_in: valid_check_in, params: params)
                       .confirm_demographics).to eq(error_response)
+      end
+    end
+  end
+
+  describe '#refresh_precheckin' do
+    context 'when token is already present' do
+      let(:lorota_uuid) { 'd602d9eb-9a31-484f-9637-13ab0b507e0d' }
+      let(:params) do
+        {
+          id: lorota_uuid,
+          check_in_type: :pre_check_in
+        }
+      end
+      let(:resp) do
+        {
+          uuid: lorota_uuid
+        }
+      end
+      let(:faraday_response) { Faraday::Response.new(body: resp, status: 200) }
+      let(:hsh) { { data: faraday_response.body, status: faraday_response.status } }
+
+      before do
+        allow_any_instance_of(::V2::Chip::Service).to receive(:token).and_return('jwt-token-123-abc')
+        allow_any_instance_of(::V2::Chip::Client).to receive(:refresh_precheckin).and_return(faraday_response)
+      end
+
+      it 'returns refresh precheckin response' do
+        expect(subject.build(check_in: valid_check_in, params: params)
+                      .refresh_precheckin).to eq(hsh)
+      end
+    end
+
+    context 'when token is not present' do
+      let(:error_response) { { data: { error: true, message: 'Unauthorized' }, status: 401 } }
+      let(:lorota_uuid) { 'd602d9eb-9a31-484f-9637-13ab0b507e0d' }
+      let(:params) do
+        {
+          id: lorota_uuid,
+          check_in_type: :pre_check_in
+        }
+      end
+
+      before do
+        allow_any_instance_of(::V2::Chip::Service).to receive(:token).and_return(nil)
+      end
+
+      it 'returns unauthorized message' do
+        expect(subject.build(check_in: valid_check_in, params: params)
+                      .refresh_precheckin).to eq(error_response)
       end
     end
   end
