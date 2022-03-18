@@ -5,6 +5,7 @@ require AppealsApi::Engine.root.join('spec', 'spec_helper.rb')
 
 describe AppealsApi::PdfConstruction::Generator do
   include FixtureHelpers
+  include SchemaHelpers
 
   let(:appeal) { create(:notice_of_disagreement) }
 
@@ -164,6 +165,22 @@ describe AppealsApi::PdfConstruction::Generator do
             generated_pdf = described_class.new(hlr, version: 'V2').generate
             generated_reader = PDF::Reader.new(generated_pdf)
             expect(generated_reader.pages[1].text).to include 'mer allergies'
+            File.delete(generated_pdf) if File.exist?(generated_pdf)
+          end
+        end
+
+        context 'pdf max length content verification' do
+          let(:schema) { read_schema('200996.json', 'V2') }
+          let(:hlr) { build(:higher_level_review_v2, created_at: '2021-02-03T14:15:16Z') }
+
+          it 'generates the expected pdf' do
+            hlr.form_data = SchemaHelpers.schema_max_lengths(hlr, schema, 'V2')
+            hlr.save!
+
+            generated_pdf = described_class.new(hlr, version: 'V2').generate
+            expected_pdf = fixture_filepath('expected_200996_maxlength.pdf', version: 'v2')
+
+            expect(generated_pdf).to match_pdf(expected_pdf)
             File.delete(generated_pdf) if File.exist?(generated_pdf)
           end
         end
