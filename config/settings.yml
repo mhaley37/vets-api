@@ -7,6 +7,7 @@ virtual_hosts: ["127.0.0.1", "localhost"] # Safe host names
 # For CORS requests; separate multiple origins with a comma
 web_origin: http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001,null
 web_origin_regex: \Ahttps?:\/\/www\.va\.gov\z
+web_origin_dashboard: https://department-of-veterans-affairs.github.io
 
 # Settings for new SAML authentication with SSOe
 saml_ssoe:
