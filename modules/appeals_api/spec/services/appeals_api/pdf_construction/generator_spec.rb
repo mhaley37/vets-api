@@ -172,9 +172,10 @@ describe AppealsApi::PdfConstruction::Generator do
         context 'pdf max length content verification' do
           let(:schema) { read_schema('200996.json', 'V2') }
           let(:hlr) { build(:higher_level_review_v2, created_at: '2021-02-03T14:15:16Z') }
+          let(:data) { override_max_lengths hlr, schema }
 
           it 'generates the expected pdf' do
-            hlr.form_data = SchemaHelpers.schema_max_lengths(hlr, schema, 'V2')
+            hlr.form_data = data
             hlr.save!
 
             generated_pdf = described_class.new(hlr, version: 'V2').generate
