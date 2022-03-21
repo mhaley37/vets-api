@@ -180,7 +180,7 @@ describe AppealsApi::PdfConstruction::Generator do
 
             generated_pdf = described_class.new(hlr, version: 'V2').generate
             expected_pdf = fixture_filepath('expected_200996_maxlength.pdf', version: 'V2')
-            `cp #{generated_pdf} #{expected_pdf}`; sleep 1
+
             expect(generated_pdf).to match_pdf(expected_pdf)
             File.delete(generated_pdf) if File.exist?(generated_pdf)
           end
