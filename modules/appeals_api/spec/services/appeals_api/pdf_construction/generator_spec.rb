@@ -170,7 +170,7 @@ describe AppealsApi::PdfConstruction::Generator do
         end
 
         context 'pdf max length content verification' do
-          let(:schema) { read_schema('200996.json', 'V2') }
+          let(:schema) { read_schema('valid_200996.json', 'V2') }
           let(:hlr) { build(:higher_level_review_v2, created_at: '2021-02-03T14:15:16Z') }
           let(:data) { override_max_lengths hlr, schema }
 
