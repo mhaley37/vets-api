@@ -5,6 +5,24 @@ module Mobile
     module_function
 
     def get_facilities(facility_ids)
+      if Flipper.enabled?(:mobile_appointment_use_VAOS_MFS)
+        new_get_facilities(facility_ids)
+      else
+        legacy_get_facilities(facility_ids)
+      end
+    end
+
+    #FIX
+    # def new_get_facilities(facility_ids)
+    #   facilities_service.get_facilities(ids: facility_ids.to_a.map { |id| "vha_#{id}" }.join(','))
+    #   facility_ids.each do |facility_id|
+    #     Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
+    #   end
+    #   temp = vaos_mobile_facility_service.get_facility(facility_ids)
+    #   binding.pry
+    # end
+
+    def legacy_get_facilities(facility_ids)
       facilities_service.get_facilities(ids: facility_ids.to_a.map { |id| "vha_#{id}" }.join(','))
     end
 
@@ -15,6 +33,10 @@ module Mobile
 
     def facilities_service
       Lighthouse::Facilities::Client.new
+    end
+
+    def vaos_mobile_facility_service
+      VAOS::V2::MobileFacilityService.new(@user)
     end
 
     def address_from_facility(facility)
