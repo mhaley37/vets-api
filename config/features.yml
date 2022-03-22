@@ -648,3 +648,6 @@ features:
   check_va_inbox_enabled:
     actor_type: user
     description: Enables check inbox link
+  appointments_use_VAOS_MFS:
+    actor_type: user
+    description: Finds facilities using VAOS's Mobile Facility Service.
