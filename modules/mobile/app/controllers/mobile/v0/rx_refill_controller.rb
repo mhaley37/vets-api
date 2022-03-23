@@ -11,9 +11,7 @@ module Mobile
         client.get_history_rxs
       end
 
-      def get_preferences
-        client.get_preferences
-      end
+      delegate :get_preferences, to: :client
 
       def post_preferences
         client.post_preferences(params)
