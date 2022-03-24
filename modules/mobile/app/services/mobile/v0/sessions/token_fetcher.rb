@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require 'capybara'
 require 'pry'
 require 'yaml'
 
 class TokenFetcher
   TOKEN_URL = 'https://va-mobile-cutter.herokuapp.com'
-  USERS_FILE = 'modules/mobile/app/services/mobile/v0/sessions/login_users.yml'
+  USERS_FILE = './login_users.yaml'
 
   attr_reader :user, :token, :session
 
   def initialize(user_name)
     set_user(user_name)
-    Capybara.default_max_wait_time = 5
+    Capybara.default_max_wait_time = 10
     @session = Capybara::Session.new(:selenium)
   end
 
@@ -41,6 +43,7 @@ class TokenFetcher
     raise 'User not found' unless @user
   end
 
+  # do this by environment variable instead
   def users_data
     YAML.safe_load(File.read(USERS_FILE))
   end

@@ -1,0 +1,10 @@
+case:
+  name: V0 get appointments
+  method: GET
+  # upstream resources
+  request:
+    user: 'judy'
+    path: mobile/v0/appointments
+  response:
+    status: 200
+    count: 10
