@@ -6,10 +6,10 @@ class TokenFetcher
   TOKEN_URL = 'https://va-mobile-cutter.herokuapp.com'
   USERS_FILE = 'modules/mobile/app/services/mobile/v0/sessions/login_users.yml'
 
-  attr_reader :user_name, :token, :session
+  attr_reader :user, :token, :session
 
   def initialize(user_name)
-    @user_name = user_name
+    set_user(user_name)
     Capybara.default_max_wait_time = 5
     @session = Capybara::Session.new(:selenium)
   end
@@ -29,7 +29,6 @@ class TokenFetcher
     session.click_button('Auth')
     token_text = session.find('div', text: /Access Token: ?/i).text
     @token = token_text.split[2]
-    puts "found token: #{token}"
   end
 
   def copy_token_to_clipboard
@@ -37,16 +36,19 @@ class TokenFetcher
   end
 
   # this should not be in this file
-  def user
-    @user ||= begin
-      users = YAML.safe_load(File.read(USERS_FILE))
-      users[user_name]
-    end
+  def set_user(user_name)
+    @user = users_data[user_name]
+    raise 'User not found' unless @user
+  end
+
+  def users_data
+    YAML.safe_load(File.read(USERS_FILE))
   end
 end
 
-if __FILE__ == $0
-  fetcher = TokenFetcher.new('judy')
+if __FILE__ == $PROGRAM_NAME
+  fetcher = TokenFetcher.new(ARGV[0])
   fetcher.fetch_token
+  puts "TOKEN: #{fetcher.token}"
   fetcher.copy_token_to_clipboard
 end
