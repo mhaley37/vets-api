@@ -9,13 +9,9 @@ require_relative 'token_fetcher'
 class EndpointTester < Thor
   TEST_DATA_DIR = File.join(File.dirname(__FILE__), 'request_data')
   BASE_URL = 'https://staging-api.va.gov'
-  ALLOWED_METHODS = %w[GET]
+  ALLOWED_METHODS = %w[GET].freeze
 
-  # def initialize
-  #   @users = {}
-  # end
-
-  desc 'hello NAME', 'say hello to NAME'
+  desc 'tests endpoints based on yaml inputs'
   def aggregate_test_data
     @users = {}
     files = Dir["#{TEST_DATA_DIR}/**/*.yaml"]
@@ -35,11 +31,11 @@ class EndpointTester < Thor
     conn = client(token)
 
     response = case method
-                when 'GET'
-                  get(conn, url)
-                else
-                  raise "Invalid method: #{method}"
-                end
+               when 'GET'
+                 get(conn, url)
+               else
+                 raise "Invalid method: #{method}"
+               end
 
     validate_response(data, response)
   end
@@ -73,13 +69,10 @@ class EndpointTester < Thor
     status = data.dig('case', 'response', 'status').to_i
     count = data.dig('case', 'response', 'count').to_i
 
-    unless response.status == status
-      raise "Incorrect status. Expected #{status}, received #{response.status}"
-    end
+    raise "Incorrect status. Expected #{status}, received #{response.status}" unless response.status == status
+
     body = JSON.parse(response.body)['data']
-    unless body.count == count
-      raise "Incorrect count. Expected #{count}, received #{body.count}"
-    end
+    raise "Incorrect count. Expected #{count}, received #{body.count}" unless body.count == count
   end
 end
 
