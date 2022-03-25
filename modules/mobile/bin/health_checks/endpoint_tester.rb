@@ -11,8 +11,10 @@ class EndpointTester < Thor
   BASE_URL = 'https://staging-api.va.gov'
   ALLOWED_METHODS = %w[GET].freeze
 
-  desc 'tests endpoints based on yaml inputs'
-  def aggregate_test_data
+  desc 'run tests', 'tests endpoints based on yaml inputs'
+  option :base_url
+  option :test_name
+  def run_tests
     @users = {}
     files = Dir["#{TEST_DATA_DIR}/**/*.yaml"]
     files.each do |f|
@@ -42,7 +44,7 @@ class EndpointTester < Thor
 
   def client(token)
     Faraday.new(
-      url: BASE_URL,
+      url: options[:base_url] || BASE_URL,
       headers: {
         'Content-Type' => 'application/json',
         'Authorization' => "Bearer #{token}",
@@ -65,10 +67,10 @@ class EndpointTester < Thor
     token
   end
 
+  # this shouldn't raise. it should capture
   def validate_response(data, response)
     status = data.dig('case', 'response', 'status').to_i
     count = data.dig('case', 'response', 'count').to_i
-
     raise "Incorrect status. Expected #{status}, received #{response.status}" unless response.status == status
 
     body = JSON.parse(response.body)['data']
