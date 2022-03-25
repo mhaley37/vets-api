@@ -19,6 +19,8 @@ class EndpointTester < Thor
     files = Dir["#{TEST_DATA_DIR}/**/*.yaml"]
     files.each do |f|
       test_data = YAML.safe_load(File.read(f))
+      next if options[:test_name] && test_data['case']['name'] != options[:test_name]
+
       run_individual_test_case(test_data)
     end
   end
