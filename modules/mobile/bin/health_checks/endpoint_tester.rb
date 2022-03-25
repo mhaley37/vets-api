@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'colorize'
 require 'faraday'
 require 'thor'
 require 'yaml'
@@ -69,14 +70,23 @@ class EndpointTester < Thor
     token
   end
 
-  # this shouldn't raise. it should capture
-  def validate_response(data, response)
-    status = data.dig('case', 'response', 'status').to_i
-    count = data.dig('case', 'response', 'count').to_i
-    raise "Incorrect status. Expected #{status}, received #{response.status}" unless response.status == status
+  def validate_response(expected_data, response)
+    status = expected_data.dig('case', 'response', 'status').to_i
+    assert_equal('status', status, response.status)
 
-    body = JSON.parse(response.body)['data']
-    raise "Incorrect count. Expected #{count}, received #{body.count}" unless body.count == count
+    count = expected_data.dig('case', 'response', 'count').to_i
+    if count
+      body = JSON.parse(response.body)['data']
+      assert_equal('count', count, body.count)
+    end
+  end
+
+  def assert_equal(descriptor, expected, observed)
+    if expected == observed
+      puts '.'.green
+    else
+      puts "Incorrect #{descriptor}. Expected #{expected}, received #{observed}".red
+    end
   end
 end
 
