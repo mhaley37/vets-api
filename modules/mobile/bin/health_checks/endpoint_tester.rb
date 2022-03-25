@@ -71,20 +71,40 @@ class EndpointTester < Thor
   end
 
   def validate_response(expected_data, response)
-    status = expected_data.dig('case', 'response', 'status').to_i
+    status = expected_data.dig('case', 'response', 'status')
     assert_equal('status', status, response.status)
 
-    count = expected_data.dig('case', 'response', 'count').to_i
+    count = expected_data.dig('case', 'response', 'count')
     if count
       body = JSON.parse(response.body)['data']
       assert_equal('count', count, body.count)
+    end
+
+    attributes = expected_data.dig('case', 'response', 'attributes')
+    if attributes
+      body = JSON.parse(response.body)['data']['attributes'] # dedupe this
+      process_attributes(attributes, body)
+    end
+  end
+
+  def process_attributes(hsh, received_value)
+    hsh.each do |k, v|
+      if v.is_a? Hash
+        process_attributes(v, received_value[k])
+      else
+        parts = k.split('_')
+        parts[1..].each(&:capitalize!)
+        camelized = parts.join
+        assert_equal(k, v, received_value[camelized])
+      end
     end
   end
 
   def assert_equal(descriptor, expected, observed)
     if expected == observed
-      puts '.'.green
+      print '.'.green
     else
+      puts
       puts "Incorrect #{descriptor}. Expected #{expected}, received #{observed}".red
     end
   end
