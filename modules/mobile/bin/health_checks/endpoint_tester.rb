@@ -1,22 +1,21 @@
 # frozen_string_literal: true
 
 require 'colorize'
-require 'faraday'
 require 'thor'
 require 'yaml'
 require 'pry'
 require_relative 'token_fetcher'
+require_relative 'client'
 
 class EndpointTester < Thor
   TEST_DATA_DIR = File.join(File.dirname(__FILE__), 'request_data')
-  BASE_URL = 'https://staging-api.va.gov'
-  ALLOWED_METHODS = %w[GET].freeze
 
   desc 'run tests', 'tests endpoints based on yaml inputs'
   option :base_url
   option :test_name
   def run_tests
     @users = {}
+    @results = { success: 0, failure: 0 }
     files = Dir["#{TEST_DATA_DIR}/**/*.yaml"]
     files.each do |f|
       test_data = YAML.safe_load(File.read(f))
@@ -24,6 +23,7 @@ class EndpointTester < Thor
 
       run_individual_test_case(test_data)
     end
+    process_results
   end
 
   private
@@ -32,12 +32,11 @@ class EndpointTester < Thor
     method = data['case']['method']
     url = data['case']['request']['path']
     user_name = data['case']['request']['user']
-    token = user_token(user_name)
-    conn = client(token)
+    client = client(user_name)
 
     response = case method
                when 'GET'
-                 get(conn, url)
+                 client.get(url)
                else
                  raise "Invalid method: #{method}"
                end
@@ -45,29 +44,19 @@ class EndpointTester < Thor
     validate_response(data, response)
   end
 
-  def client(token)
-    Faraday.new(
-      url: options[:base_url] || BASE_URL,
-      headers: {
-        'Content-Type' => 'application/json',
-        'Authorization' => "Bearer #{token}",
-        'X-Key-Inflection' => 'camel'
-      }
-    )
-  end
+  def client(user_name)
+    return @users[user_name] if @users[user_name]
 
-  def get(conn, url)
-    conn.get(url)
+    token = user_token(user_name)
+    client = Client.new(token, options[:base_url])
+    @users[user_name] = client
+    client
   end
 
   def user_token(user_name)
-    return @users[user_name] if @users[user_name]
-
     fetcher = TokenFetcher.new(user_name)
     fetcher.fetch_token
-    token = fetcher.token
-    @users[user_name] = token
-    token
+    fetcher.token
   end
 
   def validate_response(expected_data, response)
@@ -101,12 +90,24 @@ class EndpointTester < Thor
   end
 
   def assert_equal(descriptor, expected, observed)
+    # error handling is in the wrong place; fix later
     if expected == observed
+      @results[:success] += 1
       print '.'.green
     else
+      @results[:failure] += 1
       puts
       puts "Incorrect #{descriptor}. Expected #{expected}, received #{observed}".red
     end
+  end
+
+  def process_results
+    puts
+    puts "Successful tests: #{@results[:success]}".green
+    if @results[:failure] > 0
+      abort("Failed tests: #{@results[:failure]}".red)
+    end
+    puts 'All tests passing'.green
   end
 end
 
