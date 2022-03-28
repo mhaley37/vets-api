@@ -8,25 +8,29 @@ module Mobile
       before_action { authorize :mhv_prescriptions, :access? }
 
       def get_full_rx_history
-        client.get_history_rxs
+        render json: Mobile::V0::RxRefillFullHistorySerializer.new(@current_user.id, client.get_history_rxs)
       end
 
-      delegate :get_preferences, to: :client
+      def get_preferences
+        render json: client.get_preferences
+      end
 
       def post_preferences
-        client.post_preferences(params)
+        render json: client.post_preferences(params)
       end
 
       def get_prescription
-        client.get_rx(params[:id])
+        render json: client.get_rx(params[:id])
       end
 
       def post_refill
-        client.post_refill_rx(params[:id])
+        render json: client.post_refill_rx(params[:id])
       end
 
       def get_single_rx_history
-        client.get_tracking_history_rx(params[:id])
+        render json: Mobile::V0::RxRefillSingleHistorySerializer.new(
+          @current_user.id, client.get_tracking_history_rx(params[:id])
+        )
       end
 
       private

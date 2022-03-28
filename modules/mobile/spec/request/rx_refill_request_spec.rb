@@ -37,6 +37,17 @@ RSpec.describe 'rx_refill', type: :request do
         VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
           get '/mobile/v0/rx-refill/full_rx_history', headers: iam_headers
         end
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
+  describe 'GET /mobile/v0/rx-refill/get_single_rx_history' do
+    context 'with a valid 200 response' do
+      it 'matches the get_single_rx_history schema' do
+        VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_for_a_prescription') do
+          get '/mobile/v0/rx-refill/get_single_rx_history/13650541', headers: iam_headers
+        end
         binding.pry
         expect(response).to have_http_status(:ok)
       end
