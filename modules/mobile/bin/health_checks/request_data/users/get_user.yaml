@@ -1,15 +1,15 @@
-case:
-  name: V0 get user
-  method: GET
-  # upstream resources
-  request:
-    user: 'judy'
-    path: mobile/v0/user
-  response:
-    status: 200
-    data:
-      attributes:
-        profile:
-          firstName: 'JUDY'
-          lastName: 'MORRISON'
-          signinEmail: 'judy.morrison@id.me'
+sequence:
+  - case:
+      name: V0 get user
+      method: GET
+      request:
+        user: 'judy'
+        path: mobile/v0/user
+      response:
+        status: 200
+        data:
+          attributes:
+            profile:
+              firstName: 'JUDY'
+              lastName: 'MORRISON'
+              signinEmail: 'judy.morrison@id.me'

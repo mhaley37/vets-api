@@ -1,17 +1,17 @@
-case:
-  name: V0 get appointments
-  method: GET
-  # upstream resources
-  request:
-    user: 'judy'
-    path: mobile/v0/appointments
-  response:
-    status: 200
-    count: 10
-    data:
-      - id: '202101062100983000030800000000000000'
-        attributes:
-          healthcareService: 'Green Team Clinic1'
-      - id: '202101071500983000089800000000000000'
-        attributes:
-          healthcareService: 'LVLND  SOCIAL WORK'
+sequence:
+  - case:
+      name: V0 get appointments
+      method: GET
+      request:
+        user: 'judy'
+        path: mobile/v0/appointments
+      response:
+        status: 200
+        count: 10
+        data:
+          - id: '202101062100983000030800000000000000'
+            attributes:
+              healthcareService: 'Green Team Clinic1'
+          - id: '202101071500983000089800000000000000'
+            attributes:
+              healthcareService: 'LVLND  SOCIAL WORK'

@@ -18,9 +18,14 @@ class EndpointTester < Thor
     files = Dir["#{TEST_DATA_DIR}/**/*.yaml"]
     files.each do |f|
       test_data = YAML.safe_load(File.read(f))
-      next if options[:test_name] && test_data['case']['name'] != options[:test_name]
+      sequence = test_data['sequence']
+      sequence.each do |test_case|
+        test_data = test_case['case']
 
-      run_individual_test_case(test_data)
+        next if options[:test_name] && test_data['name'] != options[:test_name]
+
+        run_individual_test_case(test_data)
+      end
     end
     process_results
   end
@@ -28,9 +33,9 @@ class EndpointTester < Thor
   private
 
   def run_individual_test_case(data)
-    method = data['case']['method']
-    url = data['case']['request']['path']
-    user_name = data['case']['request']['user']
+    method = data['method']
+    url = data['request']['path']
+    user_name = data['request']['user']
     client = client(user_name)
 
     response = case method
@@ -59,16 +64,16 @@ class EndpointTester < Thor
   end
 
   def validate_response(expected_data, response)
-    status = expected_data.dig('case', 'response', 'status')
+    status = expected_data.dig('response', 'status')
     correct_status_received = equal?('status', status, response.status)
 
     if correct_status_received
       received_data = JSON.parse(response.body)['data']
 
-      count = expected_data.dig('case', 'response', 'count')
+      count = expected_data.dig('response', 'count')
       equal?('count', count, received_data.count) if count
 
-      expected_data = expected_data.dig('case', 'response', 'data')
+      expected_data = expected_data.dig('response', 'data')
       # ensuring that both data sets are hashes to avoid having a special case when data is an array
       compare_data({ 'data' => expected_data }, { 'data' => received_data }) if expected_data
     end
