@@ -70,31 +70,22 @@ class EndpointTester < Thor
       equal?('count', count, received_data.count) if count
 
       expected_data = expected_data.dig('case', 'response', 'data')
-      compare_data(expected_data, received_data) if expected_data
+      # ensuring that both data sets are hashes to avoid having a special case when data is an array
+      compare_data({ 'data' => expected_data }, { 'data' => received_data }) if expected_data
     end
   end
 
   def compare_data(expected, received)
-    binding.pry
-    if expected.is_a? Array
-      expected.each_with_index do |array_item, i|
-        compare_data(array_item, received[i])
-      end
-    end
     expected.each do |k, v|
       case v
       when Hash
         compare_data(v, received[k])
       when Array
         v.each_with_index do |array_item, i|
-          compare_data(array_item, received[i])
+          compare_data(array_item, received[k][i])
         end
       else
-        begin
-          equal?(k, v, received[k])
-        rescue
-          binding.pry
-        end
+        equal?(k, v, received[k])
       end
     end
   end
