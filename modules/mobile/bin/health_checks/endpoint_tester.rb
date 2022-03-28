@@ -3,7 +3,6 @@
 require 'colorize'
 require 'thor'
 require 'yaml'
-require 'pry'
 require_relative 'token_fetcher'
 require_relative 'client'
 
