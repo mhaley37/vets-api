@@ -61,52 +61,61 @@ class EndpointTester < Thor
 
   def validate_response(expected_data, response)
     status = expected_data.dig('case', 'response', 'status')
-    assert_equal('status', status, response.status)
+    correct_status_received = equal?('status', status, response.status)
 
-    count = expected_data.dig('case', 'response', 'count')
-    if count
-      body = JSON.parse(response.body)['data']
-      assert_equal('count', count, body.count)
-    end
+    if correct_status_received
+      received_data = JSON.parse(response.body)['data']
 
-    attributes = expected_data.dig('case', 'response', 'attributes')
-    if attributes
-      body = JSON.parse(response.body)['data']['attributes'] # dedupe this
-      process_attributes(attributes, body)
+      count = expected_data.dig('case', 'response', 'count')
+      equal?('count', count, received_data.count) if count
+
+      expected_data = expected_data.dig('case', 'response', 'data')
+      compare_data(expected_data, received_data) if expected_data
     end
   end
 
-  def process_attributes(hsh, received_value)
-    hsh.each do |k, v|
-      if v.is_a? Hash
-        process_attributes(v, received_value[k])
+  def compare_data(expected, received)
+    binding.pry
+    if expected.is_a? Array
+      expected.each_with_index do |array_item, i|
+        compare_data(array_item, received[i])
+      end
+    end
+    expected.each do |k, v|
+      case v
+      when Hash
+        compare_data(v, received[k])
+      when Array
+        v.each_with_index do |array_item, i|
+          compare_data(array_item, received[i])
+        end
       else
-        parts = k.split('_')
-        parts[1..].each(&:capitalize!)
-        camelized = parts.join
-        assert_equal(k, v, received_value[camelized])
+        begin
+          equal?(k, v, received[k])
+        rescue
+          binding.pry
+        end
       end
     end
   end
 
-  def assert_equal(descriptor, expected, observed)
-    # error handling is in the wrong place; fix later
+  def equal?(descriptor, expected, observed)
     if expected == observed
-      @results[:success] += 1
+      @results[:success] += 1 # this should be done elsewhere
       print '.'.green
+      true
     else
       @results[:failure] += 1
       puts
       puts "Incorrect #{descriptor}. Expected #{expected}, received #{observed}".red
+      false
     end
   end
 
   def process_results
     puts
     puts "Successful tests: #{@results[:success]}".green
-    if @results[:failure] > 0
-      abort("Failed tests: #{@results[:failure]}".red)
-    end
+    abort("Failed tests: #{@results[:failure]}".red) if @results[:failure].positive?
     puts 'All tests passing'.green
   end
 end
