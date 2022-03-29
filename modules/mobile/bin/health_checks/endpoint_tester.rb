@@ -41,7 +41,7 @@ class EndpointTester < Thor
                when 'GET'
                  client.get(url)
                else
-                 raise "Invalid method: #{method}"
+                 abort("Invalid method: #{method}".red)
                end
 
     validate_response(data, response)
@@ -95,11 +95,14 @@ class EndpointTester < Thor
 
     puts
     puts "Successful tests: #{successes.count}".green
-    failures.each do |name, messages|
-      puts "Test #{name} failed with errors:".red
-      messages.each { |message| puts "\t#{message.red}" }
+    if failures.any?
+      puts "Failed tests: #{failures.count}".red
+      failures.each do |name, messages|
+        puts "Test #{name} failed with errors:".red
+        messages.each { |message| puts "\t#{message.red}" }
+      end
+      abort
     end
-    abort("Failed tests: #{failures.count}".red) if failures.any?
     puts 'All tests passing'.green
   end
 

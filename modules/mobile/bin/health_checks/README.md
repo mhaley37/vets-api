@@ -20,7 +20,7 @@ judy:
   password: 'redacted'
 ```
 
-## Use
+## Usage
 
 To run all tests:
 `bundle exec ruby endpoint_tester.rb run_tests`

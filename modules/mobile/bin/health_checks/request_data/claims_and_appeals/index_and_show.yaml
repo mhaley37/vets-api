@@ -1,0 +1,26 @@
+sequence:
+  - case:
+      name: judy v0 index claims and appeals
+      method: GET
+      request:
+        user: 'judy'
+        path: mobile/v0/claims-and-appeals-overview
+      response:
+        status: 207
+        count: 1
+        data:
+          - id: '600229968'
+            type: 'claim'
+            attributes:
+              subtype: 'Compensation'
+              completed: false
+              dateFiled: '2021-03-22'
+              displayTitle: 'Compensation'
+  - case:
+      name: judy v0 show claims and appeals
+      method: GET
+      request:
+        user: 'judy'
+        path: mobile/v0/claim/600229968
+      response:
+        status: 200
