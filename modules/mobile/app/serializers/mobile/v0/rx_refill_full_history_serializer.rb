@@ -9,12 +9,11 @@ module Mobile
       attributes :prescriptions
 
       def initialize(id, prescriptions)
-        resource = PrescriptionsStruct.new(id,prescriptions)
+        resource = PrescriptionsStruct.new(id, prescriptions)
         super(resource)
       end
     end
 
-    PrescriptionsStruct = Struct.new(:id,:prescriptions)
+    PrescriptionsStruct = Struct.new(:id, :prescriptions)
   end
 end
-

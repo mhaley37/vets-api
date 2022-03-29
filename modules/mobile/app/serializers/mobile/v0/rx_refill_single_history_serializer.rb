@@ -17,4 +17,3 @@ module Mobile
     PrescriptionStruct = Struct.new(:id, :prescription)
   end
 end
-

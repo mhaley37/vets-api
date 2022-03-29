@@ -42,7 +42,7 @@ Mobile::Engine.routes.draw do
     put '/user/phones', to: 'phones#update'
     delete '/user/phones', to: 'phones#destroy'
     get '/rx-refill/full_rx_history', to: 'rx_refill#get_full_rx_history'
-    get '/rx-refill/get_preferences/:id', to: 'rx_refill#get_preferences'
+    get '/rx-refill/get_preferences', to: 'rx_refill#get_preferences'
     post '/rx-refill/post_preferences', to: 'rx_refill#post_preferences'
     get '/rx-refill/get_prescription/:id', to: 'rx_refill#get_prescription'
     post '/rx-refill/post_refill/:id', to: 'rx_refill#post_refill'

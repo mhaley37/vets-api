@@ -16,7 +16,9 @@ module Mobile
       end
 
       def post_preferences
-        render json: client.post_preferences(params)
+        client.post_preferences(preferences_params)
+
+        head :no_content
       end
 
       def get_prescription
@@ -24,7 +26,9 @@ module Mobile
       end
 
       def post_refill
-        render json: client.post_refill_rx(params[:id])
+        client.post_refill_rx(params[:id])
+
+        head :no_content
       end
 
       def get_single_rx_history
@@ -34,6 +38,13 @@ module Mobile
       end
 
       private
+
+      def preferences_params
+        params.permit(
+          :rx_flag,
+          :email_address
+        )
+      end
 
       def client
         @client ||= Rx::Client.new(session: { user_id: @current_user.mhv_correlation_id })
