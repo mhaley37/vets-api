@@ -72,6 +72,14 @@ GIT
       multi_json (~> 1.0)
       script_utils (= 0.0.4)
 
+GIT
+  remote: https://github.com/resque/redis-namespace
+  revision: de6c3b9b01658b37e3ea776c52cf2eec3a89dcb3
+  branch: master
+  specs:
+    redis-namespace (1.8.2)
+      redis (>= 3.0.4)
+
 PATH
   remote: modules
   specs:
@@ -115,6 +123,7 @@ PATH
 
 GEM
   remote: https://rubygems.org/
+  remote: https://enterprise.contribsys.com/
   specs:
     Ascii85 (1.1.0)
     aasm (5.2.0)
@@ -347,6 +356,7 @@ GEM
     e2mmap (0.1.0)
     ecma-re-validator (0.4.0)
       regexp_parser (~> 2.2)
+    einhorn (0.8.2)
     erubi (1.10.0)
     et-orbi (1.2.6)
       tzinfo
@@ -726,8 +736,6 @@ GEM
       ffi (~> 1.0)
     rchardet (1.8.0)
     redis (4.6.0)
-    redis-namespace (1.8.2)
-      redis (>= 3.0.4)
     regexp_parser (2.2.1)
     representable (3.1.1)
       declarative (< 0.1.0)
@@ -848,6 +856,12 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
+    sidekiq-ent (2.3.1)
+      einhorn (>= 0.7.4)
+      sidekiq (>= 6.3.0)
+      sidekiq-pro (>= 5.3.0)
+    sidekiq-pro (5.3.1)
+      sidekiq (>= 6.3.0)
     sidekiq-scheduler (3.1.1)
       e2mmap
       redis (>= 3, < 5)
@@ -1088,7 +1102,7 @@ DEPENDENCIES
   rails_semantic_logger
   rainbow
   redis
-  redis-namespace
+  redis-namespace!
   request_store
   restforce
   rgeo-geojson
@@ -1112,6 +1126,8 @@ DEPENDENCIES
   sentry-raven
   shrine
   sidekiq (>= 6.4.0)
+  sidekiq-ent!
+  sidekiq-pro!
   sidekiq-scheduler
   simplecov
   slack-notify
