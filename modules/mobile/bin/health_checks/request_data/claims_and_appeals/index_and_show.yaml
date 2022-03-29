@@ -8,14 +8,15 @@ sequence:
       response:
         status: 207
         count: 1
-        data:
-          - id: '600229968'
-            type: 'claim'
-            attributes:
-              subtype: 'Compensation'
-              completed: false
-              dateFiled: '2021-03-22'
-              displayTitle: 'Compensation'
+        body:
+          data:
+            - id: '600229968'
+              type: 'claim'
+              attributes:
+                subtype: 'Compensation'
+                completed: false
+                dateFiled: '2021-03-22'
+                displayTitle: 'Compensation'
   - case:
       name: judy v0 show claims and appeals
       method: GET
@@ -24,14 +25,15 @@ sequence:
         path: mobile/v0/claim/600229968
       response:
         status: 200
-      data:
-        id: '600229968'
-        type: 'claim'
-        attributes:
-          dateFiled: '2021-03-22'
-          open: true
-          phase: 2
-          eventsTimeline:
-            - fileType: 'VA 21-0781a, Statement in Support of Claim for PTSD Secondary to Personal Assault'
-              documentType: 'L229'
+        body:
+          data:
+            id: '600229968'
+            type: 'claim'
+            attributes:
+              dateFiled: '2021-03-22'
+              open: true
+              phase: 2
+              eventsTimeline:
+                - fileType: 'VA 21-0781a, Statement in Support of Claim for PTSD Secondary to Personal Assault'
+                  documentType: 'L229'
 

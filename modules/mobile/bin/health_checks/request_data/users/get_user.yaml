@@ -7,9 +7,10 @@ sequence:
         path: mobile/v0/user
       response:
         status: 200
-        data:
-          attributes:
-            profile:
-              firstName: 'JUDY'
-              lastName: 'MORRISON'
-              signinEmail: 'judy.morrison@id.me'
+        body:
+          data:
+            attributes:
+              profile:
+                firstName: 'JUDY'
+                lastName: 'MORRISON'
+                signinEmail: 'judy.morrison@id.me'

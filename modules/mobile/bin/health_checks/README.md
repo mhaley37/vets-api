@@ -33,3 +33,9 @@ To run tests against a review instance or environment other than staging (more w
 
 To fetch a test user's api token:
 `bundle exec ruby token_fetcher.rb judy`
+
+## Creating New Tests
+
+New tests are added by creating yaml files in the `request_data` directory. Yaml was chosen to make it easy for non-developers to add new tests. Files are expected to have a top-level `sequence` key containing an array of `case` keys. The idea is to be able to create a full CRUD life-cycle test in a single file. In other words, a sequence could consist of creating a record, listing the record, updating the record, then deleting the record. At this time, only GET requests are supported. We should discuss the ramifications of automating staging changes before adding other request types.
+
+All cases are expected to test the response status, but all other checks are optional. The `attributes` section is intended to be very flexible. We don't necessarily want to check all attributes because many of them are susceptible to change. These scripts are primarily intended as a health check or smoke test. A test can consist of the full expected response, a partial body response, or as little as the expected status.

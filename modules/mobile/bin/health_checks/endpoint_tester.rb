@@ -56,14 +56,13 @@ class EndpointTester < Thor
     correct_status_received = expected_status == response.status
 
     if correct_status_received
-      received_data = JSON.parse(response.body)['data']
+      received_data = JSON.parse(response.body)
 
       count = expected_data.dig('response', 'count')
-      add_error('count', count, received_data.count) if count && count != received_data.count
+      add_error('count', count, received_data['data'].count) if count && count != received_data['data'].count
 
-      expected_data = expected_data.dig('response', 'data')
-      # ensuring that both data sets are hashes to avoid having a special case when data is an array
-      compare_data({ 'data' => expected_data }, { 'data' => received_data }) if expected_data
+      expected_data = expected_data.dig('response', 'body')
+      compare_data(expected_data, received_data) if expected_data
     else
       add_error('status', expected_status, response.status)
     end
