@@ -12,7 +12,9 @@ SHELL ["/bin/bash", "-c"]
 RUN groupadd -g $userid -r vets-api && \
     useradd -u $userid -r -m -d /srv/vets-api -g vets-api vets-api
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    dumb-init clamav clamdscan clamav-daemon imagemagick pdftk curl poppler-utils libpq5 vim
+    dumb-init clamav clamdscan clamav-daemon imagemagick pdftk curl poppler-utils libpq5 vim wget xz-utils cmake gcc \
+    build-essential libfontconfig1-dev pkg-config libjpeg-dev gnome-common libglib2.0-dev gtk-doc-tools libyelp-dev \
+    yelp-tools gobject-introspection libsecret-1-dev libnautilus-extension-dev libopenjp2-7 libopenjp2-7-dev libboost-all-dev
 # The pki work below is for parity with the non-docker BRD deploys to mount certs into
 # the container, we need to get rid of it and refactor the configuration bits into
 # something more continer friendly in a later bunch of work
@@ -23,6 +25,18 @@ RUN mkdir -p /srv/vets-api/{clamav/database,pki/tls,secure,src} && \
 COPY config/ca-trust/* /usr/local/share/ca-certificates/
 # rename .pem files to .crt because update-ca-certificates ignores files that are not .crt
 RUN cd /usr/local/share/ca-certificates ; for i in *.pem ; do mv $i ${i/pem/crt} ; done ; update-ca-certificates
+
+# Download and compile Poppler
+RUN wget http://poppler.freedesktop.org/poppler-21.11.0.tar.xz \
+    && unxz poppler-21.11.0.tar.xz \
+    && tar xf poppler-21.11.0.tar \
+    && cd poppler-21.11.0 \
+    && cmake   -DCMAKE_BUILD_TYPE=Release   \
+            -DENABLE_XPDF_HEADERS=ON \
+    && make install \
+    && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Relax ImageMagick PDF security. See https://stackoverflow.com/a/59193253.
 RUN sed -i '/rights="none" pattern="PDF"/d' /etc/ImageMagick-6/policy.xml
 WORKDIR /srv/vets-api/src
