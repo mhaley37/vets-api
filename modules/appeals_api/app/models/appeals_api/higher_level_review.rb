@@ -6,6 +6,10 @@ require 'common/exceptions'
 module AppealsApi
   class HigherLevelReview < ApplicationRecord
     include HlrStatus
+    include PdfOutputPrep
+
+    attr_readonly :auth_headers
+    attr_readonly :form_data
 
     scope :pii_expunge_policy, lambda {
       where('updated_at < ? AND status IN (?)', 7.days.ago, COMPLETE_STATUSES)
@@ -231,7 +235,7 @@ module AppealsApi
       current_status = self.status
       update_handler = Events::Handler.new(event_type: :hlr_status_updated, opts: {
                                              from: current_status,
-                                             to: status,
+                                             to: status.to_s,
                                              status_update_time: Time.zone.now.iso8601,
                                              statusable_id: id
                                            })
@@ -240,13 +244,15 @@ module AppealsApi
                                             email_identifier: email_identifier,
                                             first_name: first_name,
                                             date_submitted: veterans_local_time.iso8601,
-                                            guid: id
+                                            guid: id,
+                                            claimant_email: claimant.email,
+                                            claimant_first_name: claimant.first_name
                                           })
 
       update!(status: status, code: code, detail: detail)
 
       update_handler.handle! unless status == current_status
-      email_handler.handle! if status == 'submitted' && email_identifier.present?
+      email_handler.handle! if status == 'submitted' && (claimant.email.present? || email_identifier.present?)
     end
 
     def informal_conference_rep
@@ -263,11 +269,11 @@ module AppealsApi
         'pensionSurvivorsBenefits' => 'PMC',
         'fiduciary' => 'FID',
         'lifeInsurance' => 'INS',
-        'veteransHealthAdministration' => 'OTH',
+        'veteransHealthAdministration' => 'CMP',
         'veteranReadinessAndEmployment' => 'VRE',
-        'loanGuaranty' => 'OTH',
+        'loanGuaranty' => 'CMP',
         'education' => 'EDU',
-        'nationalCemeteryAdministration' => 'OTH'
+        'nationalCemeteryAdministration' => 'NCA'
       }[benefit_type]
     end
 
@@ -366,6 +372,10 @@ module AppealsApi
         [veteran_data.dig('address', 'addressLine1'),
          veteran_data.dig('address', 'addressLine2'),
          veteran_data.dig('address', 'addressLine3')].compact.map(&:strip).join(' ')
+    end
+
+    def clear_memoized_values
+      @contestable_issues = @veteran = @claimant = @address_combined = nil
     end
   end
 end

@@ -36,7 +36,6 @@ module AppealsApi
             form_fields.veteran_phone_area_code => form_data.veteran_area_code,
             form_fields.veteran_phone_prefix => form_data.veteran_phone_prefix,
             form_fields.veteran_phone_line_number => form_data.veteran_phone_line_number,
-            form_fields.veteran_phone_international_number => form_data.veteran_international_number,
 
             # Claimant
             # Claimant name is filled out through autosize text box, not pdf fields
@@ -52,7 +51,6 @@ module AppealsApi
             form_fields.claimant_phone_area_code => form_data.claimant_area_code,
             form_fields.claimant_phone_prefix => form_data.claimant_phone_prefix,
             form_fields.claimant_phone_line_number => form_data.claimant_phone_line_number,
-            form_fields.claimant_phone_international_number => form_data.claimant_international_number,
 
             # Benefit Type
             form_fields.benefit_type(0) => form_data.benefit_type('education'),
@@ -61,7 +59,7 @@ module AppealsApi
             form_fields.benefit_type(3) => form_data.benefit_type('lifeInsurance'),
             form_fields.benefit_type(4) => form_data.benefit_type('loanGuaranty'),
             form_fields.benefit_type(5) => form_data.benefit_type('fiduciary'),
-            form_fields.benefit_type(6) => form_data.benefit_type('readinessAndEmployment'),
+            form_fields.benefit_type(6) => form_data.benefit_type('veteranReadinessAndEmployment'),
             form_fields.benefit_type(7) => form_data.benefit_type('pensionSurvivorsBenefits'),
             form_fields.benefit_type(8) => form_data.benefit_type('compensation'),
 
@@ -167,6 +165,7 @@ module AppealsApi
             fill_text pdf, :veteran_number_and_street
             fill_text pdf, :veteran_city
             fill_text pdf, :veteran_zip_code
+            fill_text pdf, :veteran_international_number
             fill_text pdf, :veteran_email,
                       long_text_override: 'See attached page for veteran email'
 
@@ -175,6 +174,7 @@ module AppealsApi
             fill_text pdf, :claimant_number_and_street
             fill_text pdf, :claimant_city
             fill_text pdf, :claimant_zip_code
+            fill_text pdf, :claimant_international_number
             fill_text pdf, :claimant_email,
                       long_text_override: 'See attached page for claimant email'
 

@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'sign_in/logingov/service'
+require 'sign_in/idme/service'
 
 class SignInController < ApplicationController
   skip_before_action :verify_authenticity_token, :authenticate
   before_action :authenticate_access_token, only: [:introspect]
 
-  REDIRECT_URLS = %w[idme logingov].freeze
+  REDIRECT_URLS = %w[idme logingov dslogon mhv].freeze
   BEARER_PATTERN = /^Bearer /.freeze
 
   def authorize
@@ -69,7 +70,7 @@ class SignInController < ApplicationController
   end
 
   def introspect
-    render json: { user_uuid: @current_user.uuid, icn: @current_user.icn }, status: :ok
+    render json: @current_user, serializer: SignIn::IntrospectSerializer, status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
   end
@@ -136,15 +137,19 @@ class SignInController < ApplicationController
 
   def auth_service(type)
     case type
-    when 'idme'
-      idme_auth_service
     when 'logingov'
       logingov_auth_service
+    else
+      idme_auth_service(type)
     end
   end
 
-  def idme_auth_service
-    # @idme_auth_service ||= AuthIdme::Service.new
+  def idme_auth_service(type)
+    return @idme_auth_service if @idme_auth_service
+
+    @idme_auth_service ||= SignIn::Idme::Service.new
+    @idme_auth_service.type = type
+    @idme_auth_service
   end
 
   def logingov_auth_service

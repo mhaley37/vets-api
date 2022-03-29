@@ -6,7 +6,9 @@ require 'rails_helper'
 require 'lighthouse/veterans_health/client'
 
 RSpec.describe RapidReadyForDecision::HypertensionPdfGenerator, :vcr do
-  subject { PDF::Inspector::Text.analyze(pdf_generator.generate.render).strings }
+  subject { PDF::Inspector::Text.analyze(compiled_pdf.render).strings }
+
+  let(:compiled_pdf) { pdf_generator.generate }
 
   let(:client) do
     # Using specific test ICN below:
@@ -29,7 +31,9 @@ RSpec.describe RapidReadyForDecision::HypertensionPdfGenerator, :vcr do
     RapidReadyForDecision::HypertensionMedicationRequestData.new(client.list_resource('medication_requests')).transform
   end
 
-  let(:patient_name) { { first: 'Cat', middle: 'Marie', last: 'Power', suffix: 'Jr.' } }
+  let(:patient_name) do
+    { first: 'Cat', middle: 'Marie', last: 'Power', suffix: 'Jr.', birthdate: '10-10-1968' }
+  end
 
   let(:pdf_generator) do
     RapidReadyForDecision::HypertensionPdfGenerator.new(patient_name, parsed_bp_data, parsed_medications_data)
@@ -38,6 +42,10 @@ RSpec.describe RapidReadyForDecision::HypertensionPdfGenerator, :vcr do
   describe '#generate', :vcr do
     it 'includes the veterans name' do
       expect(subject).to include 'Cat Marie Power, Jr.'
+    end
+
+    it 'includes the veterans birthdate' do
+      expect(subject).to include 'DOB: 10-10-1968'
     end
 
     it 'includes the veterans blood pressure readings' do

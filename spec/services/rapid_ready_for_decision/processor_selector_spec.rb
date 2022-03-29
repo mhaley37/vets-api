@@ -18,9 +18,19 @@ RSpec.describe RapidReadyForDecision::ProcessorSelector do
     context 'when given single-issue hypertension claim for increase submission' do
       let(:submission) { build(:form526_submission, :hypertension_claim_for_increase) }
 
-      it 'returns DisabilityCompensationJob' do
+      it 'returns RRD processor' do
         expect(subject.rrd_applicable?).to eq true
-        expect(subject.processor_class).to eq RapidReadyForDecision::DisabilityCompensationJob
+        expect(subject.processor_class).to eq RapidReadyForDecision::Form526HypertensionJob
+        expect(subject.processor_class(backup: true)).to eq RapidReadyForDecision::DisabilityCompensationJob
+      end
+    end
+
+    context 'when given single-issue asthma claim for increase submission' do
+      let(:submission) { build(:form526_submission, :asthma_claim_for_increase) }
+
+      it 'returns Form526AsthmaJob' do
+        expect(subject.rrd_applicable?).to eq true
+        expect(subject.processor_class).to eq RapidReadyForDecision::Form526AsthmaJob
       end
     end
   end
