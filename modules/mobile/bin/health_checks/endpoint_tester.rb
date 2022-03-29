@@ -21,7 +21,6 @@ class EndpointTester < Thor
       sequence = test_data['sequence']
       sequence.each do |test_case|
         test_data = test_case['case']
-
         next if options[:test_name] && test_data['name'] != options[:test_name]
 
         run_individual_test_case(test_data)
@@ -51,6 +50,7 @@ class EndpointTester < Thor
   def validate_response(expected_data, response)
     test_name = expected_data['name']
     @results[test_name] = []
+    @current_test = @results[test_name]
 
     expected_status = expected_data.dig('response', 'status')
     correct_status_received = expected_status == response.status
@@ -59,35 +59,35 @@ class EndpointTester < Thor
       received_data = JSON.parse(response.body)['data']
 
       count = expected_data.dig('response', 'count')
-      add_error(test_name, 'count', count, received_data.count) if count && count != received_data.count
+      add_error('count', count, received_data.count) if count && count != received_data.count
 
       expected_data = expected_data.dig('response', 'data')
       # ensuring that both data sets are hashes to avoid having a special case when data is an array
-      compare_data(test_name, { 'data' => expected_data }, { 'data' => received_data }) if expected_data
+      compare_data({ 'data' => expected_data }, { 'data' => received_data }) if expected_data
     else
-      add_error(test_name, 'status', expected_status, response.status)
+      add_error('status', expected_status, response.status)
     end
 
     @results[test_name].empty? ? print('.'.green) : print('.'.red)
   end
 
-  def compare_data(test_name, expected, received)
+  def compare_data(expected, received)
     expected.each do |k, v|
       case v
       when Hash
-        compare_data(test_name, v, received[k])
+        compare_data(v, received[k])
       when Array
         v.each_with_index do |array_item, i|
-          compare_data(test_name, array_item, received[k][i])
+          compare_data(array_item, received[k][i])
         end
       else
-        add_error(test_name, k, v, received[k]) unless v == received[k]
+        add_error(k, v, received[k]) unless v == received[k]
       end
     end
   end
 
-  def add_error(test_name, descriptor, expected, received)
-    @results[test_name] << "#{descriptor}: expected #{expected}, received #{received}"
+  def add_error(descriptor, expected, received)
+    @current_test << "#{descriptor}: expected #{expected}, received #{received}"
   end
 
   def process_results
