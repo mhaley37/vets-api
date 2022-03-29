@@ -24,3 +24,14 @@ sequence:
         path: mobile/v0/claim/600229968
       response:
         status: 200
+      data:
+        id: '600229968'
+        type: 'claim'
+        attributes:
+          dateFiled: '2021-03-22'
+          open: true
+          phase: 2
+          eventsTimeline:
+            - fileType: 'VA 21-0781a, Statement in Support of Claim for PTSD Secondary to Personal Assault'
+              documentType: 'L229'
+
