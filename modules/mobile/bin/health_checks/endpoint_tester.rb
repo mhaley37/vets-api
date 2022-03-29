@@ -33,13 +33,13 @@ class EndpointTester < Thor
 
   def run_individual_test_case(data)
     method = data['method']
-    url = data['request']['path']
+    path = data['request']['path']
     user_name = data['request']['user']
     client = client(user_name)
 
     response = case method
                when 'GET'
-                 client.get(url)
+                 client.get(path)
                else
                  abort("Invalid method: #{method}".red)
                end
