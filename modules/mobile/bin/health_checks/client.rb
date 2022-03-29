@@ -5,8 +5,9 @@ require 'faraday'
 class Client
   BASE_URL = 'https://staging-api.va.gov'
 
-  def initialize(token, base_url = BASE_URL)
-    @connection = connection(token, base_url)
+  def initialize(token, base_url = nil)
+    url = base_url || BASE_URL
+    @connection = connection(token, url)
   end
 
   def get(path)

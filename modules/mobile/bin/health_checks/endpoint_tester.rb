@@ -67,7 +67,7 @@ class EndpointTester < Thor
       add_error('status', expected_status, response.status)
     end
 
-    @results[test_name].empty? ? print('.'.green) : print('.'.red)
+    @current_test.empty? ? print('.'.green) : print('.'.red)
   end
 
   def compare_data(expected, received)
