@@ -14,7 +14,8 @@ RUN groupadd -g $userid -r vets-api && \
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     dumb-init clamav clamdscan clamav-daemon imagemagick pdftk curl poppler-utils libpq5 vim wget xz-utils cmake gcc \
     build-essential libfontconfig1-dev pkg-config libjpeg-dev gnome-common libglib2.0-dev gtk-doc-tools libyelp-dev \
-    yelp-tools gobject-introspection libsecret-1-dev libnautilus-extension-dev libopenjp2-7 libopenjp2-7-dev libboost-all-dev
+    yelp-tools gobject-introspection libsecret-1-dev libnautilus-extension-dev libopenjp2-7 libopenjp2-7-dev libboost-all-dev \
+    libpoppler82 libc6 libcairo2 libfreetype6 liblcms2-2 libstdc++6
 # The pki work below is for parity with the non-docker BRD deploys to mount certs into
 # the container, we need to get rid of it and refactor the configuration bits into
 # something more continer friendly in a later bunch of work
