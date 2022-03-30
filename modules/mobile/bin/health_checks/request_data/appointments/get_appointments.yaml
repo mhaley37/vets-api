@@ -1,9 +1,9 @@
 sequence:
   - case:
-      name: V0 get appointments
+      name: judy V0 get appointments
       method: GET
       request:
-        user: 'judy'
+        user: judy
         path: mobile/v0/appointments
       response:
         status: 200
@@ -12,7 +12,15 @@ sequence:
           data:
             - id: '202101062100983000030800000000000000'
               attributes:
-                healthcareService: 'Green Team Clinic1'
+                healthcareService: Green Team Clinic1
             - id: '202101071500983000089800000000000000'
               attributes:
-                healthcareService: 'LVLND  SOCIAL WORK'
+                healthcareService: LVLND  SOCIAL WORK
+  - case:
+      name: ruben V0 get appointments
+      method: GET
+      request:
+        user: ruben
+        path: mobile/v0/appointments
+      response:
+        status: 200

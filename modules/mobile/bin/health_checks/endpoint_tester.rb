@@ -26,7 +26,7 @@ class EndpointTester < Thor
         run_individual_test_case(test_data)
       end
     end
-    process_results
+    print_results
   end
 
   private
@@ -62,7 +62,7 @@ class EndpointTester < Thor
       add_error('count', count, received_data['data'].count) if count && count != received_data['data'].count
 
       expected_data = expected_data.dig('response', 'body')
-      compare_data(expected_data, received_data) if expected_data
+      compare(expected_data, received_data) if expected_data
     else
       add_error('status', expected_status, response.status)
     end
@@ -70,14 +70,14 @@ class EndpointTester < Thor
     @current_test.empty? ? print('.'.green) : print('.'.red)
   end
 
-  def compare_data(expected, received)
+  def compare(expected, received)
     expected.each do |k, v|
       case v
       when Hash
-        compare_data(v, received[k])
+        compare(v, received[k])
       when Array
         v.each_with_index do |array_item, i|
-          compare_data(array_item, received[k][i])
+          compare(array_item, received[k][i])
         end
       else
         add_error(k, v, received[k]) unless v == received[k]
@@ -85,11 +85,14 @@ class EndpointTester < Thor
     end
   end
 
+  # this is a naive implementation that will not be sufficient because a
+  # single test can have multiple keys with the same name
+  # a better version will need to track the parent keys to give more context.
   def add_error(descriptor, expected, received)
-    @current_test << "#{descriptor}: expected #{expected}, received #{received}"
+    @current_test << "\t#{descriptor}: \n\t\texpected: '#{expected}' \n\t\treceived '#{received}'"
   end
 
-  def process_results
+  def print_results
     successes, failures = @results.partition { |_, v| v.empty? }
 
     puts
@@ -98,7 +101,7 @@ class EndpointTester < Thor
       puts "Failed tests: #{failures.count}".red
       failures.each do |name, messages|
         puts "Test #{name} failed with errors:".red
-        messages.each { |message| puts "\t#{message.red}" }
+        messages.each { |message| puts message.red }
       end
       abort
     end

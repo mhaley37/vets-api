@@ -3,7 +3,7 @@ sequence:
       name: V0 get user
       method: GET
       request:
-        user: 'judy'
+        user: judy
         path: mobile/v0/user
       response:
         status: 200
@@ -11,6 +11,6 @@ sequence:
           data:
             attributes:
               profile:
-                firstName: 'JUDY'
-                lastName: 'MORRISON'
-                signinEmail: 'judy.morrison@id.me'
+                firstName: JUDY
+                lastName: MORRISON
+                signinEmail: judy.morrison@id.me

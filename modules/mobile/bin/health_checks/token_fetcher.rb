@@ -7,7 +7,7 @@ class TokenFetcher
   TOKEN_URL = 'https://va-mobile-cutter.herokuapp.com'
   USERS_FILE = ENV['STAGING_TEST_USERS']
 
-  attr_reader :token, :session
+  attr_reader :token
 
   def initialize(user_name)
     set_user(user_name)
@@ -30,6 +30,7 @@ class TokenFetcher
     @session.click_button('Auth')
     token_text = @session.find('div', text: /Access Token: ?/i).text
     @token = token_text.split[2]
+    @session.driver.quit
   end
 
   def copy_token_to_clipboard
