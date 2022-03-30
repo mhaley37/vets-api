@@ -16,7 +16,7 @@ module Mobile
       end
 
       def post_preferences
-        client.post_preferences(preferences_params)
+        client.post_preferences(params.permit(:rx_flag, :email_address))
 
         head :no_content
       end
@@ -38,13 +38,6 @@ module Mobile
       end
 
       private
-
-      def preferences_params
-        params.permit(
-          :rx_flag,
-          :email_address
-        )
-      end
 
       def client
         @client ||= Rx::Client.new(session: { user_id: @current_user.mhv_correlation_id })
