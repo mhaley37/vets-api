@@ -1,16 +1,47 @@
 sequence:
   - case:
-      name: V0 get user
-      method: GET
+      name: V0 get user judy
       request:
         user: judy
         path: mobile/v0/user
+        method: GET
       response:
         status: 200
-        body:
-          data:
-            attributes:
-              profile:
-                firstName: JUDY
-                lastName: MORRISON
-                signinEmail: judy.morrison@id.me
+        data:
+          attributes:
+            profile:
+              firstName: JUDY
+              lastName: MORRISON
+              signinEmail: judy.morrison@id.me
+            # authorizedServices:
+            #   - appeals
+            #   - appointments
+            #   - claims
+            #   - directDepositBenefits
+            #   - disabilityRating
+            #   - lettersAndDocuments
+            #   - militaryServiceHistory
+            #   - paymentHistory
+            #   - userProfileUpdate
+            #   - scheduleAppointments
+            #   - directDepositBenefitsUpdate
+  - case:
+      name: V0 get user cecil
+      request:
+        user: cecil
+        path: mobile/v0/user
+        method: GET
+      response:
+        status: 200
+        data:
+          attributes:
+            profile:
+              firstName: CECIL
+              lastName: MORGAN
+              signinEmail: cecil.morgan@id.me
+            # authorizedServices:
+            #   - appeals
+            #   - appointments
+            #   - militaryServiceHistory
+            #   - userProfileUpdate
+            #   - scheduleAppointments

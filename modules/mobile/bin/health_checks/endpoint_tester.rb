@@ -32,7 +32,7 @@ class EndpointTester < Thor
   private
 
   def run_individual_test_case(data)
-    method = data['method']
+    method = data['request']['method']
     path = data['request']['path']
     user_name = data['request']['user']
     client = client(user_name)
@@ -56,13 +56,17 @@ class EndpointTester < Thor
     correct_status_received = expected_status == response.status
 
     if correct_status_received
-      received_data = JSON.parse(response.body)
+      received_data = JSON.parse(response.body)['data']
 
       count = expected_data.dig('response', 'count')
-      add_error('count', count, received_data['data'].count) if count && count != received_data['data'].count
+      add_error('count', count, received_data.count) if count && count != received_data.count
 
-      expected_data = expected_data.dig('response', 'body')
-      compare(expected_data, received_data) if expected_data
+      expected_data = expected_data.dig('response', 'data')
+      if expected_data.is_a?(Array)
+        expected_data.each_with_index { |record, i| compare(record, received_data[i]) }
+      else
+        compare(expected_data, received_data)
+      end
     else
       add_error('status', expected_status, response.status)
     end
