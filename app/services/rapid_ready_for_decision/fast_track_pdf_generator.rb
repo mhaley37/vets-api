@@ -31,11 +31,8 @@ module RapidReadyForDecision
 
     # progressively builds a pdf and is sensitive to sequence
     def generate
-      add_intro
-      add_blood_pressure_list
-      add_blood_pressure_outro
-      add_medications_list
-      add_about
+      template = File.read('app/services/rapid_ready_for_decision/views/hypertension.erb')
+      @pdf.markup ERB.new(template).result(binding)
 
       @pdf
     end
@@ -73,33 +70,9 @@ module RapidReadyForDecision
       "#{generated_time.strftime('%m/%d/%Y')} at #{generated_time.strftime('%l:%M %p %Z')}"
     end
 
-    def add_intro
-      template = File.read('app/services/rapid_ready_for_decision/views/hypertension/intro.erb')
-      @pdf.markup ERB.new(template).result(binding)
-    end
-
-    def add_blood_pressure_list
-      template = File.read('app/services/rapid_ready_for_decision/views/hypertension/blood_pressure_readings.erb')
-      @pdf.markup ERB.new(template).result(binding)
-    end
-
-    def add_blood_pressure_outro
-      template = File.read('app/services/rapid_ready_for_decision/views/hypertension/rating_schedule.erb')
-      @pdf.markup ERB.new(template).result(binding)
-    end
-
-    def add_medications_list
-      @pdf.text "\n", size: 12
-
-      template = File.read('app/services/rapid_ready_for_decision/views/shared/medications.erb')
-      @pdf.markup ERB.new(template).result(binding)
-    end
-
-    def add_about
-      @pdf.start_new_page
-
-      template = File.read('app/services/rapid_ready_for_decision/views/hypertension/about.erb')
-      @pdf.markup ERB.new(template).result(binding)
+    def partial(erb_file_relative_path, *args)
+      erb_file_full_path = "app/services/rapid_ready_for_decision/views/#{erb_file_relative_path}.erb"
+      ERB.new(File.new(erb_file_full_path).read).result(binding)
     end
   end
 end
