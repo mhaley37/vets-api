@@ -70,7 +70,7 @@ module RapidReadyForDecision
       "#{generated_time.strftime('%m/%d/%Y')} at #{generated_time.strftime('%l:%M %p %Z')}"
     end
 
-    def partial(erb_file_relative_path, *args)
+    def render_partial(erb_file_relative_path)
       erb_file_full_path = "app/services/rapid_ready_for_decision/views/#{erb_file_relative_path}.erb"
       ERB.new(File.new(erb_file_full_path).read).result(binding)
     end
