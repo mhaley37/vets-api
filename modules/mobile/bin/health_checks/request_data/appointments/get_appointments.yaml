@@ -16,7 +16,7 @@ sequence:
             attributes:
               healthcareService: LVLND  SOCIAL WORK
   - case:
-      name: ruben V0 get appointments
+      name: V0 get appointments ruben
       request:
         user: ruben
         path: mobile/v0/appointments

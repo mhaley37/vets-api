@@ -13,18 +13,18 @@ sequence:
               firstName: JUDY
               lastName: MORRISON
               signinEmail: judy.morrison@id.me
-            # authorizedServices:
-            #   - appeals
-            #   - appointments
-            #   - claims
-            #   - directDepositBenefits
-            #   - disabilityRating
-            #   - lettersAndDocuments
-            #   - militaryServiceHistory
-            #   - paymentHistory
-            #   - userProfileUpdate
-            #   - scheduleAppointments
-            #   - directDepositBenefitsUpdate
+            authorizedServices:
+              - appeals
+              - appointments
+              - claims
+              - directDepositBenefits
+              - disabilityRating
+              - lettersAndDocuments
+              - militaryServiceHistory
+              - paymentHistory
+              - userProfileUpdate
+              - scheduleAppointments
+              - directDepositBenefitsUpdate
   - case:
       name: V0 get user cecil
       request:
@@ -39,9 +39,9 @@ sequence:
               firstName: CECIL
               lastName: MORGAN
               signinEmail: cecil.morgan@id.me
-            # authorizedServices:
-            #   - appeals
-            #   - appointments
-            #   - militaryServiceHistory
-            #   - userProfileUpdate
-            #   - scheduleAppointments
+            authorizedServices:
+              - appeals
+              - appointments
+              - militaryServiceHistory
+              - userProfileUpdate
+              - scheduleAppointments

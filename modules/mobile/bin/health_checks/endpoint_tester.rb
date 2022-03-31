@@ -74,14 +74,24 @@ class EndpointTester < Thor
     @current_test.empty? ? print('.'.green) : print('.'.red)
   end
 
+  # there are some inherent limitations here. the original idea was not to check the full
+  # response body but to allow spot checking. that approach becomes ambiguous when dealing with arrays.
+  # you can't really do a partial check of an array of objects, so if array items are objects we check
+  # them positionally. otherwise, we check for a full array match. we can iterate on this as our
+  # requirements become clear
   def compare(expected, received)
     expected.each do |k, v|
       case v
       when Hash
         compare(v, received[k])
       when Array
-        v.each_with_index do |array_item, i|
-          compare(array_item, received[k][i])
+        if v.any? { |item| item.is_a? Hash }
+          v.each_with_index do |array_item, i|
+            received_item = received[k][i]
+            compare(array_item, received_item)
+          end
+        else
+          add_error(k, v, received[k]) unless v == received[k]
         end
       else
         add_error(k, v, received[k]) unless v == received[k]

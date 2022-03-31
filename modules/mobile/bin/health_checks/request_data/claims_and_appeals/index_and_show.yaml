@@ -1,6 +1,6 @@
 sequence:
   - case:
-      name: judy v0 index claims and appeals
+      name: v0 index claims and appeals judy
       request:
         user: judy
         path: mobile/v0/claims-and-appeals-overview
@@ -17,7 +17,7 @@ sequence:
               dateFiled: '2021-03-22'
               displayTitle: Compensation
   - case:
-      name: judy v0 show claims and appeals
+      name: v0 show claims and appeals judy
       request:
         user: judy
         path: mobile/v0/claim/600229968
