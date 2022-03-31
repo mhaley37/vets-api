@@ -58,27 +58,24 @@ module RapidReadyForDecision
       @date.strftime('%m/%d/%Y')
     end
 
-    def add_intro
-      patient_info = @patient_info.with_indifferent_access
-      full_name = [patient_info[:first], patient_info[:middle], patient_info[:last]].reject(&:blank?).join ' '
-      patient_name = [full_name, patient_info[:suffix]].reject(&:blank?).join ', '
-      birthdate = patient_info[:birthdate]
+    def patient_name
+      first, middle, last, suffix = @patient_info.values_at(:first, :middle, :last, :suffix)
+      full_name = [first, middle, last].reject(&:blank?).join ' '
+      [full_name, suffix].reject(&:blank?).join ', '
+    end
+
+    def birthdate
+      @patient_info[:birthdate]
+    end
+
+    def generated_at
       generated_time = Time.now.getlocal
-      generated_at = "#{generated_time.strftime('%m/%d/%Y')} at #{generated_time.strftime('%l:%M %p %Z')}"
+      "#{generated_time.strftime('%m/%d/%Y')} at #{generated_time.strftime('%l:%M %p %Z')}"
+    end
 
-      intro_lines = [
-        "<font size='11'>Hypertension Rapid Ready for Decision | Claim for Increase</font>\n",
-        "<font size='22'>VHA Hypertension Data Summary for</font>",
-        "<font size='10'><i>Generated automatically on #{generated_at}</i></font>\n",
-        "<font size='11'>\n</font>",
-        "<font size='14'>#{patient_name}</font>\n",
-        birthdate ? "<font size='11'>DOB: #{birthdate}</font>\n" : '',
-        "<font size='11'>\n</font>"
-      ]
-
-      intro_lines.each do |line|
-        @pdf.text line, inline_format: true
-      end
+    def add_intro
+      template = File.read('app/services/rapid_ready_for_decision/views/hypertension/intro.erb')
+      @pdf.markup ERB.new(template).result(binding)
     end
 
     def add_blood_pressure_list

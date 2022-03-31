@@ -1,0 +1,20 @@
+<%#
+  Note: This templating language is HTML-inspired. It does not always behave like true HTML.
+  To see limitations, check out the documentation: https://github.com/puzzle/prawn-markup.
+%>
+
+Hypertension Rapid Ready for Decision | Claim for Increase <br />
+<h1>
+  VHA Hypertension Data Summary for <br/>
+</h1>
+<i>Generated automatically on <%= generated_at %></i>
+
+<p> <br /> </p>
+
+<%= patient_name %><br />
+
+<% if birthdate %>
+  DOB: <%= birthdate %>
+<% end %>
+
+<p> <br /> </p>
