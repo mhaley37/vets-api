@@ -44,7 +44,11 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
   end
 
   let(:pdf_generator) do
-    RapidReadyForDecision::FastTrackPdfGenerator.new(patient_name, parsed_bp_data, parsed_medications_data)
+    assessed_data = {
+      bp_readings: parsed_bp_data,
+      medications: parsed_medications_data
+    }
+    RapidReadyForDecision::FastTrackPdfGenerator.new(patient_name, assessed_data, :hypertension)
   end
 
   describe '#generate', :vcr do

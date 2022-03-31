@@ -19,11 +19,11 @@ module RapidReadyForDecision
       }
     }.freeze
 
-    def initialize(patient_info, blood_pressure_data, medications)
+    def initialize(patient_info, assessed_data, _disability_type)
       @pdf = Prawn::Document.new
       @patient_info = patient_info
-      @blood_pressure_data = blood_pressure_data
-      @medications = medications
+      @blood_pressure_data = assessed_data[:bp_readings]
+      @medications = assessed_data[:medications]
       @date = Time.zone.today
       @pdf.markup_options = PDF_MARKUP_SETTINGS
     end
