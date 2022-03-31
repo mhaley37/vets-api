@@ -11,14 +11,13 @@ class TokenFetcher
 
   def initialize(user_name)
     set_user(user_name)
-    Capybara.default_max_wait_time = 10
-    @session = Capybara::Session.new(:selenium)
+    Capybara.default_max_wait_time = 5
+    @session = Capybara::Session.new(:selenium_chrome_headless)
   end
 
   def fetch_token
     @session.visit TOKEN_URL
     @session.click_link('Please Login')
-    sleep 3 # this sleep appears to be necessary for dealing with the redirect
     @session.click_button('Sign in with ID.me')
     @session.click_button('Accept')
     @session.fill_in 'user_email', with: @user['email']
@@ -39,7 +38,7 @@ class TokenFetcher
 
   def set_user(user_name)
     @user = users_data[user_name]
-    raise 'User not found' unless @user
+    raise "User #{user_name} not found" unless @user
   end
 
   def users_data

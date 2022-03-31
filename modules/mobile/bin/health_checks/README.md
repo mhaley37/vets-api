@@ -10,13 +10,23 @@ Additionally, the token fetcher script here can be used on its own to fetch user
 
 Requires: brew, ruby, and bundler
 
-* `brew install geckodriver`
+* `brew install chromedriver`
+  * execute it: `chromedriver`
+  * depending on operating system, you may get a security pop-up. Click cancel.
+  * go to System Preferences -> Security & Privacy
+  * from here, you can allow chromedriver to execute anyhow
 * in this directory: `bundle install`
 * You will need to set up a YAML file with test user credentials. That file should *not* be version controlled, so it is strongly recommended that you do not keep it in this repo. Set an environment variable called `STAGING_TEST_USERS` in your profile that points to this file. The top level keys in that file must match the usernames used in the test files in the `request_data` folder. The file must be formatted like:
 
 ```
 judy:
-  email: 'judy@example.com'
+  email: 'judy.morrison@id.me'
+  password: 'redacted'
+ruben:
+  email: 'ruben.moreno@id.me'
+  password: 'redacted'
+cecil:
+  email: 'cecil.morgan@id.me'
   password: 'redacted'
 ```
 
