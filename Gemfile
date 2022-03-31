@@ -43,7 +43,7 @@ gem 'betamocks', git: 'https://github.com/department-of-veterans-affairs/betamoc
 gem 'bgs_ext', git: 'https://github.com/department-of-veterans-affairs/bgs-ext.git', require: 'bgs'
 gem 'blueprinter'
 gem 'bootsnap', require: false
-gem 'breakers'
+gem 'breakers', github: 'department-of-veterans-affairs/breakers', branch: 'eb-mo-arity-less-problems'
 gem 'carrierwave'
 gem 'carrierwave-aws'
 gem 'clam_scan'
