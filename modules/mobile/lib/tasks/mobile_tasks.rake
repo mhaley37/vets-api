@@ -3,20 +3,21 @@ task :mobile_test_users do
   uuid = SecureRandom.uuid
 
   identity = IAMUserIdentity.new(
-    uuid: uuid,
-    first_name: 'HECTOR',
-    middle_name: 'J',
-    last_name: 'ALLEN',
     birth_date: '1932-02-05',
+    email: 'vets.gov.user+0@gmail.com',
+    expiration_timestamp: Time.now.to
+    first_name: 'HECTOR',
+    gender: 'M',
     iam_sec_id: '0000027792',
     icn: '1012667122V019349',
-    gender: 'M',
-    ssn: '796126859',
-    email: 'vets.gov.user+0@gmail.com',
+    last_name: 'ALLEN',
     loa: {
       current: LOA::THREE,
       highest: LOA::THREE
-    }
+    },
+    middle_name: 'J',
+    ssn: '796126859',
+    uuid: uuid
   )
   identity.save
   
