@@ -23,7 +23,7 @@ module RapidReadyForDecision
       @pdf = Prawn::Document.new
       @patient_info = patient_info
       @assessed_data = assessed_data
-      @date = Time.zone.today
+      @date = Time.now.getlocal
       @disability_type = disability_type
       @pdf.markup_options = PDF_MARKUP_SETTINGS
     end
@@ -41,11 +41,6 @@ module RapidReadyForDecision
       first, middle, last, suffix = @patient_info.values_at(:first, :middle, :last, :suffix)
       full_name = [first, middle, last].reject(&:blank?).join ' '
       [full_name, suffix].reject(&:blank?).join ', '
-    end
-
-    def generated_at
-      generated_time = Time.now.getlocal
-      "#{generated_time.strftime('%m/%d/%Y')} at #{generated_time.strftime('%l:%M %p %Z')}"
     end
 
     def render_partial(erb_file_relative_path)

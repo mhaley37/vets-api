@@ -7,7 +7,7 @@
 <h1>
   VHA <%= @disability_type.to_s.capitalize %> Data Summary<br/>
 </h1>
-<i>Generated automatically on <%= generated_at %></i>
+<i>Generated automatically on <%= @date.strftime('%m/%d/%Y') %> at <%= @date.strftime('%l:%M %p %Z') %></i>
 
 <p> <br /> </p>
 
