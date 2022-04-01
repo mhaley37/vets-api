@@ -11,7 +11,7 @@
   <% end %>
 </p>
 
-<i>VHA records searched from <%= blood_pressure_start_date %> to <%= blood_pressure_end_date %></i> <br/>
+<i>VHA records searched from <%= (@date - 1.year).strftime('%m/%d/%Y') %> to <%= @date.strftime('%m/%d/%Y') %></i> <br/>
 <i>All VAMC locations using VistA/CAPRI were checked</i>
 
 <% if @assessed_data[:bp_readings].any? %>

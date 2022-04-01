@@ -23,8 +23,6 @@ module RapidReadyForDecision
       @pdf = Prawn::Document.new
       @patient_info = patient_info
       @assessed_data = assessed_data
-      @blood_pressure_data = assessed_data[:bp_readings]
-      @medications = assessed_data[:medications]
       @date = Time.zone.today
       @disability_type = disability_type
       @pdf.markup_options = PDF_MARKUP_SETTINGS
@@ -40,26 +38,10 @@ module RapidReadyForDecision
 
     private
 
-    def medications?
-      @medications.any?
-    end
-
-    def blood_pressure_start_date
-      (@date - 1.year).strftime('%m/%d/%Y')
-    end
-
-    def blood_pressure_end_date
-      @date.strftime('%m/%d/%Y')
-    end
-
     def patient_name
       first, middle, last, suffix = @patient_info.values_at(:first, :middle, :last, :suffix)
       full_name = [first, middle, last].reject(&:blank?).join ' '
       [full_name, suffix].reject(&:blank?).join ', '
-    end
-
-    def birthdate
-      @patient_info[:birthdate]
     end
 
     def generated_at
