@@ -15,6 +15,7 @@
 !/tmp/.keep
 /coverage
 /reports
+tags.*
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
