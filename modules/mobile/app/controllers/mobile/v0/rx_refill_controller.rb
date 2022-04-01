@@ -11,8 +11,20 @@ module Mobile
         render json: Mobile::V0::RxRefillFullHistorySerializer.new(@current_user.id, client.get_history_rxs)
       end
 
+      def get_single_rx_history
+        render json: Mobile::V0::RxRefillSingleHistorySerializer.new(
+          @current_user.id, client.get_tracking_history_rx(params[:id])
+        )
+      end
+
+      def post_refill
+        client.post_refill_rx(params[:id])
+
+        head :no_content
+      end
+
       def get_preferences
-        render json: client.get_preferences
+        render json: Mobile::V0::RxRefillPreferencesSerializer.new(client.get_preferences)
       end
 
       def post_preferences
@@ -22,19 +34,7 @@ module Mobile
       end
 
       def get_prescription
-        render json: client.get_rx(params[:id])
-      end
-
-      def post_refill
-        client.post_refill_rx(params[:id])
-
-        head :no_content
-      end
-
-      def get_single_rx_history
-        render json: Mobile::V0::RxRefillSingleHistorySerializer.new(
-          @current_user.id, client.get_tracking_history_rx(params[:id])
-        )
+        render json: Mobile::V0::RxRefillPrescriptionSerializer.new(client.get_rx(params[:id]))
       end
 
       private

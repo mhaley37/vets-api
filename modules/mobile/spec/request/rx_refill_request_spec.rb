@@ -10,11 +10,7 @@ RSpec.describe 'rx_refill', type: :request do
   include JsonSchemaMatchers
   include Rx::ClientHelpers
 
-  # let(:va_patient) { true }
   let(:mhv_account_type) { 'Premium' }
-  # let(:current_user) do
-  #  build(:user, :mhv, authn_context: LOA::IDME_LOA3_VETS, va_patient: va_patient, mhv_account_type: mhv_account_type, sign_in: { service_name: 'idme' })
-  # end
   let(:json_body_headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
 
   before(:all) do
@@ -27,77 +23,96 @@ RSpec.describe 'rx_refill', type: :request do
   before do
     allow_any_instance_of(MHVAccountTypeService).to receive(:mhv_account_type).and_return(mhv_account_type)
     allow(Rx::Client).to receive(:new).and_return(authenticated_client)
-    current_user = build(:iam_user, :idme)
+    current_user = build(:iam_user, :mhv)
 
     iam_sign_in(current_user)
   end
 
-  describe 'GET /mobile/v0/rx-refill/get_full_rx_history' do
-    context 'with a valid 200 response' do
-      it 'matches the get_full_rx_history schema' do
-        VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-          get '/mobile/v0/rx-refill/full_rx_history', headers: iam_headers
-        end
-        expect(response).to have_http_status(:ok)
+  describe 'GET /mobile/v0/rx-refill/rx_history' do
+    before do
+      VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
+        get '/mobile/v0/rx-refill/rx_history', headers: iam_headers
       end
+    end
+
+    it 'matches the rx_history schema' do
+    end
+
+    it 'returns a 200' do
+      expect(response).to have_http_status(:ok)
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/get_single_rx_history' do
-    context 'with a valid 200 response' do
-      it 'matches the get_single_rx_history schema' do
-        VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_for_a_prescription') do
-          get '/mobile/v0/rx-refill/get_single_rx_history/13650541', headers: iam_headers
-        end
-        expect(response).to have_http_status(:ok)
+  describe 'GET /mobile/v0/rx-refill/rx_history/:id' do
+    before do
+      VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_for_a_prescription') do
+        get '/mobile/v0/rx-refill/rx_history/13650541', headers: iam_headers
       end
+    end
+
+    it 'matches the get_single_rx_history schema' do
+    end
+
+    it 'returns a 200' do
+      expect(response).to have_http_status(:ok)
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/get_preferences' do
-    context 'with a valid 200 response' do
-      it 'matches the get_preferences schema' do
-        VCR.use_cassette('rx_refill/preferences/gets_rx_preferences') do
-          get '/mobile/v0/rx-refill/get_preferences', headers: iam_headers
-        end
-        expect(response).to have_http_status(:ok)
+  describe 'GET /mobile/v0/rx-refill/preferences' do
+    before do
+      VCR.use_cassette('rx_refill/preferences/gets_rx_preferences') do
+        get '/mobile/v0/rx-refill/preferences', headers: iam_headers
       end
+    end
+
+    it 'matches the get_preferences schema' do
+      attributes = response.parsed_body.dig('data', 'attributes')
+      binding.pry
+      expect(attributes['emailAddress']).to eq('Praneeth.Gaganapally@va.gov')
+      expect(attributes['rxFlag']).to eq(true)
+    end
+
+    it 'returns a 200' do
+      expect(response).to have_http_status(:ok)
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/post_preferences' do
-    context 'with a valid 204 response' do
-      it 'matches the post_preferences schema' do
-        VCR.use_cassette('rx_refill/preferences/sets_rx_preferences') do
-          post '/mobile/v0/rx-refill/post_preferences',
-               params: { rx_flag: false, email_address: 'kamyar.karshenas@va.gov' }.to_json,
-               headers: iam_headers(json_body_headers)
-        end
-        expect(response).to have_http_status(:no_content)
+  describe 'POST /mobile/v0/rx-refill/preferences' do
+    before do
+      VCR.use_cassette('rx_refill/preferences/sets_rx_preferences') do
+        post '/mobile/v0/rx-refill/preferences',
+             params: { rx_flag: false, email_address: 'kamyar.karshenas@va.gov' }.to_json,
+             headers: iam_headers(json_body_headers)
       end
+    end
+
+    it 'returns valid 204 response' do
+      expect(response).to have_http_status(:no_content)
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/get_prescription' do
-    context 'with a valid 200 response' do
-      it 'matches the get_prescription schema' do
-        VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-          get '/mobile/v0/rx-refill/get_prescription/13568747', headers: iam_headers
-        end
-        expect(response).to have_http_status(:ok)
+  describe 'GET /mobile/v0/rx-refill/prescription/:id' do
+    before do
+      VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
+        get '/mobile/v0/rx-refill/prescription/13568747', headers: iam_headers
       end
+    end
+
+    it 'returns a 200' do
+      binding.pry
+      expect(response).to have_http_status(:ok)
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/post_refill' do
-    context 'with a valid 204 response' do
-      it 'matches the post_refill schema' do
-        VCR.use_cassette('rx_refill/prescriptions/refills_a_prescription') do
-          post '/mobile/v0/rx-refill/post_refill/13650545', headers: iam_headers
-        end
-        expect(response).to have_http_status(:no_content)
+  describe 'POST /mobile/v0/rx-refill/refill/:id' do
+    before do
+      VCR.use_cassette('rx_refill/prescriptions/refills_a_prescription') do
+        post '/mobile/v0/rx-refill/refill/13650545', headers: iam_headers
       end
     end
-  end
 
+    it 'returns valid 204 response' do
+      expect(response).to have_http_status(:no_content)
+    end
+  end
 end
