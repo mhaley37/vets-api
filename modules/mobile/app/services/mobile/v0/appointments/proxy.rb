@@ -17,7 +17,7 @@ module Mobile
 
         def fetch_facilities(appointments)
           if Flipper.enabled?(:mobile_appointment_use_VAOS_MFS)
-            legacy_fetch_facilities(appointments)
+            new_fetch_facilities(appointments)
           else
             legacy_fetch_facilities(appointments)
           end
@@ -138,11 +138,18 @@ module Mobile
         def new_fetch_facilities(appointments)
           facility_ids = appointments.map(&:id_for_address).uniq
 
+          ids= ids(facility_ids) #may not be needed
+
           return nil unless facility_ids.any?
 
           facility_ids.each do |facility_id|
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
           end
+
+          # response = vaos_mobile_facility_service.get_facilities(ids: ids, children: children, type: type)
+          # temp= vaos_mobile_facility_service
+          # response[:data]
+          # binding.pry
           Mobile::FacilitiesHelper.get_facilities(facility_ids)
         end
 
@@ -215,6 +222,18 @@ module Mobile
             response = service.get_requests(start_date, end_date)
             response[:data]
           }
+        end
+
+        def ids(ids)
+          ids.is_a?(Array) ? ids.to_csv(row_sep: nil) : ids
+        end
+
+        def children
+          nil
+        end
+
+        def type
+          nil
         end
 
         def vaos_appointments_service
