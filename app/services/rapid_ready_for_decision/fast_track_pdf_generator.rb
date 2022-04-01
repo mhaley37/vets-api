@@ -31,8 +31,8 @@ module RapidReadyForDecision
 
     # progressively builds a pdf and is sensitive to sequence
     def generate
-      template = File.read('app/services/rapid_ready_for_decision/views/hypertension.erb')
-      @pdf.markup ERB.new(template).result(binding)
+      template = File.join('app/services/rapid_ready_for_decision/views', "#{@disability_type}.erb")
+      @pdf.markup ERB.new(File.new(template).read).result(binding)
 
       @pdf
     end
@@ -71,7 +71,7 @@ module RapidReadyForDecision
     end
 
     def render_partial(erb_file_relative_path)
-      erb_file_full_path = "app/services/rapid_ready_for_decision/views/#{erb_file_relative_path}.erb"
+      erb_file_full_path = File.join('app/services/rapid_ready_for_decision/views', "#{erb_file_relative_path}.erb")
       ERB.new(File.new(erb_file_full_path).read).result(binding)
     end
   end
