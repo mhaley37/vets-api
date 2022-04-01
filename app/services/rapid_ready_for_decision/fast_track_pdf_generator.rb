@@ -19,6 +19,11 @@ module RapidReadyForDecision
       }
     }.freeze
 
+    def self.extract_patient_name(patient_info)
+      full_name = patient_info.values_at(:first, :middle, :last).reject(&:blank?).join ' '
+      [full_name, patient_info[:suffix]].reject(&:blank?).join ', '
+    end
+
     def initialize(patient_info, assessed_data, disability_type)
       @pdf = Prawn::Document.new
       @patient_info = patient_info
@@ -36,12 +41,6 @@ module RapidReadyForDecision
     end
 
     private
-
-    def patient_name
-      first, middle, last, suffix = @patient_info.values_at(:first, :middle, :last, :suffix)
-      full_name = [first, middle, last].reject(&:blank?).join ' '
-      [full_name, suffix].reject(&:blank?).join ', '
-    end
 
     def render_partial(erb_file_relative_path)
       erb_file_full_path = File.join('app/services/rapid_ready_for_decision/views', "#{erb_file_relative_path}.erb")
