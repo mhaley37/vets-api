@@ -28,7 +28,6 @@ module RapidReadyForDecision
       @pdf.markup_options = PDF_MARKUP_SETTINGS
     end
 
-    # progressively builds a pdf and is sensitive to sequence
     def generate
       template = File.join('app/services/rapid_ready_for_decision/views', "#{@disability_type}.erb")
       @pdf.markup ERB.new(File.new(template).read).result(binding)
