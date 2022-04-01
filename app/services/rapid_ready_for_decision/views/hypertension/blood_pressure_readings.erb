@@ -4,7 +4,7 @@
 %>
 
 <p>
-  <% if blood_pressure_data? %>
+  <% if @assessed_data[:bp_readings].any? %>
     <h4>One Year of Blood Pressure History</h4>
   <% else %>
     <h4>No blood pressure records found</h4>
@@ -14,13 +14,13 @@
 <i>VHA records searched from <%= blood_pressure_start_date %> to <%= blood_pressure_end_date %></i> <br/>
 <i>All VAMC locations using VistA/CAPRI were checked</i>
 
-<% if blood_pressure_data? %>
+<% if @assessed_data[:bp_readings].any? %>
   <p>Blood pressure is shown as systolic/diastolic.</p>
 <% end %>
 
 <p> <br /> </p>
 
-<% @blood_pressure_data.each do |bp| %>
+<% @assessed_data[:bp_readings].each do |bp| %>
   <% systolic = bp[:systolic]['value'].round %>
   <% diastolic = bp[:diastolic]['value'].round %>
 

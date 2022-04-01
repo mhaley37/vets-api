@@ -22,6 +22,7 @@ module RapidReadyForDecision
     def initialize(patient_info, assessed_data, disability_type)
       @pdf = Prawn::Document.new
       @patient_info = patient_info
+      @assessed_data = assessed_data
       @blood_pressure_data = assessed_data[:bp_readings]
       @medications = assessed_data[:medications]
       @date = Time.zone.today
@@ -38,10 +39,6 @@ module RapidReadyForDecision
     end
 
     private
-
-    def blood_pressure_data?
-      @blood_pressure_data.length.positive?
-    end
 
     def medications?
       @medications.any?
