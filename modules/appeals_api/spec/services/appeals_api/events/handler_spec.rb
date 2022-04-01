@@ -6,6 +6,10 @@ require 'sidekiq/testing'
 module AppealsApi
   module Events
     describe Handler do
+      after do
+        Sidekiq.strict_args!(false)
+      end
+
       describe '.subscribe' do
         it 'creates a record of the callback needed for the event' do
           Handler.subscribe(:hlr_status_updated, 'AppealsApi::Events::StatusUpdated')
