@@ -67,7 +67,6 @@ RSpec.describe 'rx_refill', type: :request do
 
     it 'matches the get_preferences schema' do
       attributes = response.parsed_body.dig('data', 'attributes')
-      binding.pry
       expect(attributes['emailAddress']).to eq('Praneeth.Gaganapally@va.gov')
       expect(attributes['rxFlag']).to eq(true)
     end
@@ -99,7 +98,6 @@ RSpec.describe 'rx_refill', type: :request do
     end
 
     it 'returns a 200' do
-      binding.pry
       expect(response).to have_http_status(:ok)
     end
   end

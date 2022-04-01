@@ -8,7 +8,9 @@ module Mobile
       before_action { authorize :mhv_prescriptions, :access? }
 
       def get_full_rx_history
-        render json: Mobile::V0::RxRefillFullHistorySerializer.new(@current_user.id, client.get_history_rxs)
+        response = client.get_history_rxs
+        rx_history = rx_history_adapter.parse(response)
+        render json: Mobile::V0::RxRefillFullHistorySerializer.new(@current_user.id, rx_history.rx_history.attributes)
       end
 
       def get_single_rx_history
@@ -34,10 +36,19 @@ module Mobile
       end
 
       def get_prescription
-        render json: Mobile::V0::RxRefillPrescriptionSerializer.new(client.get_rx(params[:id]))
+        prescription = prescription_adapter.parse(client.get_rx(params[:id]))
+        render json: Mobile::V0::RxRefillPrescriptionSerializer.new(prescription)
       end
 
       private
+
+      def prescription_adapter
+        Mobile::V0::Adapters::Prescription.new
+      end
+
+      def rx_history_adapter
+        Mobile::V0::Adapters::RxHistory.new
+      end
 
       def client
         @client ||= Rx::Client.new(session: { user_id: @current_user.mhv_correlation_id })

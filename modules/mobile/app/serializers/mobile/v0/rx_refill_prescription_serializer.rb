@@ -6,23 +6,20 @@ module Mobile
       include FastJsonapi::ObjectSerializer
 
       set_type :prescription
-      attributes
-      %i[prescriptionId
-         prescriptionNumber
-         prescriptionName
-         refillStatus
-         refillSubmitDate
-         refillDate
-         refillRemaining
-         facilityName
-         orderedDate
-         quantity
-         expirationDate
-         dispensedDate
-         stationNumber
-         isRefillable
-         isTrackable
-         links]
+      attributes :id,
+                 :prescription_name,
+                 :refill_status,
+                 :refill_submit_date,
+                 :refill_date,
+                 :refill_remaining,
+                 :facility_name,
+                 :ordered_date,
+                 :quantity,
+                 :expiration_date,
+                 :dispensed_date,
+                 :station_number,
+                 :is_refillable,
+                 :is_trackable
     end
   end
 end

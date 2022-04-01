@@ -5,15 +5,15 @@ module Mobile
     class RxRefillFullHistorySerializer
       include FastJsonapi::ObjectSerializer
 
-      set_type :prescriptionsHistory
-      attributes :prescriptionsHistory
+      set_type :fullRxHistory
+      attributes :fullRxHistory
 
-      def initialize(id, prescriptions)
-        resource = PrescriptionsHistoryStruct.new(id, prescriptions)
+      def initialize(id, full_rx_history)
+        resource = FullRxHistoryStruct.new(id, full_rx_history)
         super(resource)
       end
     end
 
-    PrescriptionsHistoryStruct = Struct.new(:id, :prescriptionsHistory)
+    FullRxHistoryStruct = Struct.new(:id, :fullRxHistory)
   end
 end
