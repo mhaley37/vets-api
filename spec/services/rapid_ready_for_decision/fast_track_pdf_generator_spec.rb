@@ -87,5 +87,13 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
         expect(subject).to include('Active Prescriptions')
       end
     end
+
+    context 'when medication data are nil' do
+      let(:parsed_medications_data) { nil }
+
+      it 'continues rendering with message' do
+        expect(subject).to include('No active medications were found in the last year')
+      end
+    end
   end
 end
