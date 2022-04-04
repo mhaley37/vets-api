@@ -115,7 +115,7 @@ FactoryBot.define do
       end
       requested_periods do
         {
-          'end': '2022-01-04T11:59:00Z',
+          'end': '2022-01-04T11:58:00Z',
           'start': '2022-01-04T00:00:00Z'
         }
       end
