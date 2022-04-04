@@ -150,11 +150,12 @@ module Mobile
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
           end
 
-          # response = vaos_mobile_facility_service.get_facilities(ids: ids, children: children, type: type)
-          # temp= vaos_mobile_facility_service
-          # response[:data]
-          # binding.pry
-          Mobile::FacilitiesHelper.get_facilities(facility_ids)
+          #pulling facilities from MFS
+          vaos = vaos_mobile_facility_service.get_facilities(ids: ids, children: children, type: type)
+          temp= vaos_mobile_facility_service
+          vaos[:data]
+          binding.pry
+          # Mobile::FacilitiesHelper.get_facilities(facility_ids)
         end
 
         def legacy_fetch_facilities(appointments)

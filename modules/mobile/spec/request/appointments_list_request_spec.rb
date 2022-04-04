@@ -139,6 +139,18 @@ RSpec.describe 'appointments', type: :request do
       end
     end
 
+    #spec for MFS testing -- need to record VCR
+    context 'on successful query for a facility given multiple facilities in array form' do
+      it 'returns facility details' do
+        VCR.use_cassette('appointments/get_facilities_200', match_requests_on: %i[method uri]) do
+          get '/mobile/v0/appointments', headers: iam_headers
+          expect(response).to have_http_status(:ok)
+          # expect(JSON.parse(response.body)['data'].size).to eq(1)
+          binding.pry
+        end
+      end
+    end
+
     context 'with a missing params' do
       before do
         VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
