@@ -6,13 +6,16 @@ require 'common/client/errors'
 module VAOS
   class AppointmentService < VAOS::SessionService
     DIRECT_SCHEDULE_ERROR_KEY = 'DirectScheduleError'
+    APPOINTMENT_PROVIDER_KEY = 'AppointmentProvider'
 
     def get_appointments(type, start_date, end_date, pagination_params = {})
       params = date_params(start_date, end_date).merge(page_params(pagination_params)).merge(other_params).compact
+      binding.pry
 
       with_monitoring do
         response = perform(:get, get_appointments_base_url(type), params, headers, timeout: 55)
-
+        binding.pry
+        # check_appointment_fields(response.body[:data][:appointment_list])
         {
           data: deserialized_appointments(response.body, type),
           meta: pagination(pagination_params).merge(partial_errors(response))
@@ -36,6 +39,12 @@ module VAOS
 
       with_monitoring do
         response = perform(:post, post_appointment_url(site_code), params, headers)
+
+        provider_array = response.body&.[](:providers)&.[](:provider)
+        unless provider_array.nil?
+          log_appointment_provider(provider_array)
+        end
+
         {
           data: OpenStruct.new(response.body),
           meta: {}
@@ -70,6 +79,21 @@ module VAOS
     def log_direct_schedule_submission_errors(e)
       error_entry = { DIRECT_SCHEDULE_ERROR_KEY => ds_error_details(e) }
       Rails.logger.warn('Direct schedule submission error', error_entry.to_json)
+    end
+
+    def log_appointment_provider(provider_array)
+      appointment_log_entry = { APPOINTMENT_PROVIDER_KEY => extract_appointment_type_from_provider(provider_array) }
+      binding.pry
+      # log appointment type and provider (3-4)
+      rails.logger.info('Appointment types with provider info', appointment_log_entry.to_json)
+    end
+
+    def extract_appointment_type_from_provider(provider_array)
+      appointment_types = []
+      provider_array.each { |p|
+        appointment_types << p&.[](:location)&.[](:type)
+      }
+      appointment_types
     end
 
     def ds_error_details(e)

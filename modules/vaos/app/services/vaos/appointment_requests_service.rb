@@ -2,6 +2,8 @@
 
 module VAOS
   class AppointmentRequestsService < VAOS::SessionService
+    APPOINTMENT_TOC_KEY = 'AppointmentTypeOfCare'
+
     def get_requests(start_date = nil, end_date = nil)
       with_monitoring do
         response = perform(:get, get_requests_url, date_params(start_date, end_date), headers)
@@ -28,7 +30,8 @@ module VAOS
       with_monitoring do
         validated_params = form_object(params).params
         response = perform(:post, post_request_url(params[:type]), validated_params, headers)
-
+        #binding.pry
+        log_appointment_type_of_care(response&.body&.[](:appointment_type))
         {
           data: OpenStruct.new(filter_cc_appointment_data(response.body))
         }
@@ -47,6 +50,16 @@ module VAOS
     end
 
     private
+
+    def log_appointment_type_of_care(appointment_type)
+      appointment_log_entry = { APPOINTMENT_TOC_KEY => appointment_type }
+      binding.pry
+      rails.logger.info('Appointment types with provider info', appointment_log_entry.to_json)
+    end
+
+    def log_appointment_type_of_care
+      # log appointment type and type of care (1-2)
+    end
 
     def get_requests_url
       "/var/VeteranAppointmentRequestService/v4/rest/appointment-service/patient/ICN/#{user.icn}/appointments"
