@@ -7,7 +7,7 @@ module V0
     before_action :authenticate, only: [:welcome]
 
     def index
-      render json: { message: 'Welcome to the va.gov API' }
+      render html: "<h1>{ message: 'zach Welcome to the va.gov API' }</h1>".html_safe
     end
 
     def limited
