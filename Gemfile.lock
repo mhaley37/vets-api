@@ -114,7 +114,6 @@ PATH
 
 GEM
   remote: https://rubygems.org/
-  remote: https://enterprise.contribsys.com/
   specs:
     Ascii85 (1.1.0)
     aasm (5.2.0)
@@ -347,12 +346,12 @@ GEM
     e2mmap (0.1.0)
     ecma-re-validator (0.4.0)
       regexp_parser (~> 2.2)
-    einhorn (0.8.2)
     erubi (1.10.0)
     et-orbi (1.2.6)
       tzinfo
     ethon (0.15.0)
       ffi (>= 1.15.0)
+    execjs (2.8.1)
     expgen (0.1.1)
       parslet
     factory_bot (6.2.0)
@@ -726,6 +725,12 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rchardet (1.8.0)
+    react_on_rails (13.0.0)
+      addressable
+      connection_pool
+      execjs (~> 2.5)
+      rails (>= 5.2)
+      rainbow (~> 3.0)
     redis (4.6.0)
     redis-namespace (1.8.2)
       redis (>= 3.0.4)
@@ -849,12 +854,6 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    sidekiq-ent (2.2.3)
-      einhorn (>= 0.7.4)
-      sidekiq (>= 6.2.0)
-      sidekiq-pro (>= 5.2.0)
-    sidekiq-pro (5.2.4)
-      sidekiq (>= 6.2.0)
     sidekiq-scheduler (3.1.1)
       e2mmap
       redis (>= 3, < 5)
@@ -1093,6 +1092,7 @@ DEPENDENCIES
   rails-session_cookie
   rails_semantic_logger
   rainbow
+  react_on_rails (= 13.0)
   redis
   redis-namespace
   request_store
@@ -1118,8 +1118,6 @@ DEPENDENCIES
   sentry-raven
   shrine
   sidekiq (>= 6.4.0)
-  sidekiq-ent!
-  sidekiq-pro!
   sidekiq-scheduler
   simplecov
   slack-notify

@@ -214,3 +214,5 @@ else
     gem 'sidekiq-pro'
   end
 end
+
+gem "react_on_rails", "= 13.0"
