@@ -7,17 +7,15 @@ module Mobile
     class RxRefillController < ApplicationController
       before_action { authorize :mhv_prescriptions, :access? }
 
-      def get_full_rx_history
-        response = client.get_history_rxs
-        binding.pry
-        rx_history = rx_history_adapter.parse(response)
-        render json: Mobile::V0::RxRefillHistorySerializer.new(@current_user.id, rx_history.rx_history.attributes)
+      def get_rx_history
+        render json: Mobile::V0::RxRefillHistorySerializer.new(@current_user.id, client.get_history_rxs)
       end
 
       def get_tracking_history
-        response = client.get_tracking_history_rx(params[:id])
-        rx_history = rx_history_adapter.parse(response)
-        render json: Mobile::V0::RxRefillHistorySerializer.new(@current_user.id, rx_history.rx_history.attributes)
+        render json: Mobile::V0::RxRefillTrackerHistorySerializer.new(
+          @current_user.id,
+          client.get_tracking_history_rx(params[:id])
+        )
       end
 
       def post_refill
@@ -31,27 +29,16 @@ module Mobile
       end
 
       def post_preferences
-        client.post_preferences(params.permit(:rx_flag, :email_address))
-
-        head :no_content
+        render json: Mobile::V0::RxRefillPreferencesSerializer.new(
+          client.post_preferences(params.permit(:rx_flag, :email_address))
+        )
       end
 
       def get_prescription
-        test =  client.get_rx(params[:id])
-        binding.pry
-        prescription = prescription_adapter.parse(test)
-        render json: Mobile::V0::RxRefillPrescriptionSerializer.new(prescription)
+        render json: Mobile::V0::RxRefillPrescriptionSerializer.new(client.get_rx(params[:id]))
       end
 
       private
-
-      def prescription_adapter
-        Mobile::V0::Adapters::Prescription.new
-      end
-
-      def rx_history_adapter
-        Mobile::V0::Adapters::RxHistory.new
-      end
 
       def client
         @client ||= Rx::Client.new(session: { user_id: @current_user.mhv_correlation_id })

@@ -9,7 +9,7 @@ module Mobile
       attributes :RxHistory
 
       def initialize(id, rx_history)
-        resource = RxHistoryStruct.new(id, rx_history)
+        resource = RxHistoryStruct.new(id, rx_history.attributes)
         super(resource)
       end
     end
