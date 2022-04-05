@@ -18,6 +18,12 @@ module Mobile
       head(:ok)
     end
 
+    protected
+
+    def access_token
+      @access_token ||= request.headers['Authorization']&.gsub(ACCESS_TOKEN_REGEX, '')
+    end
+
     private
 
     attr_reader :current_user
@@ -30,10 +36,6 @@ module Mobile
       @current_user = session_manager.find_or_create_user
       link_user_with_vets360 if @current_user.vet360_id.blank?
       @current_user
-    end
-
-    def access_token
-      @access_token ||= request.headers['Authorization']&.gsub(ACCESS_TOKEN_REGEX, '')
     end
 
     def raise_unauthorized(detail)

@@ -2,6 +2,7 @@
 
 Mobile::Engine.routes.draw do
   get '/', to: 'discovery#welcome'
+  get '/token', to: 'discovery#token' if Settings.hostname != 'api.va.gov' && Flipper.enabled?(:mobile_api_tests)
 
   namespace :v0 do
     get '/appeal/:id', to: 'claims_and_appeals#get_appeal'

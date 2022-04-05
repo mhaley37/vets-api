@@ -1316,3 +1316,6 @@ lgy:
   app_id: ~
   api_key: ~
   mock_coe: false
+
+mobile_api:
+  secret: fake_secret
