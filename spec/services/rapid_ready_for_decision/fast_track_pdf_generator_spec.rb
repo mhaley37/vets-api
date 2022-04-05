@@ -54,9 +54,7 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
   end
 
   describe '#generate', :vcr do
-    context 'when pdf is for hypertension' do
-      let(:disability_type) { :hypertension }
-
+    shared_examples 'includes introduction' do
       it 'includes the veterans name' do
         expect(subject).to include 'Cat Marie Power, Jr.'
       end
@@ -64,6 +62,12 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
       it 'includes the veterans birthdate' do
         expect(subject).to include 'DOB: 10-10-1968'
       end
+    end
+
+    context 'when pdf is for hypertension' do
+      let(:disability_type) { :hypertension }
+
+      it_behaves_like 'includes introduction'
 
       it 'includes the veterans blood pressure readings' do
         expect(subject).to include 'Blood pressure: 115/87'
@@ -103,13 +107,7 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
     context 'when pdf is for asthma' do
       let(:disability_type) { :asthma }
 
-      it 'includes the veterans name' do
-        expect(subject).to include 'Cat Marie Power, Jr.'
-      end
-
-      it 'includes the veterans birthdate' do
-        expect(subject).to include 'DOB: 10-10-1968'
-      end
+      it_behaves_like 'includes introduction'
     end
   end
 end
