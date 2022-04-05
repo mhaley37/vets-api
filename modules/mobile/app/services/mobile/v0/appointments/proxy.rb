@@ -131,6 +131,7 @@ module Mobile
 
           # appointment requests are fetched by a service that raises on error
           errors = [va_response[:error], cc_response[:error]].compact
+          binding.pry
           if errors.size.positive?
             Rails.logger.error('Mobile Appointments w/ Requests Error: ', errors: errors)
             raise Common::Exceptions::BackendServiceException, 'MOBL_502_upstream_error'
@@ -154,7 +155,6 @@ module Mobile
           vaos = vaos_mobile_facility_service.get_facilities(ids: ids, children: children, type: type)
           temp= vaos_mobile_facility_service
           vaos[:data]
-          binding.pry
           # Mobile::FacilitiesHelper.get_facilities(facility_ids)
         end
 

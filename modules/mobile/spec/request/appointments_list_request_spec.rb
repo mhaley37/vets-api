@@ -12,6 +12,7 @@ RSpec.describe 'appointments', type: :request do
     iam_sign_in(build(:iam_user))
     allow_any_instance_of(VAOS::UserService).to receive(:session).and_return('stubbed_token')
     Flipper.disable(:mobile_appointment_requests)
+    Flipper.disable(:mobile_appointment_use_VAOS_MFS)
   end
 
   before(:all) do
@@ -139,14 +140,19 @@ RSpec.describe 'appointments', type: :request do
       end
     end
 
-    #spec for MFS testing -- need to record VCR
-    context 'on successful query for a facility given multiple facilities in array form' do
+    context 'when the MFS flag is enabled' do
+      before { Flipper.enable(:mobile_appointment_use_VAOS_MFS) }
+      after { Flipper.disable(:mobile_appointment_use_VAOS_MFS) }
+
       it 'returns facility details' do
-        VCR.use_cassette('appointments/get_facilities_200', match_requests_on: %i[method uri]) do
-          get '/mobile/v0/appointments', headers: iam_headers
-          expect(response).to have_http_status(:ok)
-          # expect(JSON.parse(response.body)['data'].size).to eq(1)
-          binding.pry
+        VCR.use_cassette('appointments/get_mfs_facilities', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              get '/mobile/v0/appointments', headers: iam_headers
+              expect(response).to have_http_status(:ok)
+              expect(JSON.parse(response.body)['data'].size).to eq(1)
+            end
+          end
         end
       end
     end

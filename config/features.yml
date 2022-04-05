@@ -395,7 +395,7 @@ features:
   mobile_appointment_use_VAOS_MFS:
     actor_type: user
     description: Finds facilities using VAOS's Mobile Facility Service.
-    enable_in_development: true
+    enable_in_development: false
   multiple_address_10_10ez:
     actor_type: cookie_id
     description: >
