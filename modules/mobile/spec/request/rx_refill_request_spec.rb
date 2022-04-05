@@ -28,10 +28,10 @@ RSpec.describe 'rx_refill', type: :request do
     iam_sign_in(current_user)
   end
 
-  describe 'GET /mobile/v0/rx-refill/rx_history' do
+  describe 'GET /mobile/v0/rx-refill/prescription' do
     before do
       VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-        get '/mobile/v0/rx-refill/rx_history', headers: iam_headers
+        get '/mobile/v0/rx-refill/prescription', headers: iam_headers
       end
     end
 
@@ -40,11 +40,11 @@ RSpec.describe 'rx_refill', type: :request do
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/rx_history/tracking/:id' do
+  describe 'GET /mobile/v0/rx-refill/prescription/:id/tracking' do
     context 'shipment having other prescriptions' do
       before do
-        VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_for_a_prescription') do
-          get '/mobile/v0/rx-refill/rx_history/tracking/13650541', headers: iam_headers
+        VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_a_list_of_tracking_history_for_a_prescription') do
+          get '/mobile/v0/rx-refill/prescription/13650541/tracking', headers: iam_headers
         end
       end
 
@@ -52,14 +52,13 @@ RSpec.describe 'rx_refill', type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to be_a(String)
         # expect(response).to match_response_schema('trackings')
-        expect(JSON.parse(response.body)['meta']['sort']).to eq('shipped_date' => 'DESC')
       end
     end
 
     context 'shipment having no other prescriptions' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_with_empty_other_prescriptions') do
-          get '/mobile/v0/rx-refill/rx_history/tracking/13650541', headers: iam_headers
+          get '/mobile/v0/rx-refill/prescription/13650541/tracking', headers: iam_headers
         end
       end
 
@@ -67,7 +66,6 @@ RSpec.describe 'rx_refill', type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to be_a(String)
         #expect(response).to match_response_schema('trackings')
-        expect(JSON.parse(response.body)['meta']['sort']).to eq('shipped_date' => 'DESC')
       end
     end
   end

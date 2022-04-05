@@ -41,12 +41,12 @@ Mobile::Engine.routes.draw do
     post '/user/phones', to: 'phones#create'
     put '/user/phones', to: 'phones#update'
     delete '/user/phones', to: 'phones#destroy'
-    get '/rx-refill/rx_history', to: 'rx_refill#get_rx_history'
-    get '/rx-refill/rx_history/tracking/:id', to: 'rx_refill#get_tracking_history'
-    get '/rx-refill/preferences', to: 'rx_refill#get_preferences'
-    post '/rx-refill/preferences', to: 'rx_refill#post_preferences'
+    get '/rx-refill/prescription', to: 'rx_refill#get_rx_history'
+    get '/rx-refill/prescription/:id/tracking', to: 'rx_refill#get_tracking_history'
     get '/rx-refill/prescription/:id', to: 'rx_refill#get_prescription'
     post '/rx-refill/prescription/:id/refill', to: 'rx_refill#post_refill'
+    get '/rx-refill/preferences', to: 'rx_refill#get_preferences'
+    post '/rx-refill/preferences', to: 'rx_refill#post_preferences'
 
     scope :messaging do
       scope :health do
