@@ -5,6 +5,8 @@ module VRE
     include Sidekiq::Worker
     attr_writer :retry_count
 
+    sidekiq_options retry: 14
+
     sidekiq_retries_exhausted do |_msg, _e|
       @claim.send_to_central_mail!
     end
