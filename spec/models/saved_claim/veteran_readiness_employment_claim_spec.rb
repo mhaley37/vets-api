@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require_relative '../../../modules/claims_api/spec/support/fake_vbms'
+require Rails.root.join('modules', 'claims_api', 'spec', 'support', 'fake_vbms.rb')
 require 'claims_api/vbms_uploader'
 
 RSpec.describe SavedClaim::VeteranReadinessEmploymentClaim do
@@ -66,16 +66,10 @@ RSpec.describe SavedClaim::VeteranReadinessEmploymentClaim do
         allow(VBMS::Client).to receive(:from_env_vars).and_return(@vbms_client)
       end
 
-      it 'calls #send_to_central_mail!' do
+      it 'raises error and does not call #send_to_central_mail!' do
         VCR.use_cassette('vbms/document_upload_417') do
-          expect(claim).to receive(:send_to_central_mail!)
-          subject
-        end
-      end
-
-      it 'does not raise an error' do
-        VCR.use_cassette('vbms/document_upload_417') do
-          expect { subject }.not_to raise_error
+          expect(claim).not_to receive(:send_to_central_mail!)
+          expect { subject }.to raise_error(VBMS::DownForMaintenance)
         end
       end
     end

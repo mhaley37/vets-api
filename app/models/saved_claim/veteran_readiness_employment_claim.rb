@@ -114,11 +114,7 @@ class SavedClaim::VeteranReadinessEmploymentClaim < SavedClaim
     if user&.participant_id.blank?
       send_to_central_mail!
     else
-      begin
-        upload_to_vbms
-      rescue
-        send_to_central_mail!
-      end
+      upload_to_vbms
     end
 
     @office_location = check_office_location[0] if @office_location.nil?
