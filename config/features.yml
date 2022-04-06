@@ -121,9 +121,17 @@ features:
     actor_type: user
     description: Enables DOB instead of last 4 of SSN.
     enable_in_development: false
+  check_in_experience_edit_messaging_enabled:
+    actor_type: user
+    description: Enables showing of edit messaging.
+    enable_in_development: false
   coe_access:
     actor_type: user
     description: Feature gates the certificate of eligibility application
+    enable_in_development: true
+  combined_debt_portal_access:
+    actor_type: user
+    description: Enables users to interact with combined debt portal experience
     enable_in_development: true
   communication_preferences:
     actor_type: user
@@ -509,6 +517,9 @@ features:
     actor_type: user
     description: Allows for frontend to have progressivley enhanced backend endpoints to consume in staging.
     enable_in_development: true
+  show_updated_toe_app:
+    actor_type: user
+    description: This determines when the form should be displayed.
   show_medical_copays:
     actor_type: user
     description: Enables the medical copays application on route /manage-va-debt/medical-copays/
@@ -655,3 +666,7 @@ features:
   check_va_inbox_enabled:
     actor_type: user
     description: Enables check inbox link
+  dhp_connected_devices_fitbit:
+    actor_type: user
+    description: Enables linking between VA.gov account and fitbit account
+    enable_in_development: true
