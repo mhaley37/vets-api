@@ -18,7 +18,7 @@ module Login
     end
 
     def load_mocks
-      mock_user_file = Settings.saml_ssoe.mock_user
+      mock_user_file = Settings.saml_ssoe.mock_user_file
       data = YAML.safe_load(File.read(mock_user_file)).deep_symbolize_keys!
       data[:user_identity]
     rescue => e
