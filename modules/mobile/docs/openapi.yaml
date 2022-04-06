@@ -2379,11 +2379,27 @@ paths:
       security:
         - Bearer: []
       summary: /v0/push/send
-  /v0/rx-refill/prescription:
+  /v0/rx-refill/prescriptions:
     get:
       description: |
-        Returns the user profile, including the user's addresses and the services the user has the requisite ids to access. Meta data for this endpoint returns all the services available in the API.
-        operationId: user.getProfile
+        Returns the user prescriptions.
+      operationId: getPrescriptions
+      parameters:
+        - description: The start date for the range of appointments in ISO 8601 UTC
+            format
+          example: 2020-10-29T07:00:00Z
+          in: query
+          name: startDate
+          schema:
+            format: date-time
+            type: string
+        - description: The end date for the range of appointments in ISO 8601 UTC format
+          example: 2021-11-29T08:00:00Z
+          in: query
+          name: endDate
+          schema:
+            format: date-time
+            type: string
   /v0/user:
     get:
       description: |

@@ -28,10 +28,10 @@ RSpec.describe 'rx_refill', type: :request do
     iam_sign_in(current_user)
   end
 
-  describe 'GET /mobile/v0/rx-refill/prescription' do
+  describe 'GET /mobile/v0/rx-refill/prescriptions' do
     before do
       VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-        get '/mobile/v0/rx-refill/prescription', headers: iam_headers
+        get '/mobile/v0/rx-refill/prescriptions', headers: iam_headers
       end
     end
 
@@ -40,11 +40,11 @@ RSpec.describe 'rx_refill', type: :request do
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/prescription/:id/tracking' do
+  describe 'GET /mobile/v0/rx-refill/prescriptions/:id/tracking' do
     context 'shipment having other prescriptions' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_a_list_of_tracking_history_for_a_prescription') do
-          get '/mobile/v0/rx-refill/prescription/13650541/tracking', headers: iam_headers
+          get '/mobile/v0/rx-refill/prescriptions/13650541/tracking', headers: iam_headers
         end
       end
 
@@ -58,7 +58,7 @@ RSpec.describe 'rx_refill', type: :request do
     context 'shipment having no other prescriptions' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/nested_resources/gets_tracking_with_empty_other_prescriptions') do
-          get '/mobile/v0/rx-refill/prescription/13650541/tracking', headers: iam_headers
+          get '/mobile/v0/rx-refill/prescriptions/13650541/tracking', headers: iam_headers
         end
       end
 
@@ -141,10 +141,10 @@ RSpec.describe 'rx_refill', type: :request do
     end
   end
 
-  describe 'GET /mobile/v0/rx-refill/prescription/:id' do
+  describe 'GET /mobile/v0/rx-refill/prescriptions/:id' do
     before do
       VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-        get '/mobile/v0/rx-refill/prescription/13568747', headers: iam_headers
+        get '/mobile/v0/rx-refill/prescriptions/13568747', headers: iam_headers
       end
     end
 
@@ -153,10 +153,10 @@ RSpec.describe 'rx_refill', type: :request do
     end
   end
 
-  describe 'POST /mobile/v0/rx-refill/prescription/:id/refill' do
+  describe 'POST /mobile/v0/rx-refill/prescriptions/:id/refill' do
     before do
       VCR.use_cassette('rx_refill/prescriptions/refills_a_prescription') do
-        post '/mobile/v0/rx-refill/prescription/13650545/refill', headers: iam_headers
+        post '/mobile/v0/rx-refill/prescriptions/13650545/refill', headers: iam_headers
       end
     end
 
