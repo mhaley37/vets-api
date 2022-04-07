@@ -32,7 +32,7 @@ module Mobile
         if validated_params[:included]&.include?('pending')
           page_meta_data[:links] = include_pending_in_links(page_meta_data[:links])
         end
-
+        binding.pry
         render json: Mobile::V0::AppointmentSerializer.new(page_appointments, page_meta_data)
       end
 

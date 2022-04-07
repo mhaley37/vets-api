@@ -41,7 +41,7 @@ Mobile::Engine.routes.draw do
     post '/user/phones', to: 'phones#create'
     put '/user/phones', to: 'phones#update'
     delete '/user/phones', to: 'phones#destroy'
-    get '/rx-refill/prescriptions', to: 'rx_refill#get_rx_history'
+    get '/rx-refill/rx-history', to: 'rx_refill#get_rx_history'
     get '/rx-refill/prescriptions/:id/tracking', to: 'rx_refill#get_tracking_history'
     get '/rx-refill/prescriptions/:id', to: 'rx_refill#get_prescription'
     post '/rx-refill/prescriptions/:id/refill', to: 'rx_refill#post_refill'

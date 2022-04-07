@@ -23,21 +23,62 @@ RSpec.describe 'rx_refill', type: :request do
   before do
     allow_any_instance_of(MHVAccountTypeService).to receive(:mhv_account_type).and_return(mhv_account_type)
     allow(Rx::Client).to receive(:new).and_return(authenticated_client)
-    current_user = build(:iam_user, :mhv)
+    current_user = build(:iam_user,:mhv)
 
     iam_sign_in(current_user)
   end
 
   describe 'GET /mobile/v0/rx-refill/prescriptions' do
-    before do
-      VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-        get '/mobile/v0/rx-refill/prescriptions', headers: iam_headers
+    context 'with a valid evss response and no failed facilities' do
+      before do
+        VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
+          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+        end
+      end
+
+      it 'returns expected response' do
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to match_json_schema('rx_history')
       end
     end
 
-    it 'returns a 200' do
-      expect(response).to have_http_status(:ok)
+    context 'with a valid evss response and failed facility' do
+      before do
+        VCR.use_cassette('rx_refill/prescriptions/handles_failed_stations') do
+          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+        end
+      end
+
+      it 'returns expected response' do
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to match_json_schema('rx_history')
+      end
     end
+
+    context 'with an 403 forbidden response' do
+      before do
+        unauthorized_user = build(:iam_user)
+        iam_sign_in(unauthorized_user)
+
+        VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
+          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+        end
+      end
+
+      it 'returns expected error response' do
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body).to eq({"errors"=>
+                                              [{"title"=>"Forbidden",
+                                                "detail"=>"User does not have access to the requested resource",
+                                                "code"=>"403",
+                                                "status"=>"403"}]
+                                           }
+                                        )
+      end
+    end
+
+
+
   end
 
   describe 'GET /mobile/v0/rx-refill/prescriptions/:id/tracking' do

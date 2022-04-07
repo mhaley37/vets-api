@@ -12,7 +12,6 @@ module Mobile
       end
 
       def get_tracking_history
-        binding.pry
         render json: Mobile::V0::RxRefillTrackerHistorySerializer.new(
           @current_user.id,
           client.get_tracking_history_rx(params[:id])
