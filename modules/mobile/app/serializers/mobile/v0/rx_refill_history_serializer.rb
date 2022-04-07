@@ -7,20 +7,20 @@ module Mobile
 
       set_type :RxHistory
       attributes :refillStatus,
-      :refillSubmitDate,
-        :refillDate,
-        :refillRemaining,
-        :facilityName,
-        :isRefillable,
-        :isTrackable,
-        :prescriptionId,
-        :orderedDate,
-        :quantity,
-        :expirationDate,
-        :prescriptionNumber,
-        :prescriptionName,
-        :dispensedDate,
-        :stationNumber
+                 :refillSubmitDate,
+                 :refillDate,
+                 :refillRemaining,
+                 :facilityName,
+                 :isRefillable,
+                 :isTrackable,
+                 :prescriptionId,
+                 :orderedDate,
+                 :quantity,
+                 :expirationDate,
+                 :prescriptionNumber,
+                 :prescriptionName,
+                 :dispensedDate,
+                 :stationNumber
 
       def initialize(id, rx_history)
         resource = rx_history.attributes.collect do |prescription|
