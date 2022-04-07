@@ -18,14 +18,25 @@ module Mobile
     end
 
     def address_from_facility(facility)
-      address = facility.address['physical']
+      if facility[:type] == "va_health_facility"
+        address = facility[:physical_address]
 
-      Mobile::V0::Address.new(
-        street: address.slice('address_1', 'address_2', 'address_3').values.compact.join(', '),
-        city: address['city'],
-        state: address['state'],
-        zip_code: address['zip']
-      )
+        Mobile::V0::Address.new(
+          street: address[:line].compact.join(', '),
+          city: address[:city],
+          state: address[:state],
+          zip_code: address[:postal_code]
+        )
+      else
+        address = facility.address['physical']
+
+        Mobile::V0::Address.new(
+          street: address.slice('address_1', 'address_2', 'address_3').values.compact.join(', '),
+          city: address['city'],
+          state: address['state'],
+          zip_code: address['zip']
+        )
+      end
     end
 
     def blank_location(appointment)

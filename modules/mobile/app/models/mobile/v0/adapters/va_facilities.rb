@@ -8,7 +8,8 @@ module Mobile
           facilities_by_id = facilities&.index_by(&:id)
 
           appointments.map do |appointment|
-            facility = facilities_by_id&.dig("vha_#{appointment.id_for_address}")
+            # facility = facilities_by_id&.dig("vha_#{appointment.id_for_address}") ---for facilities_helper
+            facility = facilities_by_id&.dig(appointment.id_for_address)
             if facility
               # resources are immutable and are updated with new copies
               appointment.new(

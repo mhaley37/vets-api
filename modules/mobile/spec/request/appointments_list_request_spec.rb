@@ -148,7 +148,7 @@ RSpec.describe 'appointments', type: :request do
         VCR.use_cassette('appointments/get_mfs_facilities', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_cc_appointments_default', match_requests_on: %i[method uri]) do
             VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-              get '/mobile/v0/appointments', headers: iam_headers
+              get '/mobile/v0/appointments', headers: iam_headers, params: nil
               expect(response).to have_http_status(:ok)
               expect(JSON.parse(response.body)['data'].size).to eq(1)
             end
