@@ -109,6 +109,10 @@ features:
     actor_type: user
     description: Enables the capture of user responses to demographics up-to-date questions
     enable_in_development: true
+  check_in_experience_custom_cookie_for_low_auth:
+    actor_type: user
+    description: Enables custom cookie for storing low auth token
+    enable_in_development: true
   check_in_experience_translation_day_of_enabled:
     actor_type: user
     description: Enables language translation for the day of check-in experience
@@ -117,9 +121,21 @@ features:
     actor_type: user
     description: Enables language translation for the pre-check-in experience
     enable_in_development: true
+  check_in_experience_lorota_security_updates_enabled:
+    actor_type: user
+    description: Enables DOB instead of last 4 of SSN.
+    enable_in_development: false
+  check_in_experience_edit_messaging_enabled:
+    actor_type: user
+    description: Enables showing of edit messaging.
+    enable_in_development: false
   coe_access:
     actor_type: user
     description: Feature gates the certificate of eligibility application
+    enable_in_development: true
+  combined_debt_portal_access:
+    actor_type: user
+    description: Enables users to interact with combined debt portal experience
     enable_in_development: true
   communication_preferences:
     actor_type: user
@@ -203,14 +219,6 @@ features:
   direct_deposit_vanotify:
     actor_type: user
     description: Send direct deposit emails using VaNotify service
-  disability_hypertension_compensation_fast_track:
-    actor_type: user
-    description: Fast tracks 526 disability compensation hypertension claims by submitting additional health data
-    enable_in_development: true
-  disability_hypertension_compensation_fast_track_add_rrd:
-    actor_type: user
-    description: Fast tracks 526 disability compensation claims by submitting additional health data and adding the RRD special issue to the claim.
-    enable_in_development: true
   disability_compensation_flashes:
     actor_type: user
     description: enables sending flashes to BGS for disability_compensation submissions.
@@ -306,6 +314,10 @@ features:
     actor_type: user
     description: Form 10182 Notice of Disagreement - Request a board appeal
     enable_in_development: true
+  form686c_confirmation_email:
+    actor_type: user
+    description: Form 686c - Email submission confirmation
+    enable_in_development: true
   fsr_confirmation_email:
     actor_type: user
     description: Enables notifications to be sent via email upon FSR submission
@@ -332,6 +344,10 @@ features:
   in_progress_form_custom_expiration:
     actor_type: user
     description: Enable/disable custom expiration dates for forms
+    enable_in_development: true
+  in_progress_form_reminder:
+    actor_type: user
+    description: Enable/disable in progress form reminders (sent via VaNotify)
     enable_in_development: true
   login_gov:
     actor_type: cookie_id
@@ -365,6 +381,10 @@ features:
     actor_type: user
     description: This will show new 508 compliant medical statement views
     enable_in_development: true
+  medical_copays_api_key_change:
+    actor_type: user
+    description: This will use new API key name when available
+    enable_in_development: true
   mega_menu_mobile_v2:
     actor_type: user
     description: Separates mobile mega menu from desktop mega menu
@@ -372,6 +392,18 @@ features:
   mhv_to_logingov_account_transition:
     actor_type: cookie_id
     description: Enables/disables MHV to Login.gov account transfer experience
+    enable_in_development: false
+  mhv_to_logingov_account_transition_modal:
+    actor_type: cookie_id
+    description: Enables/disables MHV to Login.gov account transfer modal experience
+    enable_in_development: false
+  mhv_to_logingov_account_transition_banner:
+    actor_type: cookie_id
+    description: Enables/disables MHV to Login.gov account transfer banner experience
+    enable_in_development: false
+  mhv_to_logingov_account_transition_urgent:
+    actor_type: cookie_id
+    description: Enables/disables MHV to Login.gov account transfer urgent experience
     enable_in_development: false
   mobile_api:
     actor_type: user
@@ -419,6 +451,9 @@ features:
     actor_type: user
     description: Show/hide the gender field UI on the profile page
     enable_in_development: true
+  profile_show_pronouns_and_sexual_orientation:
+    actor_type: user
+    description: Show/hide Pronouns and Sexual Orientation fields on profile page
   profile_show_receive_text_notifications:
     actor_type: user
     description: https://www.va.gov/profile/ show Receive Text Notifications
@@ -502,6 +537,9 @@ features:
     actor_type: user
     description: Allows for frontend to have progressivley enhanced backend endpoints to consume in staging.
     enable_in_development: true
+  show_updated_toe_app:
+    actor_type: user
+    description: This determines when the form should be displayed.
   show_medical_copays:
     actor_type: user
     description: Enables the medical copays application on route /manage-va-debt/medical-copays/
@@ -648,3 +686,7 @@ features:
   check_va_inbox_enabled:
     actor_type: user
     description: Enables check inbox link
+  dhp_connected_devices_fitbit:
+    actor_type: user
+    description: Enables linking between VA.gov account and fitbit account
+    enable_in_development: true

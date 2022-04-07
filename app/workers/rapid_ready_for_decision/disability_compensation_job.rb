@@ -14,12 +14,6 @@ module RapidReadyForDecision
     # https://github.com/mperham/sidekiq/issues/2168#issuecomment-72079636
     sidekiq_options retry: 8
 
-    sidekiq_retries_exhausted do |msg, _ex|
-      submission_id = msg['args'].first
-      submission = Form526Submission.find(submission_id)
-      submission.start_evss_submission_job
-    end
-
     STATSD_KEY_PREFIX = 'worker.fast_track.disability_compensation_job'
 
     def perform(form526_submission_id)
@@ -27,6 +21,8 @@ module RapidReadyForDecision
 
       begin
         with_tracking(self.class.name, form526_submission.saved_claim_id, form526_submission_id) do
+          return if form526_submission.pending_eps?
+
           client = Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
 
           return if bp_readings(client).blank?
@@ -54,17 +50,17 @@ module RapidReadyForDecision
 
     def bp_readings(client)
       @bp_readings ||= client.list_resource('observations')
-      @bp_readings.present? ? RapidReadyForDecision::HypertensionObservationData.new(@bp_readings).transform : []
+      @bp_readings.present? ? RapidReadyForDecision::LighthouseObservationData.new(@bp_readings).transform : []
     end
 
     def medications(client)
       @medications ||= client.list_resource('medication_requests')
-      @medications.present? ? RapidReadyForDecision::HypertensionMedicationRequestData.new(@medications).transform : []
+      @medications.present? ? RapidReadyForDecision::LighthouseMedicationRequestData.new(@medications).transform : []
     end
 
     def add_bp_readings_stats(form526_submission, bp_readings)
       med_stats_hash = { bp_readings_count: bp_readings.size }
-      RapidReadyForDecision::Form526BaseJob.add_medical_stats_hash(form526_submission, med_stats_hash)
+      form526_submission.add_metadata(med_stats: med_stats_hash)
     end
 
     def send_fast_track_engineer_email_for_testing(form526_submission_id, error_message, backtrace)
@@ -100,15 +96,18 @@ module RapidReadyForDecision
     end
 
     def upload_pdf_and_attach_special_issue(form526_submission, pdf)
-      RapidReadyForDecision::HypertensionUploadManager.new(form526_submission).handle_attachment(pdf.render)
-      if Flipper.enabled?(:disability_hypertension_compensation_fast_track_add_rrd) ||
-         Flipper.enabled?(:rrd_add_special_issue)
-        RapidReadyForDecision::HypertensionSpecialIssueManager.new(form526_submission).add_special_issue
+      RapidReadyForDecision::FastTrackPdfUploadManager.new(form526_submission).handle_attachment(pdf.render)
+      if Flipper.enabled?(:rrd_add_special_issue)
+        RapidReadyForDecision::RrdSpecialIssueManager.new(form526_submission).add_special_issue
       end
     end
 
     def pdf(patient_info, bpreadings, medications)
-      RapidReadyForDecision::HypertensionPdfGenerator.new(patient_info, bpreadings, medications).generate
+      assessed_data = {
+        bp_readings: bpreadings,
+        medications: medications
+      }
+      RapidReadyForDecision::FastTrackPdfGenerator.new(patient_info, assessed_data, :hypertension).generate
     end
   end
 end

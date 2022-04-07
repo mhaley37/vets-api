@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   post '/sign_in/token', to: 'sign_in#token'
   get '/sign_in/introspect', to: 'sign_in#introspect'
 
+  get '/inherited_proofing/auth', to: 'inherited_proofing#auth'
+  get '/inherited_proofing/user_attributes', to: 'inherited_proofing#user_attributes'
+  get '/inherited_proofing/callback', to: 'inherited_proofing#callback'
+
   namespace :v0, defaults: { format: 'json' } do
     resources :onsite_notifications, only: %i[create index update]
 
@@ -413,6 +417,7 @@ Rails.application.routes.draw do
   mount CheckIn::Engine, at: '/check_in'
   mount CovidResearch::Engine, at: '/covid-research'
   mount CovidVaccine::Engine, at: '/covid_vaccine'
+  mount DhpConnectedDevices::Engine, at: '/dhp_connected_devices'
   mount FacilitiesApi::Engine, at: '/facilities_api'
   mount HealthQuest::Engine, at: '/health_quest'
   mount MebApi::Engine, at: '/meb_api'

@@ -44,6 +44,12 @@ module ClaimsApi
             source: source_name
           )
 
+          ClaimsApi::Logger.log('526', claim_id: params[:id], detail: 'Submitted to Lighthouse',
+                                       pdf_gen_dis: form_attributes['autoCestPDFGenerationDisabled'])
+
+          # .create returns the resulting object whether the object was saved successfully to the database or not.
+          # If it's lacking the ID, that means the create was unsuccessful and an identical claim already exists.
+          # Find and return that claim instead.
           unless auto_claim.id
             existing_auto_claim = ClaimsApi::AutoEstablishedClaim.find_by(md5: auto_claim.md5)
             auto_claim = existing_auto_claim if existing_auto_claim.present?
@@ -74,6 +80,7 @@ module ClaimsApi
             pending_claim.set_file_data!(documents.first, params[:doc_type])
             pending_claim.save!
 
+            ClaimsApi::Logger.log('526', claim_id: params[:id], detail: 'Uploaded PDF to S3')
             ClaimsApi::ClaimEstablisher.perform_async(pending_claim.id)
             ClaimsApi::ClaimUploader.perform_async(pending_claim.id)
 
@@ -165,6 +172,7 @@ module ClaimsApi
           validate_form_526_veteran_homelessness!
           validate_form_526_service_pay!
           validate_form_526_title10_activation_date!
+          validate_form_526_title10_anticipated_separation_date!
           validate_form_526_change_of_address!
           validate_form_526_disabilities!
           validate_form_526_treatments!
@@ -210,6 +218,22 @@ module ClaimsApi
                     Date.parse(title10_activation_date) <= Time.zone.now
 
           raise ::Common::Exceptions::InvalidFieldValue.new('title10ActivationDate', title10_activation_date)
+        end
+
+        def validate_form_526_title10_anticipated_separation_date!
+          title10_anticipated_separation_date = form_attributes.dig('serviceInformation',
+                                                                    'reservesNationalGuardService',
+                                                                    'title10Activation',
+                                                                    'anticipatedSeparationDate')
+
+          return if title10_anticipated_separation_date.blank?
+
+          return if Date.parse(title10_anticipated_separation_date) > Time.zone.now
+
+          raise ::Common::Exceptions::InvalidFieldValue.new(
+            'anticipatedSeparationDate',
+            title10_anticipated_separation_date
+          )
         end
 
         def validate_form_526_submission_claim_date!

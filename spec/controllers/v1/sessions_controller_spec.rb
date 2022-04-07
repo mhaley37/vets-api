@@ -77,8 +77,6 @@ RSpec.describe V1::SessionsController, type: :controller do
     request.host = request_host
     allow(SAML::SSOeSettingsService).to receive(:saml_settings).and_return(rubysaml_settings)
     allow(SAML::Responses::Login).to receive(:new).and_return(valid_saml_response)
-    Redis.current.set("benchmark_api.auth.login_#{uuid}", Time.now.to_f)
-    Redis.current.set("benchmark_api.auth.logout_#{uuid}", Time.now.to_f)
   end
 
   context 'when not logged in' do
@@ -110,11 +108,19 @@ RSpec.describe V1::SessionsController, type: :controller do
                  AuthnContext::LOGIN_GOV]
               end
             end
+            let(:expected_force_authn) do
+              case type
+              when 'mhv', 'mhv_verified', 'dslogon', 'dslogon_verified'
+                true
+              else
+                false
+              end
+            end
 
             it 'presents login form' do
               expect(SAML::SSOeSettingsService)
                 .to receive(:saml_settings)
-
+                .with(force_authn: expected_force_authn)
               expect { get(:new, params: { type: type, clientId: '123123' }) }
                 .to trigger_statsd_increment(described_class::STATSD_SSO_NEW_KEY,
                                              tags: ["context:#{type}", 'version:v1'], **once)
@@ -140,6 +146,7 @@ RSpec.describe V1::SessionsController, type: :controller do
             it 'redirects for an inbound ssoe' do
               expect(SAML::SSOeSettingsService)
                 .to receive(:saml_settings)
+                .with(force_authn: false)
 
               expect do
                 get(:new, params: {
@@ -202,6 +209,7 @@ RSpec.describe V1::SessionsController, type: :controller do
             it 'redirects for an inbound ssoe' do
               expect(SAML::SSOeSettingsService)
                 .to receive(:saml_settings)
+                .with(force_authn: false)
 
               expect { get(:new, params: { type: 'custom', authn: 'myhealthevet', clientId: '123123' }) }
                 .to trigger_statsd_increment(described_class::STATSD_SSO_NEW_KEY,

@@ -48,7 +48,8 @@ module Mobile
         militaryServiceHistory: :emis,
         paymentHistory: :bgs,
         userProfileUpdate: :vet360,
-        secureMessaging: :mhv_messaging
+        secureMessaging: :mhv_messaging,
+        scheduleAppointments: :schedule_appointment
       }.freeze
 
       set_type :user
@@ -94,10 +95,17 @@ module Mobile
 
       def authorized_services
         auth_services = SERVICE_DICTIONARY.filter { |_k, policies| authorized_for_service(policies) }.keys
-        if auth_services.include?(:directDepositBenefits) && user.authorize(:ppiu, :access_update?)
+        if auth_services.include?(:directDepositBenefits) && direct_deposit_update_access?
           auth_services.push(:directDepositBenefitsUpdate)
         end
         auth_services
+      end
+
+      def direct_deposit_update_access?
+        user.authorize(:ppiu, :access_update?)
+      rescue EVSS::PPIU::ServiceException => e
+        Rails.logger.error('Error fetching user data from EVSS', user_uuid: user.uuid, details: e.messages)
+        false
       end
 
       def health

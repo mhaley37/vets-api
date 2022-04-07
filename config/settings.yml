@@ -14,6 +14,7 @@ logingov:
   client_cert_path: spec/fixtures/sign_in/oauth.crt
   client_key_path: spec/fixtures/sign_in/oauth.key
   oauth_url: https://idp.int.identitysandbox.gov
+  oauth_public_key: spec/fixtures/logingov/oauth_pub.key
 
 idme:
   client_id: dde0b5b8bfc023a093830e64ef83f148
@@ -218,6 +219,13 @@ decision_review:
   v1:
     url: https://sandbox-api.va.gov/services/appeals/v2/decision_reviews
 
+# Settings for modules/dhp_connected_devices
+dhp:
+  fitbit:
+    client_id: ''
+    client_secret: ''
+    redirect_uri: 'http://localhost:3000/dhp_connected_devices/fitbit-callback'
+    scope: 'heartrate activity nutrition sleep'
 
 # Settings for modules/appeals_api
 modules_appeals_api:
@@ -426,6 +434,10 @@ mhv:
     collection_caching_enabled: true
   account:
     mock: false
+  inherited_proofing:
+    base_path: https://mhv-api.example.com
+    app_token: fake-app-token
+    mock: true
 
 # Settings for alternate MHV integration for mobile app
 mhv_mobile:
@@ -1082,6 +1094,7 @@ vanotify:
         contact_info_change: fake_template_id
         form526_confirmation_email: fake_template_id
         form526_submission_failed_email: fake_template_id
+        form686c_confirmation_email: fake_template_id
         covid_vaccine_registration: fake_template_id
         covid_vaccine_expanded_registration: fake_template_id
         direct_deposit_edu: edu_template_id
@@ -1201,10 +1214,6 @@ veteran_readiness_and_employment:
       - VRE.VBAANC@va.gov
       - VRE.VBAPIT@va.gov
       - VRE-CMS.VBAVACO@va.gov
-      - Jason.Wolf@va.gov
-      - Kathleen.Crawford@va.gov
-      - Kevin.Musiorski@va.gov
-      - Amanda.Leaders@va.gov
 
 # Settings for connecting to the va.gov Google Analytics for the Cypress Viewport Updater
 google_analytics_cvu:

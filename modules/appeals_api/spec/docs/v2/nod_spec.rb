@@ -4,11 +4,13 @@ require 'swagger_helper'
 require Rails.root.join('spec', 'rswag_override.rb').to_s
 
 require 'rails_helper'
-require_relative '../../support/swagger_shared_components'
+require AppealsApi::Engine.root.join('spec', 'spec_helper.rb')
 
 # rubocop:disable RSpec/VariableName, RSpec/ScatteredSetup, RSpec/RepeatedExample, Layout/LineLength, RSpec/RepeatedDescription
 
 describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagger/appeals_api/v2/swagger.json', type: :request do
+  include DocHelpers
+
   let(:apikey) { 'apikey' }
 
   path '/notice_of_disagreements' do
@@ -53,6 +55,21 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
       parameter AppealsApi::SwaggerSharedComponents.header_params[:veteran_birth_date_header]
       let(:'X-VA-Birth-Date') { '1900-01-01' }
 
+      # TODO: Return full headers after we've validated all Non-Veteran Claimant functionality
+      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_first_name_header]
+      # let(:'X-VA-Claimant-First-Name') { 'first' }
+      #
+      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_middle_initial_header]
+      #
+      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_last_name_header]
+      # let(:'X-VA-Claimant-Last-Name') { 'last' }
+      #
+      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_ssn_header]
+      # let(:'X-VA-Claimant-SSN') { '999999999' }
+      #
+      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_birth_date_header]
+      # let(:'X-VA-Claimant-Birth-Date') { '1921-08-08' }
+
       parameter AppealsApi::SwaggerSharedComponents.header_params[:consumer_username_header]
       parameter AppealsApi::SwaggerSharedComponents.header_params[:consumer_id_header]
 
@@ -77,7 +94,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
             'application/json' => {
               examples: {
                 "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
+                  value: normalize_appeal_response(response)
                 }
               }
             }
@@ -106,7 +123,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
             'application/json' => {
               examples: {
                 "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
+                  value: normalize_appeal_response(response)
                 }
               }
             }
@@ -171,7 +188,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
+              example: normalize_appeal_response(response)
             }
           }
         end
@@ -426,7 +443,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
+              example: normalize_evidence_submission_response(response)
             }
           }
         end
@@ -651,7 +668,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
         after do |example|
           example.metadata[:response][:content] = {
             'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
+              example: normalize_evidence_submission_response(response)
             }
           }
         end

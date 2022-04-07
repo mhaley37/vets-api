@@ -3,6 +3,7 @@
 require 'evss/error_middleware'
 require 'bgs/power_of_attorney_verifier'
 require 'token_validation/v2/client'
+require 'claims_api/claim_logger'
 
 module ClaimsApi
   module V1
@@ -37,8 +38,8 @@ module ClaimsApi
           )
         end
 
-        add_response = @current_user.mpi_add_person
-        raise add_response.error unless add_response.ok?
+        mpi_add_response = target_veteran.mpi.add_person
+        raise mpi_add_response.error unless mpi_add_response.ok?
       rescue ArgumentError
         raise ::Common::Exceptions::UnprocessableEntity.new(
           detail: 'Required values are missing. Please double check the accuracy of any request header values.'
