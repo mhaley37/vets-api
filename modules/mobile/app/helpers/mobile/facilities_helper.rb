@@ -18,25 +18,27 @@ module Mobile
     end
 
     def address_from_facility(facility)
-      if facility[:type] == "va_health_facility"
-        address = facility[:physical_address]
+      if facility.type == 'va_health_facility'
+        address = facility.physical_address
 
-        Mobile::V0::Address.new(
-          street: address[:line].compact.join(', '),
-          city: address[:city],
-          state: address[:state],
-          zip_code: address[:postal_code]
-        )
+        street = address[:line].compact.join(', ')
+        city = address[:city]
+        state = address[:state]
+        zip_code = address[:postal_code]
       else
         address = facility.address['physical']
 
-        Mobile::V0::Address.new(
-          street: address.slice('address_1', 'address_2', 'address_3').values.compact.join(', '),
-          city: address['city'],
-          state: address['state'],
-          zip_code: address['zip']
-        )
+        street = address.slice('address_1', 'address_2', 'address_3').values.compact.join(', ')
+        city = address['city']
+        state = address['state']
+        zip_code = address['zip']
       end
+      Mobile::V0::Address.new(
+        street: street,
+        city: city,
+        state: state,
+        zip_code: zip_code
+      )
     end
 
     def blank_location(appointment)
@@ -50,12 +52,16 @@ module Mobile
     end
 
     def phone_from_facility(facility)
-      phone = facility.phone['main']
+      if facility.type == 'va_health_facility'
+        phone = facility.phone[:main]
+      else
+        phone = facility.phone['main']
+      end
       return nil unless phone
 
       # captures area code (\d{3}) number (\d{3}-\d{4})
       # and optional extension (until the end of the string) (?:\sx(\d*))?$
-      phone_captures = facility.phone['main'].match(/^(\d{3})-(\d{3}-\d{4})(?:\sx(\d*))?$/)
+      phone_captures = phone.match(/^(\d{3})-(\d{3}-\d{4})(?:\sx(\d*))?$/)
 
       if phone_captures.nil?
         Rails.logger.warn(
