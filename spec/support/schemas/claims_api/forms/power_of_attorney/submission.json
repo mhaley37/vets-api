@@ -32,6 +32,7 @@
             },
             "date_request_accepted": {
               "type": "string",
+              "nullable": true,
               "description": "Date request was first accepted",
               "format": "date"
             },
