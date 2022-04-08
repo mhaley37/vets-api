@@ -41,7 +41,7 @@ Mobile::Engine.routes.draw do
     post '/user/phones', to: 'phones#create'
     put '/user/phones', to: 'phones#update'
     delete '/user/phones', to: 'phones#destroy'
-    get '/rx-refill/rx-history', to: 'rx_refill#get_rx_history'
+    get '/rx/refill/history', to: 'rx_refill#get_history'
 
     scope :messaging do
       scope :health do

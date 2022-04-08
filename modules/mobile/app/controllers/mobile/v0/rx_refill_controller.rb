@@ -7,7 +7,7 @@ module Mobile
     class RxRefillController < ApplicationController
       before_action { authorize :mhv_prescriptions, :access? }
 
-      def get_rx_history
+      def get_history
         render json: Mobile::V0::RxRefillHistorySerializer.new(@current_user.id, client.get_history_rxs)
       end
 

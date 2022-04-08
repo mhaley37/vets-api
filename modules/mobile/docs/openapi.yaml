@@ -2379,11 +2379,11 @@ paths:
       security:
         - Bearer: []
       summary: /v0/push/send
-  /v0/rx-refill/prescriptions:
+  /v0/rx/refill/history:
     get:
       description: |
         Returns the user RX history of prescriptions.
-      operationId: getPrescriptions
+      operationId: getHistory
       responses:
         '200':
           content:
@@ -2442,7 +2442,7 @@ paths:
           description: A response from an upstream service timed out.
       security:
         - Bearer: [ ]
-      summary: /v0/rx-refill/prescriptions
+      summary: /v0/rx/refill/history
   /v0/user:
     get:
       description: |

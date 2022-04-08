@@ -32,11 +32,11 @@ RSpec.describe 'rx_refill', type: :request do
     context 'with a valid evss response and no failed facilities' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+          get '/mobile/v0/rx/refill/history', headers: iam_headers
         end
       end
 
-      it 'returns expected response' do
+      it 'returns expected response', :aggregate_failures do
         expect(response).to have_http_status(:ok)
         expect(response.body).to match_json_schema('rx_history')
       end
@@ -45,11 +45,11 @@ RSpec.describe 'rx_refill', type: :request do
     context 'with a valid evss response and failed facility' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/handles_failed_stations') do
-          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+          get '/mobile/v0/rx/refill/history', headers: iam_headers
         end
       end
 
-      it 'returns expected response' do
+      it 'returns expected response', :aggregate_failures do
         expect(response).to have_http_status(:ok)
         expect(response.body).to match_json_schema('rx_history')
       end
@@ -61,11 +61,11 @@ RSpec.describe 'rx_refill', type: :request do
         iam_sign_in(unauthorized_user)
 
         VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
-          get '/mobile/v0/rx-refill/rx-history', headers: iam_headers
+          get '/mobile/v0/rx/refill/history', headers: iam_headers
         end
       end
 
-      it 'returns expected error response' do
+      it 'returns expected error response', :aggregate_failures do
         expect(response).to have_http_status(:forbidden)
         expect(response.parsed_body).to eq({ 'errors' =>
                                               [{ 'title' => 'Forbidden',

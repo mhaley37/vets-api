@@ -49,7 +49,7 @@ properties:
         example: false
       isTrackable:
         type: bool, null
-        example: false,
+        example: false
       prescriptionId:
         type: integer, null
         example: 13568747
