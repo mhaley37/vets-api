@@ -496,7 +496,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "6299b17f-35ce-4093-b755-93d92f1cbd50",
+                    "id": "6e66dbb6-9f62-44ff-a631-3ac29f8f17e5",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": 600118851,
@@ -545,11 +545,11 @@
                       "status": "Initial review",
                       "supporting_documents": [
                         {
-                          "id": "fc51ba08-f931-4f5f-bac6-8573d01ff29c",
+                          "id": "33f5ce64-9207-4e3d-987b-a310013ed83a",
                           "type": "claim_supporting_document",
                           "md5": "d927c7e283b3158a54822a493d06181d",
                           "filename": "extras.pdf",
-                          "uploaded_at": "2022-04-05T15:09:35.608Z"
+                          "uploaded_at": "2022-04-07T17:31:16.406Z"
                         }
                       ]
                     }
@@ -2437,7 +2437,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "be116749-3bdb-4ab0-b933-0daa7290609e",
+                    "id": "9dd6d9d0-6a62-40b0-b25a-e53c1a68b20e",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -2455,13 +2455,13 @@
                       "current_phase_back": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-05T15:09:36.649Z",
+                      "updated_at": "2022-04-07T17:31:16.728Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
 
                       ],
-                      "token": "be116749-3bdb-4ab0-b933-0daa7290609e",
+                      "token": "9dd6d9d0-6a62-40b0-b25a-e53c1a68b20e",
                       "status": "pending",
                       "flashes": [
                         "Hardship",
@@ -4311,7 +4311,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "076d4af9-24e2-42aa-8cff-999c9fedb7a1",
+                    "id": "3599c6e9-02b1-4788-b73f-70824fe336a8",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -4329,13 +4329,13 @@
                       "current_phase_back": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-05T15:09:37.537Z",
+                      "updated_at": "2022-04-07T17:31:16.991Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
 
                       ],
-                      "token": "076d4af9-24e2-42aa-8cff-999c9fedb7a1",
+                      "token": "3599c6e9-02b1-4788-b73f-70824fe336a8",
                       "status": "pending",
                       "flashes": [
                         "Hardship",
@@ -6581,7 +6581,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "cbe2b986-bd2a-4b13-ab4b-d651534cc6ae",
+                    "id": "ecb26271-06d9-4140-8a08-26b0ce51bb69",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -6595,7 +6595,7 @@
                       "decision_letter_sent": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-05T15:09:39.125Z",
+                      "updated_at": "2022-04-07T17:31:17.541Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
@@ -6604,7 +6604,7 @@
                       "status": "pending",
                       "supporting_documents": [
                         {
-                          "id": "40b7cae7-cd9a-4050-9cc9-800bf8b5ce6a",
+                          "id": "606d1995-3009-4836-9f22-8f00f3ea9f50",
                           "type": "claim_supporting_document",
                           "md5": null,
                           "filename": null,
@@ -8562,11 +8562,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "e5e36361-795a-410e-97b4-cbfb2a50af8f",
+                    "id": "d702ea55-a0d8-4213-9d3e-4f706d5e22fa",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "pending",
-                      "date_request_accepted": "2022-04-05",
+                      "date_request_accepted": "2022-04-07",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
@@ -8620,6 +8620,7 @@
                             },
                             "date_request_accepted": {
                               "type": "string",
+                              "nullable": true,
                               "description": "Date request was first accepted",
                               "format": "date"
                             },
@@ -9275,11 +9276,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "d33a6d65-0a93-4f39-b48e-10a943c41879",
+                    "id": "beacacb2-8bb5-474f-861e-1057b00e49d0",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "submitted",
-                      "date_request_accepted": "2022-04-05",
+                      "date_request_accepted": "2022-04-07",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
@@ -9333,6 +9334,7 @@
                             },
                             "date_request_accepted": {
                               "type": "string",
+                              "nullable": "true",
                               "description": "Date request was first accepted",
                               "format": "date"
                             },
@@ -9730,11 +9732,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "6b36d33a-f419-4b18-9fb7-206965273c17",
+                    "id": "9cf72ec2-6134-4776-bba0-a3c757a0df3b",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "submitted",
-                      "date_request_accepted": "2022-04-05",
+                      "date_request_accepted": "2022-04-07",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
@@ -9788,6 +9790,7 @@
                             },
                             "date_request_accepted": {
                               "type": "string",
+                              "nullable": "true",
                               "description": "Date request was first accepted",
                               "format": "date"
                             },
@@ -10092,10 +10095,8 @@
                               ]
                             },
                             "date_request_accepted": {
-                              "type": [
-                                "string",
-                                "null"
-                              ],
+                              "type": "string",
+                              "nullable": "true",
                               "description": "Date request was first accepted",
                               "format": "date"
                             },
