@@ -28,7 +28,7 @@ RSpec.describe 'rx_refill', type: :request do
     iam_sign_in(current_user)
   end
 
-  describe 'GET /mobile/v0/rx-refill/prescriptions' do
+  describe 'GET /mobile/v0/rx/refill/history' do
     context 'with a valid evss response and no failed facilities' do
       before do
         VCR.use_cassette('rx_refill/prescriptions/gets_a_list_of_all_prescriptions') do
