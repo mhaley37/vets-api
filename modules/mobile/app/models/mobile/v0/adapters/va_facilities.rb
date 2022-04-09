@@ -5,11 +5,13 @@ module Mobile
     module Adapters
       class VAFacilities
         def map_appointments_to_facilities(appointments, facilities)
-          facilities_by_id = facilities&.index_by(&:id)
+          facilities.map do |facility|
+            facility.id = "vha_#{facility.id.delete("vha_")}" unless facility.id.nil?
+          end
+          facilities_by_id = facilities.index_by(&:id)
 
           appointments.map do |appointment|
-            facility = facilities_by_id&.dig(appointment.id_for_address)
-            # facility = facilities_by_id&.dig("vha_#{appointment.id_for_address}")
+            facility = facilities_by_id&.dig("vha_#{appointment.id_for_address}")
             if facility
               # resources are immutable and are updated with new copies
               appointment.new(
