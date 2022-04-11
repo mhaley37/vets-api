@@ -4,7 +4,8 @@ module RapidReadyForDecision
   class FastTrackPdfGenerator
     PDF_MARKUP_SETTINGS = {
       text: {
-        size: 11
+        size: 11,
+        font: 'Bitter'
       },
       heading4: {
         margin_top: 12
@@ -24,6 +25,7 @@ module RapidReadyForDecision
       [full_name, patient_info[:suffix]].reject(&:blank?).join ', '
     end
 
+    # TODO: move this into the data class
     def self.flag_with_keyword(keywords, medication_struct)
       keywords.any? { |keyword| medication_struct.to_s.include?(keyword) }
     end
@@ -36,6 +38,11 @@ module RapidReadyForDecision
       @disability_metadata = RapidReadyForDecision::Constants::DISABILITIES[disability_type]
       @disability_type = @disability_metadata[:label]
       @pdf.markup_options = PDF_MARKUP_SETTINGS
+      @pdf.font_families.update('Bitter' => {
+                                  normal: Rails.root.join('public', 'fonts', 'bitter-regular.ttf'),
+                                  italic: Rails.root.join('public', 'fonts', 'bitter-italic.ttf'),
+                                  bold: Rails.root.join('public', 'fonts', 'bitter-bold.ttf')
+                                })
     end
 
     def generate
