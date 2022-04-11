@@ -4,7 +4,6 @@ require 'common/exceptions'
 
 module VAOSAppointments
   class AppointmentsHelper
-
     def initialize(user)
       @current_user = user
     end
@@ -110,10 +109,10 @@ module VAOSAppointments
                           :confirmation_code,
                           {
                             address: %i[
-                                street_address city state
-                                zip country latitude longitude
-                                additional_details
-                              ]
+                              street_address city state
+                              zip country latitude longitude
+                              additional_details
+                            ]
                           }
                         ]
                       }

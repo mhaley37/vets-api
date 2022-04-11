@@ -26,7 +26,6 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
   end
 
   context 'with iam user' do
-
     describe 'CREATE cc appointment' do
       let(:community_cares_request_body) do
         FactoryBot.build(:appointment_form_v2, :community_cares).attributes
@@ -46,8 +45,8 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
           expect(response).to have_http_status(:bad_request)
           expect(JSON.parse(response.body)['errors'][0]['status']).to eq('400')
           expect(JSON.parse(response.body)['errors'][0]['detail']).to eq(
-                                                                        'the patientIcn must match the ICN in the request URI'
-                                                                      )
+            'the patientIcn must match the ICN in the request URI'
+          )
         end
       end
     end
