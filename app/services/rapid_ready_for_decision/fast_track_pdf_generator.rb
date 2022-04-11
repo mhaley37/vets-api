@@ -24,12 +24,17 @@ module RapidReadyForDecision
       [full_name, patient_info[:suffix]].reject(&:blank?).join ', '
     end
 
+    def self.flag_with_keyword(keywords, medication_struct)
+      keywords.any? { |keyword| medication_struct.to_s.include?(keyword) }
+    end
+
     def initialize(patient_info, assessed_data, disability_type)
       @pdf = Prawn::Document.new
       @patient_info = patient_info
       @assessed_data = assessed_data
       @date = Time.now.getlocal
-      @disability_type = disability_type
+      @disability_metadata = RapidReadyForDecision::Constants::DISABILITIES[disability_type]
+      @disability_type = @disability_metadata[:label]
       @pdf.markup_options = PDF_MARKUP_SETTINGS
     end
 
