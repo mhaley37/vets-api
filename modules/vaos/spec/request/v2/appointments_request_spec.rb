@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'vaos_appointments/appointments_helper'
 
 RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
   include SchemaMatchers
@@ -21,8 +22,8 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
     Flipper.enable('va_online_scheduling')
     sign_in_as(current_user)
     allow_any_instance_of(VAOS::UserService).to receive(:session).and_return('stubbed_token')
-    allow_any_instance_of(VAOS::V2::AppointmentsController).to receive(:get_clinic).and_return(mock_clinic)
-    allow_any_instance_of(VAOS::V2::AppointmentsController).to receive(:get_facility).and_return(mock_facility)
+    allow_any_instance_of(VAOSAppointments::AppointmentsHelper).to receive(:get_clinic).and_return(mock_clinic)
+    allow_any_instance_of(VAOSAppointments::AppointmentsHelper).to receive(:get_facility).and_return(mock_facility)
   end
 
   let(:inflection_header) { { 'X-Key-Inflection' => 'camel' } }
@@ -105,7 +106,7 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
         end
 
         it 'has access and returns va appointments and honors includes with no physical_location field' do
-          allow_any_instance_of(VAOS::V2::AppointmentsController).to receive(:get_clinic)
+          allow_any_instance_of(VAOSAppointments::AppointmentsHelper).to receive(:get_clinic)
             .and_return(mock_clinic_without_physical_location)
           VCR.use_cassette('vaos/v2/appointments/get_appointments_200', match_requests_on: %i[method uri],
                                                                         allow_playback_repeats: true) do
@@ -135,7 +136,7 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
         end
 
         it 'has access and returns va appointments when systems service fails' do
-          allow_any_instance_of(VAOS::V2::AppointmentsController).to receive(:get_clinic).and_call_original
+          allow_any_instance_of(VAOSAppointments::AppointmentsHelper).to receive(:get_clinic).and_call_original
           VCR.use_cassette('vaos/v2/appointments/get_appointments_200_with_system_service_500',
                            match_requests_on: %i[method uri], allow_playback_repeats: true) do
             get '/vaos/v2/appointments', params: params, headers: inflection_header
@@ -149,7 +150,7 @@ RSpec.describe 'vaos appointments', type: :request, skip_mvi: true do
         end
 
         it 'has access and returns va appointments when mobile facility service fails' do
-          allow_any_instance_of(VAOS::V2::AppointmentsController).to receive(:get_facility).and_call_original
+          allow_any_instance_of(VAOSAppointments::AppointmentsHelper).to receive(:get_facility).and_call_original
           VCR.use_cassette('vaos/v2/appointments/get_appointments_200_with_mobile_facility_service_500',
                            match_requests_on: %i[method uri], allow_playback_repeats: true) do
             get '/vaos/v2/appointments?_include=facilities', params: params, headers: inflection_header

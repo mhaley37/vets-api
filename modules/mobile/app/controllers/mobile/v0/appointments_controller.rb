@@ -3,6 +3,7 @@
 require_dependency 'mobile/application_controller'
 require 'lighthouse/facilities/client'
 require 'mobile/v0/exceptions/validation_errors'
+require 'vaos_appointments/appointments_helper'
 
 module Mobile
   module V0
@@ -51,6 +52,13 @@ module Mobile
         end
 
         head :no_content
+      end
+
+      def create
+        new_appointment = appointments_helper.create_new_appointment(params)
+        serializer = VAOS::V2::VAOSSerializer.new
+        serialized = serializer.serialize(new_appointment, 'appointmentRequest')
+        render json: { data: serialized }, status: :created
       end
 
       private
@@ -119,6 +127,10 @@ module Mobile
 
       def appointments_proxy
         Mobile::V0::Appointments::Proxy.new(@current_user)
+      end
+
+      def appointments_helper
+        @appointments_helper ||= VAOSAppointments::AppointmentsHelper.new(@current_user)
       end
     end
   end
