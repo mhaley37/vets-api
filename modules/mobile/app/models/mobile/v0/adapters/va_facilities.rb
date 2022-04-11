@@ -5,10 +5,11 @@ module Mobile
     module Adapters
       class VAFacilities
         def map_appointments_to_facilities(appointments, facilities)
-          facilities.map do |facility|
-            facility.id = "vha_#{facility.id.delete("vha_")}" unless facility.id.nil?
+          facilities&.map do |facility|
+            next if facility.id.nil?
+            facility.id = "vha_#{facility.id.delete("vha_")}"
           end
-          facilities_by_id = facilities.index_by(&:id)
+          facilities_by_id = facilities&.index_by(&:id)
 
           appointments.map do |appointment|
             facility = facilities_by_id&.dig("vha_#{appointment.id_for_address}")

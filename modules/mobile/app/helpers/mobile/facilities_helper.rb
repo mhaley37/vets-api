@@ -18,7 +18,7 @@ module Mobile
     end
 
     def address_from_facility(facility)
-      if facility.type == 'va_health_facility'
+      if facility.type == 'va_health_facility' #for MFS Facilities
         address = facility.physical_address
 
         street = address[:line].compact.join(', ')
