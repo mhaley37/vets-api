@@ -18,7 +18,7 @@ module Mobile
     end
 
     def address_from_facility(facility)
-      if facility.type == 'va_health_facility' #for MFS Facilities
+      if facility.type == 'va_health_facility' # for MFS Facilities
         address = facility.physical_address
 
         street = address[:line].compact.join(', ')
@@ -52,11 +52,11 @@ module Mobile
     end
 
     def phone_from_facility(facility)
-      if facility.type == 'va_health_facility'
-        phone = facility.phone[:main]
-      else
-        phone = facility.phone['main']
-      end
+      phone = if facility.type == 'va_health_facility'
+                facility.phone[:main]
+              else
+                facility.phone['main']
+              end
       return nil unless phone
 
       # captures area code (\d{3}) number (\d{3}-\d{4})

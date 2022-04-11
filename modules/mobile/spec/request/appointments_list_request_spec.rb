@@ -142,6 +142,7 @@ RSpec.describe 'appointments', type: :request do
 
     context 'when the MFS flag is enabled' do
       before { Flipper.enable(:mobile_appointment_use_VAOS_MFS) }
+
       after { Flipper.disable(:mobile_appointment_use_VAOS_MFS) }
 
       it 'returns facility details' do

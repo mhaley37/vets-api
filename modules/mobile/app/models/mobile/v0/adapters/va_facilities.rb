@@ -7,7 +7,8 @@ module Mobile
         def map_appointments_to_facilities(appointments, facilities)
           facilities&.map do |facility|
             next if facility.id.nil?
-            facility.id = "vha_#{facility.id.delete("vha_")}"
+
+            facility.id = "vha_#{facility.id.delete('vha_')}"
           end
           facilities_by_id = facilities&.index_by(&:id)
 

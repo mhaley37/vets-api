@@ -142,7 +142,7 @@ module Mobile
         def new_fetch_facilities(appointments)
           facility_ids = appointments.map(&:id_for_address).uniq
 
-          ids= ids(facility_ids) #may not be needed
+          ids = ids(facility_ids) # may not be needed
 
           return nil unless facility_ids.any?
 
