@@ -14,45 +14,12 @@ module RapidReadyForDecision
     # https://github.com/mperham/sidekiq/issues/2168#issuecomment-72079636
     sidekiq_options retry: 8
 
-    # @return if this claim submission was processed and fast-tracked by RRD
-    def self.rrd_claim_processed?(submission)
-      submission.form_json.include? RapidReadyForDecision::FastTrackPdfUploadManager::DOCUMENT_TITLE
-    end
-
-    # Fetch all claims from EVSS and return whether there are any open EP 020's.
-    # This method could be moved into a Concern when ProcessorSelector adds new job classes.
-    def self.pending_eps?(form526_submission)
-      all_claims = EVSS::ClaimsService.new(form526_submission.auth_headers).all_claims.body
-      pending = all_claims['open_claims'].any? { |claim| claim['base_end_product_code'] == '020' }
-      add_metadata(form526_submission, offramp_reason: 'pending_ep') if pending
-      pending
-    end
-
-    # @param metadata_hash [Hash] to be merged into form526_submission.form_json['rrd_metadata']
-    def self.add_metadata(form526_submission, metadata_hash)
-      form_json = JSON.parse(form526_submission.form_json)
-      form_json['rrd_metadata'] ||= {}
-      form_json['rrd_metadata'].deep_merge!(metadata_hash)
-
-      form526_submission.update!(form_json: JSON.dump(form_json))
-      form526_submission.invalidate_form_hash
-      form526_submission
-    end
-
-    def self.rrd_status(form526_submission)
-      return :processed if RapidReadyForDecision::Form526BaseJob.rrd_claim_processed?(form526_submission)
-
-      return :pending_ep if form526_submission.form.dig('rrd_metadata', 'offramp_reason') == 'pending_ep'
-
-      :insufficient_data
-    end
-
     def perform(form526_submission_id)
       form526_submission = Form526Submission.find(form526_submission_id)
 
       begin
         with_tracking(self.class.name, form526_submission.saved_claim_id, form526_submission_id) do
-          return if RapidReadyForDecision::Form526BaseJob.pending_eps?(form526_submission)
+          return if form526_submission.pending_eps?
 
           assessed_data = assess_data(form526_submission)
           return if assessed_data.nil?
@@ -67,7 +34,9 @@ module RapidReadyForDecision
       rescue => e
         # only retry if the error was raised within the "with_tracking" block
         retryable_error_handler(e) if @status_job_title
-        send_fast_track_engineer_email_for_testing(form526_submission_id, e.message, e.backtrace)
+        message = "Sidekiq job id: #{jid}. The error was: #{e.message}.<br/>" \
+                  "The backtrace was:\n #{e.backtrace.join(",<br/>\n ")}"
+        form526_submission.send_rrd_alert_email('Rapid Ready for Decision (RRD) Job Errored', message)
         raise
       end
     end
@@ -96,7 +65,7 @@ module RapidReadyForDecision
       med_stats_hash = med_stats_hash(form526_submission, assessed_data)
       return if med_stats_hash.blank?
 
-      self.class.add_metadata(form526_submission, med_stats: med_stats_hash)
+      form526_submission.add_metadata(med_stats: med_stats_hash)
     end
 
     class AccountNotFoundError < StandardError; end
@@ -105,23 +74,6 @@ module RapidReadyForDecision
 
     def lighthouse_client(form526_submission)
       Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
-    end
-
-    def send_fast_track_engineer_email_for_testing(form526_submission_id, error_message, backtrace)
-      # TODO: This should be removed once we have basic metrics
-      # on this feature and the visibility is imporved.
-      body = <<~BODY
-        A claim errored in the #{Settings.vsp_environment} environment \
-        with Form 526 submission id: #{form526_submission_id} and Sidekiq job id: #{jid}.<br/>
-        <br/>
-        The error was: #{error_message}. The backtrace was:\n #{backtrace.join(",<br/>\n ")}
-      BODY
-      ActionMailer::Base.mail(
-        from: ApplicationMailer.default[:from],
-        to: Settings.rrd.alerts.recipients,
-        subject: 'Rapid Ready for Decision (RRD) Job Errored',
-        body: body
-      ).deliver_now
     end
 
     def get_icn(form526_submission)
@@ -139,6 +91,10 @@ module RapidReadyForDecision
       Account.find_by(edipi: edipi) if edipi
     end
 
+    def patient_info(form526_submission)
+      form526_submission.full_name.merge(birthdate: form526_submission.auth_headers['va_eauth_birthdate'])
+    end
+
     def upload_pdf(form526_submission, pdf)
       RapidReadyForDecision::FastTrackPdfUploadManager
         .new(form526_submission)
@@ -146,7 +102,7 @@ module RapidReadyForDecision
     end
 
     def set_special_issue(form526_submission)
-      return if release_pdf?(form526_submission)
+      return unless release_pdf?(form526_submission)
 
       RapidReadyForDecision::RrdSpecialIssueManager.new(form526_submission).add_special_issue
     end

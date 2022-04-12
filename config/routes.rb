@@ -24,6 +24,8 @@ Rails.application.routes.draw do
   get '/sign_in/introspect', to: 'sign_in#introspect'
 
   get '/inherited_proofing/auth', to: 'inherited_proofing#auth'
+  get '/inherited_proofing/user_attributes', to: 'inherited_proofing#user_attributes'
+  get '/inherited_proofing/callback', to: 'inherited_proofing#callback'
 
   namespace :v0, defaults: { format: 'json' } do
     resources :onsite_notifications, only: %i[create index update]
@@ -39,6 +41,9 @@ Rails.application.routes.draw do
     resources :veteran_readiness_employment_claims, only: :create
     resource :virtual_agent_token, only: [:create], controller: :virtual_agent_token
     resources :preferred_facilities, only: %i[index create destroy]
+
+    get 'form1095_bs/download/:tax_year', to: 'form1095_bs#download'
+    get 'form1095_bs/available_forms', to: 'form1095_bs#available_forms'
 
     resources :medical_copays, only: %i[index show]
     get 'medical_copays/get_pdf_statement_by_id/:statement_id', to: 'medical_copays#get_pdf_statement_by_id'
