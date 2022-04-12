@@ -11,7 +11,8 @@ module Mobile
     end
 
     def token
-      return nil unless Settings.hostname != 'api.va.gov' && Flipper.enabled?(:mobile_api_tests)
+      raise Common::Exceptions::Unauthorized unless Settings.hostname != 'api.va.gov' && Flipper.enabled?(:mobile_api_test_sessions)
+      raise Common::Exceptions::Unauthorized.new(detail: 'missing access token') unless access_token
 
       token = Mobile::TestSessionHelper.new(access_token).find_or_create_session_token
       render json: {

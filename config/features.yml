@@ -380,6 +380,10 @@ features:
   mobile_api:
     actor_type: user
     description: API endpoints consumed by the VA Mobile App (iOS/Android)
+  mobile_api_test_sessions:
+    actor_type: user
+    description: If the test sessions for automated integration API tests are enabled.
+    enable_in_development: false
   mobile_appointment_requests:
     actor_type: user
     description: enables a user to include pending appointment requests in the mobile/v0/appointments endpoint
