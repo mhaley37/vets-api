@@ -12,7 +12,7 @@ module V1
   class SessionsController < ApplicationController
     skip_before_action :verify_authenticity_token
 
-    REDIRECT_URLS = %w[signup mhv mhv_verified dslogon dslogon_verified idme idme_verified idme_signup
+    REDIRECT_URLS = %w[mock signup mhv mhv_verified dslogon dslogon_verified idme idme_verified idme_signup
                        idme_signup_verified logingov logingov_verified logingov_signup
                        logingov_signup_verified custom mfa verify slo].freeze
     STATSD_SSO_NEW_KEY = 'api.auth.new'
@@ -34,7 +34,8 @@ module V1
     def new
       type = params[:type]
 
-      if type == 'slo'
+      case type
+      when 'slo'
         Rails.logger.info("SessionsController version:v1 LOGOUT of type #{type}", sso_logging_info)
         reset_session
         url = url_service.ssoe_slo_url
@@ -42,6 +43,8 @@ module V1
         # clientId must be added at the end or the URL will be invalid for users using various "Do not track"
         # extensions with their browser.
         redirect_to params[:client_id].present? ? url + "&clientId=#{params[:client_id]}" : url
+      when 'mock'
+        mock_user_login(params[:icn])
       else
         render_login(type)
       end
@@ -128,6 +131,14 @@ module V1
         redirect_to url_service.login_redirect_url
         login_stats(:success)
       end
+    end
+
+    def mock_user_login(icn)
+      mock_service = Login::MockUserSessionForm.new
+      @current_user, @session_object = mock_service.persist(icn)
+      set_cookies
+      after_login_actions
+      redirect_to url_service.login_redirect_url
     end
 
     def render_login(type)
