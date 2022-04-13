@@ -142,7 +142,7 @@ module Mobile
         def new_fetch_facilities(appointments)
           facility_ids = appointments.map(&:id_for_address).uniq
 
-          ids = ids(facility_ids) # may not be needed
+          ids = format_facility_ids(facility_ids)
 
           return nil unless facility_ids.any?
 
@@ -224,7 +224,7 @@ module Mobile
           }
         end
 
-        def ids(ids)
+        def format_facility_ids(ids)
           ids.is_a?(Array) ? ids.to_csv(row_sep: nil) : ids
         end
 
