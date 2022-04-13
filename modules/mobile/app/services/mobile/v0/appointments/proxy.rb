@@ -142,9 +142,9 @@ module Mobile
         def new_fetch_facilities(appointments)
           facility_ids = appointments.map(&:id_for_address).uniq
 
-          ids = format_facility_ids(facility_ids)
-
           return nil unless facility_ids.any?
+
+          ids = format_facility_ids(facility_ids)
 
           facility_ids.each do |facility_id|
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
@@ -225,7 +225,7 @@ module Mobile
         end
 
         def format_facility_ids(ids)
-          ids.is_a?(Array) ? ids.to_csv(row_sep: nil) : ids
+          ids.join(', ')
         end
 
         def vaos_appointments_service
