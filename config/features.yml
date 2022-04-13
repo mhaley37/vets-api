@@ -451,6 +451,9 @@ features:
     actor_type: user
     description: Show/hide the fax number UI on the profile page
     enable_in_development: true
+  profile_show_demographics:
+    actor_type: user
+    description: Used to show demographic data (preferred name and gender identity) for the profile    
   profile_show_gender:
     actor_type: user
     description: Show/hide the gender field UI on the profile page
@@ -469,6 +472,10 @@ features:
   rrd_asthma_compensation:
     actor_type: user
     description: Fast tracks 526 disability compensation asthma claims by submitting additional health data
+    enable_in_development: true
+  rrd_asthma_release_pdf:
+    actor_type: user
+    description: For 526 disability compensation asthma claims, add RRD PDF and set RRD special issue to route to RVSRs
     enable_in_development: true
   rrd_hypertension_compensation:
     actor_type: user
