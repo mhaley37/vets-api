@@ -149,8 +149,8 @@ module Mobile
           facility_ids.each do |facility_id|
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
           end
-          vaos = vaos_mobile_facility_service.get_facilities(ids: ids, children: children, type: type)
-          vaos[:data]
+          vaos_facilities = vaos_mobile_facility_service.get_facilities(ids: ids, children: nil, type: nil)
+          vaos_facilities[:data]
         end
 
         def legacy_fetch_facilities(appointments)
@@ -226,14 +226,6 @@ module Mobile
 
         def ids(ids)
           ids.is_a?(Array) ? ids.to_csv(row_sep: nil) : ids
-        end
-
-        def children
-          nil
-        end
-
-        def type
-          nil
         end
 
         def vaos_appointments_service
