@@ -24,7 +24,7 @@ module Mobile
 
       def initialize(id, rx_history)
         resource = rx_history.attributes.collect do |prescription|
-          RxHistoryStruct.new(id, *prescription.values)
+          RxHistoryStruct.new(id, *prescription.attributes.values)
         end
         super(resource)
       end
