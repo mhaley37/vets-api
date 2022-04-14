@@ -144,7 +144,7 @@ module Mobile
 
           return nil unless facility_ids.any?
 
-          ids = format_facility_ids(facility_ids)
+          ids = facility_ids.join(', ')
 
           facility_ids.each do |facility_id|
             Rails.logger.info('metric.mobile.appointment.facility', facility_id: facility_id)
@@ -222,10 +222,6 @@ module Mobile
             response = service.get_requests(start_date, end_date)
             response[:data]
           }
-        end
-
-        def format_facility_ids(ids)
-          ids.join(', ')
         end
 
         def vaos_appointments_service
