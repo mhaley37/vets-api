@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sign_in/logging'
+
 module SignIn
   class SessionCreator
     attr_reader :user_account
@@ -46,7 +48,7 @@ module SignIn
     end
 
     def create_new_access_token
-      SignIn::AccessToken.new(
+      access_token = SignIn::AccessToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         refresh_token_hash: refresh_token_hash,
@@ -54,15 +56,19 @@ module SignIn
         anti_csrf_token: anti_csrf_token,
         last_regeneration_time: refresh_created_time
       )
+      token_logger.log_token_creation(access_token)
+      access_token
     end
 
     def create_new_refresh_token(parent_refresh_token_hash: nil)
-      SignIn::RefreshToken.new(
+      refresh_token = SignIn::RefreshToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         parent_refresh_token_hash: parent_refresh_token_hash,
         anti_csrf_token: anti_csrf_token
       )
+      token_logger.log_token_creation(refresh_token)
+      refresh_token
     end
 
     def create_new_session
@@ -87,6 +93,10 @@ module SignIn
 
     def handle
       @handle ||= SecureRandom.uuid
+    end
+
+    def token_logger
+      @token_logger ||= SignIn::Logging::Token.new
     end
   end
 end
