@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7.4'
+ruby '~> 2.7.6'
 
 # Modules
 path 'modules' do
@@ -109,13 +109,13 @@ gem 'pg_query'
 gem 'pg_search'
 gem 'pkce_challenge'
 gem 'prawn'
-gem 'prawn-markup'
+gem 'prawn-markup', github: 'puzzle/prawn-markup', ref: 'f7956009df696c9d126843d2d35ff270b9c031cd' # TODO: Remove ref once a new release has been made.
 gem 'prawn-table'
 gem 'puma'
 gem 'puma-plugin-statsd'
 gem 'pundit'
 gem 'rack'
-gem 'rack-attack', github: 'rack/rack-attack', ref: 'b0be38334a3776c536bb5e54b2ce33fd38f8bf5c' # TODO: Remove ref once a new release has been made.
+gem 'rack-attack'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rails_semantic_logger'
 gem 'rails-session_cookie'
