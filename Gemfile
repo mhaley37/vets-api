@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7.4'
+ruby '~> 2.7.6'
 
 # Modules
 path 'modules' do
@@ -109,7 +109,7 @@ gem 'pg_query'
 gem 'pg_search'
 gem 'pkce_challenge'
 gem 'prawn'
-gem 'prawn-markup'
+gem 'prawn-markup', github: 'puzzle/prawn-markup', ref: 'f7956009df696c9d126843d2d35ff270b9c031cd' # TODO: Remove ref once a new release has been made.
 gem 'prawn-table'
 gem 'puma'
 gem 'puma-plugin-statsd'
@@ -120,7 +120,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_semantic_logger'
 gem 'rails-session_cookie'
 gem 'redis'
-gem 'redis-namespace'
+gem 'redis-namespace', github: 'resque/redis-namespace', ref: 'de6c3b9b01658b37e3ea776c52cf2eec3a89dcb3' # TODO: Remove ref once a new release has been made
 gem 'request_store'
 gem 'restforce'
 gem 'rgeo-geojson'

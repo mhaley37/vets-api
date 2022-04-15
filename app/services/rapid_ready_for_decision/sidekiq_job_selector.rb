@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module RapidReadyForDecision
-  class ProcessorSelector
+  class SidekiqJobSelector
     def initialize(form526_submission)
       @form526_submission = form526_submission
     end
 
     RrdConstants = RapidReadyForDecision::Constants
 
-    def processor_class(backup: false)
+    def sidekiq_job(backup: false)
       return unless rrd_enabled?
 
       # single-issue claims only
@@ -26,33 +26,18 @@ module RapidReadyForDecision
       # the submitted disability must be for a claim for increase
       return unless self.class.disability_increase?(form_disability, disability_struct)
 
-      return disability_struct[:backup_processor_class]&.constantize if backup
+      return disability_struct[:backup_sidekiq_job]&.constantize if backup
 
-      disability_struct[:processor_class]&.constantize
+      disability_struct[:sidekiq_job]&.constantize
     end
 
     def rrd_applicable?
-      !processor_class.nil?
+      !sidekiq_job.nil?
     end
 
     def self.disability_increase?(form_disability, disability_struct)
       form_disability['diagnosticCode'] == disability_struct[:code] &&
         form_disability['disabilityActionType']&.upcase == 'INCREASE'
-    end
-
-    def send_rrd_alert(message)
-      body = <<~BODY
-        Environment: #{Settings.vsp_environment}<br/>
-        Form526Submission.id: #{@form526_submission.id}<br/>
-        <br/>
-        #{message}
-      BODY
-      ActionMailer::Base.mail(
-        from: ApplicationMailer.default[:from],
-        to: Settings.rrd.alerts.recipients,
-        subject: 'RRD Processor Selector alert',
-        body: body
-      ).deliver_now
     end
 
     private
@@ -64,7 +49,7 @@ module RapidReadyForDecision
 
     # @return [Boolean] Is the specified disability RRD-enabled according to Flipper settings
     def rrd_enabled_disability?(disability_struct)
-      Flipper.enabled?("rrd_#{disability_struct[:flipper_name].downcase}_compensation".to_sym)
+      Flipper.enabled?("rrd_#{disability_struct[:flipper_name]&.downcase}_compensation".to_sym)
     end
 
     def form_disabilities

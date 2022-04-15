@@ -16,7 +16,7 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
   end
   let(:saved_claim) { FactoryBot.create(:va526ez) }
   let(:submission) do
-    create(:form526_submission, :with_uploads,
+    create(:form526_submission, :with_uploads, :hypertension_claim_for_increase,
            user_uuid: user.uuid,
            auth_headers_json: auth_headers.to_json,
            saved_claim_id: saved_claim.id,
@@ -55,7 +55,8 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
         it 'returns from the class if the claim observations does NOT include bp readings from the past year' do
           Sidekiq::Testing.inline! do
             expect(RapidReadyForDecision::LighthouseMedicationRequestData).not_to receive(:new)
-            subject.perform_async(submission_for_user_wo_bp.id)
+            expect { described_class.perform_async(submission_for_user_wo_bp.id) }
+              .to raise_error described_class::NoRrdProcessorForClaim
           end
         end
       end
@@ -113,7 +114,7 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
               end.to raise_error(NoMethodError)
               expect(ActionMailer::Base.deliveries.last.subject).to eq 'Rapid Ready for Decision (RRD) Job Errored'
               expect(ActionMailer::Base.deliveries.last.body.raw_source)
-                .to match 'A claim errored'
+                .to match 'The error was:'
               expect(ActionMailer::Base.deliveries.last.body.raw_source.scan(/\n /).count).to be > 10
             end
           end
@@ -134,7 +135,7 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
       let(:submission_without_account_or_edpid) do
         auth_headers.delete('va_eauth_dodedipnid')
 
-        create(:form526_submission,
+        create(:form526_submission, :hypertension_claim_for_increase,
                user_uuid: 'nonsense',
                auth_headers_json: auth_headers.to_json,
                saved_claim_id: saved_claim.id,
@@ -147,14 +148,14 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
 
           expect do
             RapidReadyForDecision::Form526HypertensionJob.perform_async(submission_without_account_or_edpid.id)
-          end.to raise_error RapidReadyForDecision::Form526BaseJob::AccountNotFoundError
+          end.to raise_error RapidReadyForDecision::RrdProcessor::AccountNotFoundError
         end
       end
     end
 
     context 'when the user uuid is not associated with an Account AND the edipi auth header is present' do
       let(:submission_without_account) do
-        create(:form526_submission, :with_uploads,
+        create(:form526_submission, :with_uploads, :hypertension_claim_for_increase,
                user_uuid: 'inconceivable',
                auth_headers_json: auth_headers.to_json,
                saved_claim_id: saved_claim.id,
@@ -180,7 +181,7 @@ RSpec.describe RapidReadyForDecision::Form526HypertensionJob, type: :worker do
         Sidekiq::Testing.inline! do
           expect do
             RapidReadyForDecision::Form526HypertensionJob.perform_async(submission.id)
-          end.to raise_error RapidReadyForDecision::Form526BaseJob::AccountNotFoundError
+          end.to raise_error RapidReadyForDecision::RrdProcessor::AccountNotFoundError
         end
       end
     end

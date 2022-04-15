@@ -35,7 +35,6 @@ module AppealsApi
     # the controller applies the JSON Schemas in modules/appeals_api/config/schemas/
     # further validations:
     validate(
-      :birth_date_is_a_date,
       :birth_date_is_in_the_past,
       :contestable_issue_dates_are_valid_dates,
       if: proc { |a| a.form_data.present? }
@@ -188,6 +187,11 @@ module AppealsApi
       veterans_local_time.strftime('%m/%d/%Y')
     end
 
+    def stamp_text
+      # TODO: Refactor to use a Veteran Appellant object once non-veteran claimant work is done
+      "#{veteran_last_name.truncate(35)} - #{ssn.last(4)}"
+    end
+
     def update_status!(status:, code: nil, detail: nil)
       handler = Events::Handler.new(event_type: :sc_status_updated, opts: {
                                       from: self.status,
@@ -282,11 +286,6 @@ module AppealsApi
     end
 
     # validation (header)
-    def birth_date_is_a_date
-      add_error("Veteran birth date isn't a date: #{birth_date_string.inspect}") unless birth_date
-    end
-
-    # validation (header)
     def birth_date_is_in_the_past
       return unless birth_date
 
@@ -297,15 +296,8 @@ module AppealsApi
       return if contestable_issues.blank?
 
       contestable_issues.each_with_index do |issue, index|
-        decision_date_invalid(issue, index)
         decision_date_not_in_past(issue, index)
       end
-    end
-
-    def decision_date_invalid(issue, issue_index)
-      return if issue.decision_date
-
-      add_decision_date_error "isn't a valid date: #{issue.decision_date_string.inspect}", issue_index
     end
 
     def decision_date_not_in_past(issue, issue_index)

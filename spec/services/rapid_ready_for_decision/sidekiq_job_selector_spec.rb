@@ -2,16 +2,16 @@
 
 require 'rails_helper'
 
-RSpec.describe RapidReadyForDecision::ProcessorSelector do
+RSpec.describe RapidReadyForDecision::SidekiqJobSelector do
   subject { described_class.new(submission) }
 
   let(:submission) { build(:form526_submission) }
 
-  describe '#processor_class' do
+  describe '#sidekiq_job' do
     context 'when given non-RRD-applicable claim submission' do
       it 'returns nil' do
         expect(subject.rrd_applicable?).to eq false
-        expect(subject.processor_class).to eq nil
+        expect(subject.sidekiq_job).to eq nil
       end
     end
 
@@ -20,8 +20,8 @@ RSpec.describe RapidReadyForDecision::ProcessorSelector do
 
       it 'returns RRD processor' do
         expect(subject.rrd_applicable?).to eq true
-        expect(subject.processor_class).to eq RapidReadyForDecision::Form526HypertensionJob
-        expect(subject.processor_class(backup: true)).to eq RapidReadyForDecision::DisabilityCompensationJob
+        expect(subject.sidekiq_job).to eq RapidReadyForDecision::Form526BaseJob
+        expect(subject.sidekiq_job(backup: true)).to eq RapidReadyForDecision::DisabilityCompensationJob
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe RapidReadyForDecision::ProcessorSelector do
 
       it 'returns Form526AsthmaJob' do
         expect(subject.rrd_applicable?).to eq true
-        expect(subject.processor_class).to eq RapidReadyForDecision::Form526AsthmaJob
+        expect(subject.sidekiq_job).to eq RapidReadyForDecision::Form526AsthmaJob
       end
     end
   end
