@@ -20,23 +20,17 @@ module Mobile
     def address_from_facility(facility)
       if facility.type == 'va_health_facility' # for MFS Facilities
         address = facility.physical_address
-
         street = address[:line].compact.join(', ')
-        city = address[:city]
-        state = address[:state]
         zip_code = address[:postal_code]
       else
         address = facility.address['physical']
-
         street = address.slice('address_1', 'address_2', 'address_3').values.compact.join(', ')
-        city = address['city']
-        state = address['state']
         zip_code = address['zip']
       end
       Mobile::V0::Address.new(
         street: street,
-        city: city,
-        state: state,
+        city: address.symbolize_keys[:city],
+        state: address.symbolize_keys[:state],
         zip_code: zip_code
       )
     end
@@ -52,11 +46,7 @@ module Mobile
     end
 
     def phone_from_facility(facility)
-      phone = if facility.type == 'va_health_facility'
-                facility.phone[:main]
-              else
-                facility.phone['main']
-              end
+      phone = facility.phone.symbolize_keys[:main]
       return nil unless phone
 
       # captures area code (\d{3}) number (\d{3}-\d{4})
