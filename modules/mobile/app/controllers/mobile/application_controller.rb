@@ -26,8 +26,9 @@ module Mobile
       raise_unauthorized('Missing Authorization header') if request.headers['Authorization'].nil?
       raise_unauthorized('Authorization header Bearer token is blank') if access_token.blank?
 
-      session_manager = IAMSSOeOAuth::SessionManager.new(access_token)
-      @current_user = session_manager.find_or_create_user
+      session_manager = Mobile::Auth::SessionManager.new(access_token)
+      session = session_manager.find_or_create_user
+      raise_unauthorized('current_user.uuid does not match session.uuid') unless @current_user.uuid == session.uuid
       link_user_with_vets360 if @current_user.vet360_id.blank?
       @current_user
     end
