@@ -32,7 +32,7 @@ jobs:
 
     # Check that the deployed app returns successful HTTP response.
     steps:
-    - run: echo "${{ fromJSON(github.event.deployment.payload) }}"
+    - run: echo "${{ fromJson(github.event.deployment.payload) }}"
     - id: health_check
       uses: jtalk/url-health-check-action@v1.3
       with:
