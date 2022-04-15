@@ -7,14 +7,22 @@ module RapidReadyForDecision
         size: 11,
         font: 'SourceSansPro'
       },
+      heading1: {
+        margin_top: 3
+      },
+      heading3: {
+        margin_bottom: 5
+      },
       heading4: {
         margin_top: 12
       },
       table: {
         width: 150,
         cell: {
-          size: 10,
+          size: 11,
           border_width: 0,
+          border_bottom_width: 0,
+          border_bottom_color: 'ffffff',
           background_color: 'f3f3f3'
         }
       }
@@ -41,7 +49,8 @@ module RapidReadyForDecision
       @pdf.font_families.update('SourceSansPro' => {
                                   normal: Rails.root.join('public', 'fonts', 'sourcesanspro-regular-webfont.ttf'),
                                   italic: Rails.root.join('public', 'fonts', 'sourcesanspro-italic-webfont.ttf'),
-                                  bold: Rails.root.join('public', 'fonts', 'sourcesanspro-bold-webfont.ttf')
+                                  bold: Rails.root.join('public', 'fonts', 'sourcesanspro-bold-webfont.ttf'),
+                                  bold_italic: Rails.root.join('public', 'fonts', 'sourcesanspro-bolditalic-webfont.ttf')
                                 })
       @pdf.font_families.update('DejaVuSans' => {
                                   normal: Rails.root.join('public', 'fonts', 'deja-vu-sans.ttf')

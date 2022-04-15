@@ -6,9 +6,9 @@
 <p>
   <h3>Active Prescriptions</h3>
   <i>VHA records searched for medication prescriptions active as of <%= Time.zone.today.strftime('%m/%d/%Y') %></i> <br />
-  <i>All VAMC locations using VistA/CAPRI were checked</i> <br />
+  <i>All VAMC locations using VistA/CAPRI were checked</i>
 </p>
-
+<p><br /></p>
 <% if @assessed_data[:medications].present? %>
   <% @assessed_data[:medications].each do |medication| %>
     <% has_keyword = @disability_metadata[:keywords] ? RapidReadyForDecision::FastTrackPdfGenerator.flag_with_keyword(@disability_metadata[:keywords], medication) : false %>
@@ -28,7 +28,7 @@
     </p>
   <% end %>
 <% else %>
-  <p><br/></p>
+  <p><br /></p>
   <h6>No active medications were found in the last year</h6>
 <% end %>
 

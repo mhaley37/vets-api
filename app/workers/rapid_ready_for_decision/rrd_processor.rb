@@ -85,7 +85,9 @@ module RapidReadyForDecision
     end
 
     def patient_info
-      form526_submission.full_name.merge(birthdate: form526_submission.auth_headers['va_eauth_birthdate'])
+      birthdate_str = form526_submission.auth_headers['va_eauth_birthdate']
+      patient_birthdate = Date.parse(birthdate_str, '%Y-%m-%d').strftime('%m/%d/%Y')
+      form526_submission.full_name.merge(birthdate: patient_birthdate)
     end
 
     def icn
