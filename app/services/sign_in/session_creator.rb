@@ -56,7 +56,7 @@ module SignIn
         anti_csrf_token: anti_csrf_token,
         last_regeneration_time: refresh_created_time
       )
-      token_logger.log_token_creation(access_token)
+      # log_token_creation(access_token)
       access_token
     end
 
@@ -67,8 +67,47 @@ module SignIn
         parent_refresh_token_hash: parent_refresh_token_hash,
         anti_csrf_token: anti_csrf_token
       )
-      token_logger.log_token_creation(refresh_token)
+      log_refresh_token_creation(refresh_token, parent_refresh_token_hash)
       refresh_token
+    end
+
+    def log_refresh_token_creation(token, parent_refresh_token_hash)
+      user = User.find(token&.user_uuid)
+      user_csp = user.identity.sign_in[:service_name]
+      require 'pry'; binding.pry
+      {
+        audit_id: SecureRandom.uuid,
+        session_id: token&.session_handle,
+        user_id: token&.user_uuid,
+        csp: user_csp,
+        csp_id: user_csp_id(user_csp, user),
+        loa_ial: user.loa[:current],
+        uri: nil,
+        client_id: nil,
+        refresh_token_hash: get_hash(token.to_json),
+        parent_refresh_token_hash: parent_refresh_token_hash,
+        created: refresh_created_time.to_time,
+        state: nil,
+        event_type: 'create',
+        event_outcome: nil,
+        redirect_uri: nil,
+        user_ip: nil,
+        device_fingerprint: nil,
+        token_start: nil
+      }
+    end
+
+    def user_csp_id(user_csp, user)
+      case user_csp
+      when 'logingov'
+        user.logingov_uuid
+      when 'dslogon'
+        user.edipi
+      when 'mhv'
+        user.icn
+      when 'idme'
+        user.idme_uuid
+      end
     end
 
     def create_new_session
