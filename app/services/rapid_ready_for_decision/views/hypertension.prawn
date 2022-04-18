@@ -1,0 +1,5 @@
+@pdf.markup(render_partial('shared/intro'))
+@pdf.markup(render_partial('hypertension/blood_pressure_readings'))
+@pdf.markup(render_partial('hypertension/rating_schedule'))
+@pdf.markup(render_partial('shared/medications'))
+@pdf.markup(render_partial('hypertension/about'))

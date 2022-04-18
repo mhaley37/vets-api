@@ -50,8 +50,9 @@ module RapidReadyForDecision
     end
 
     def generate
-      template = File.join('app/services/rapid_ready_for_decision/views', "#{@disability_type}.erb")
-      @pdf.markup ERB.new(File.new(template).read).result(binding)
+      template_path = File.join('app/services/rapid_ready_for_decision/views', "#{@disability_type}.prawn")
+      Tilt.new(template_path).render(self)
+      # @pdf.markup template
 
       @pdf
     end
@@ -59,8 +60,9 @@ module RapidReadyForDecision
     private
 
     def render_partial(erb_file_relative_path)
-      erb_file_full_path = File.join('app/services/rapid_ready_for_decision/views', "#{erb_file_relative_path}.erb")
-      ERB.new(File.new(erb_file_full_path).read).result(binding)
+      filename = erb_file_relative_path.include?('.') ? erb_file_relative_path : "#{erb_file_relative_path}.erb"
+      erb_file_full_path = File.join('app/services/rapid_ready_for_decision/views', filename)
+      Tilt.new(erb_file_full_path).render(self)
     end
   end
 end

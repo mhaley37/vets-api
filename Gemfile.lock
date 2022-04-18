@@ -929,6 +929,9 @@ GEM
     thwait (0.2.0)
       e2mmap
     tilt (2.0.10)
+    tilt-prawn (0.1.1)
+      prawn (>= 1.0, < 3.0)
+      tilt (>= 1.4, < 3.0)
     timecop (0.9.5)
     tins (1.31.0)
       sync
@@ -1158,6 +1161,8 @@ DEPENDENCIES
   super_diff
   swagger-blocks
   test_user_dashboard!
+  tilt
+  tilt-prawn
   timecop
   typhoeus
   tzinfo-data
