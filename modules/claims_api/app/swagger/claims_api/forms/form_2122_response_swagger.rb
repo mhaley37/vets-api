@@ -290,8 +290,9 @@ with the human immunodeficiency virus (HIV), or sickle cell anemia is limited as
             end
 
             property :date_request_accepted do
-              key :type, :string
               key :format, 'date'
+              key :type, :string
+              key :nullable, true
               key :example, '2014-07-28'
               key :description, 'Date request was first accepted'
             end
