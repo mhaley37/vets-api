@@ -7,6 +7,8 @@ class SignInController < ApplicationController
   skip_before_action :verify_authenticity_token, :authenticate
   before_action :authenticate_access_token, only: [:introspect]
 
+  wrap_parameters format: []
+
   REDIRECT_URLS = %w[idme logingov dslogon mhv].freeze
   BEARER_PATTERN = /^Bearer /.freeze
 
@@ -50,7 +52,6 @@ class SignInController < ApplicationController
 
     user_account = SignIn::CodeValidator.new(code: code, code_verifier: code_verifier, grant_type: grant_type).perform
     session_container = SignIn::SessionCreator.new(user_account: user_account).perform
-
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized

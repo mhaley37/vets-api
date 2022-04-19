@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sign_in/logging'
-
 module SignIn
   class SessionCreator
     attr_reader :user_account
@@ -48,7 +46,7 @@ module SignIn
     end
 
     def create_new_access_token
-      access_token = SignIn::AccessToken.new(
+      new_access_token = SignIn::AccessToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         refresh_token_hash: refresh_token_hash,
@@ -56,45 +54,43 @@ module SignIn
         anti_csrf_token: anti_csrf_token,
         last_regeneration_time: refresh_created_time
       )
-      # log_token_creation(access_token)
-      access_token
+      log_token_creation(new_access_token)
+      new_access_token
     end
 
     def create_new_refresh_token(parent_refresh_token_hash: nil)
-      refresh_token = SignIn::RefreshToken.new(
+      new_refresh_token = SignIn::RefreshToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         parent_refresh_token_hash: parent_refresh_token_hash,
         anti_csrf_token: anti_csrf_token
       )
-      log_refresh_token_creation(refresh_token, parent_refresh_token_hash)
-      refresh_token
+      log_token_creation(new_refresh_token, parent_refresh_token_hash: parent_refresh_token_hash)
+      new_refresh_token
     end
 
-    def log_refresh_token_creation(token, parent_refresh_token_hash)
+    def log_token_creation(token, parent_refresh_token_hash: nil)
       user = User.find(token&.user_uuid)
       user_csp = user.identity.sign_in[:service_name]
-      require 'pry'; binding.pry
-      {
+      token_type = token.class.to_s.include?('Refresh') ? 'refresh' : 'access'
+      refresh_token_hash = token_type == 'Refresh' ? get_hash(token.to_json) : token&.refresh_token_hash
+
+      token_log_info = {
         audit_id: SecureRandom.uuid,
+        token_type: token_type,
         session_id: token&.session_handle,
         user_id: token&.user_uuid,
         csp: user_csp,
         csp_id: user_csp_id(user_csp, user),
-        loa_ial: user.loa[:current],
-        uri: nil,
-        client_id: nil,
-        refresh_token_hash: get_hash(token.to_json),
+        ial: user.loa[:current],
+        access_token_hash: nil,
+        refresh_token_hash: refresh_token_hash,
         parent_refresh_token_hash: parent_refresh_token_hash,
         created: refresh_created_time.to_time,
-        state: nil,
         event_type: 'create',
-        event_outcome: nil,
-        redirect_uri: nil,
-        user_ip: nil,
-        device_fingerprint: nil,
-        token_start: nil
+        event_outcome: token.valid? ? 'success' : 'failure'
       }
+      Rails.logger.info('Sign in Service - Token created:', token_log_info)
     end
 
     def user_csp_id(user_csp, user)
