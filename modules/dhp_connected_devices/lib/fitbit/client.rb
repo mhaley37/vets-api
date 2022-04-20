@@ -2,7 +2,7 @@
 
 require 'common/client/base'
 require_relative 'configuration'
-# require_relative 'response'
+require_relative 'response'
 
 module DhpConnectedDevices
   module Fitbit
