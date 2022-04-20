@@ -6,6 +6,7 @@ module SignIn
 
     def initialize(encrypted_refresh_token:)
       @split_token_array = split_encrypted_refresh_token(encrypted_refresh_token)
+      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -13,7 +14,7 @@ module SignIn
 
       validate_token!(decrypted_component)
 
-      SignIn::RefreshToken.new(
+      refresh_token = SignIn::RefreshToken.new(
         session_handle: decrypted_component.session_handle,
         user_uuid: decrypted_component.user_uuid,
         parent_refresh_token_hash: decrypted_component.parent_refresh_token_hash,
@@ -21,6 +22,10 @@ module SignIn
         nonce: decrypted_component.nonce,
         version: decrypted_component.version
       )
+      sign_in_logger.log_token(refresh_token,
+                               event: 'decrypt',
+                               parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
+      refresh_token
     end
 
     private

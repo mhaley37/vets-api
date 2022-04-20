@@ -8,6 +8,7 @@ module SignIn
       @refresh_token = refresh_token
       @anti_csrf_token = anti_csrf_token
       @enable_anti_csrf = enable_anti_csrf
+      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -15,7 +16,9 @@ module SignIn
       find_valid_oauth_session
       detect_token_theft
       update_session! if parent_refresh_token_in_session?
-      create_new_tokens
+      new_tokens = create_new_tokens
+      sign_in_logger.log_session_refresh(child_refresh_token)
+      new_tokens
     end
 
     private
@@ -55,16 +58,20 @@ module SignIn
     end
 
     def create_child_refresh_token
-      SignIn::RefreshToken.new(
+      new_child_token = SignIn::RefreshToken.new(
         session_handle: session.handle,
         user_uuid: session.user_account.id,
         anti_csrf_token: updated_anti_csrf_token,
         parent_refresh_token_hash: refresh_token_hash
       )
+      sign_in_logger.log_token(new_child_token,
+                               event: 'rotate',
+                               parent_refresh_token_hash: refresh_token_hash)
+      new_child_token
     end
 
     def create_access_token
-      SignIn::AccessToken.new(
+      new_access_token = SignIn::AccessToken.new(
         session_handle: session.handle,
         user_uuid: session.user_account.id,
         refresh_token_hash: get_hash(child_refresh_token.to_json),
@@ -72,6 +79,8 @@ module SignIn
         anti_csrf_token: updated_anti_csrf_token,
         last_regeneration_time: last_regeneration_time
       )
+      sign_in_logger.log_token(new_access_token, event: 'rotate')
+      new_access_token
     end
 
     def last_regeneration_time

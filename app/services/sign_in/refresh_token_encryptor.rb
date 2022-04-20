@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sign_in/logger'
+
 module SignIn
   class RefreshTokenEncryptor
     attr_reader :refresh_token, :version, :nonce
@@ -9,10 +11,14 @@ module SignIn
       validate_input
       @version = refresh_token.version
       @nonce = refresh_token.nonce
+      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
       encrypted_refresh_token = serialize_and_encrypt_refresh_token
+      sign_in_logger.log_token(refresh_token,
+                               event: 'encrypt',
+                               parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
       build_refresh_token_string(encrypted_refresh_token)
     end
 
