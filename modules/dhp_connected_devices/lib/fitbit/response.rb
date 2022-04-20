@@ -4,7 +4,7 @@ module DhpConnectedDevices
   module Fitbit
     class Response < Common::Base
       def initialize(attributes = nil)
-        super
+        super(attributes) if attributes
         self.status if attributes[:status]
         self.body if attributes[:body]
         parsed_body = JSON.parse(attributes[:body])
@@ -17,3 +17,5 @@ module DhpConnectedDevices
     end
   end
 end
+
+Faraday::Response.register_middleware(fitbit_response: DhpConnectedDevices::Fitbit::Response)

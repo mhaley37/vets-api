@@ -12,10 +12,10 @@ module DhpConnectedDevices
       ##
       # HTTP POST call to the Fitbit API to exchange auth code for a user token
       #
-      # @return [Faraday::Response]
+      # @return [DhpConnectedDevices::Fitbit::Response]
       #
       def get_token(auth_code)
-        connection.post(config.base_path) do |req|
+        response = connection.post(config.base_path) do |req|
           req.headers = headers
           req.body = "client_id=#{Settings.dhp.fitbit.client_id}" \
                      "&code=#{auth_code}" \
@@ -23,6 +23,9 @@ module DhpConnectedDevices
                      '&grant_type=authorization_code' \
                      "&redirect_uri=#{Settings.dhp.fitbit.redirect_uri}"
         end
+        p '***********hello****************'
+        p response
+        DhpConnectedDevices::Fitbit::Response.new({ body: response, status: response.status })
       end
 
       ##

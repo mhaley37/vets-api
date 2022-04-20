@@ -24,7 +24,7 @@ module DhpConnectedDevices
           # conn.response(:logger, ::Logger.new(STDOUT), bodies: true) unless Rails.env.production?
 
           conn.response :raise_error, error_prefix: service_name
-
+          conn.response :fitbit_response
           conn.adapter Faraday.default_adapter
         end
       end

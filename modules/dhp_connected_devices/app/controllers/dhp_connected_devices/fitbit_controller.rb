@@ -31,7 +31,7 @@ module DhpConnectedDevices
     end
 
     def callback_params
-      params.permit(:code, :error, :error_detail)
+      params.permit(:code, :error, :error_description)
     end
 
     def feature_enabled

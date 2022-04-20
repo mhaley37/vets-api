@@ -17,6 +17,7 @@ class FitbitService
 
   def exchange_code_for_token(data)
     response = data.fetch(:client).get_token(data.fetch(:code))
+    p response
     response.status == 200
   end
 end
