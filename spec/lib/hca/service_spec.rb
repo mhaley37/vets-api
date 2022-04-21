@@ -24,6 +24,15 @@ describe HCA::Service do
   end
   let(:current_user) { FactoryBot.build(:user, :loa3, icn: nil) }
 
+  it 'f' do
+    VCR.configure do |c|
+      c.allow_http_connections_when_no_cassette = true
+    end
+    json = '{"deductibleMedicalExpenses":1,"deductibleFuneralExpenses":1,"deductibleEducationExpenses":1,"veteranGrossIncome":8989,"veteranNetIncome":8989,"veteranOtherIncome":889,"spouseGrossIncome":88,"spouseNetIncome":888,"spouseOtherIncome":88,"dependents":[],"spouseFullName":{"first":"hjkhjk","last":"hjkhjk"},"spouseSocialSecurityNumber":"676766666","spouseDateOfBirth":"1980-01-01","dateOfMarriage":"2000-02-18","sameAddress":true,"discloseFinancialInformation":true,"isEssentialAcaCoverage":false,"vaMedicalFacility":"610","isCoveredByHealthInsurance":false,"isEnrolledMedicarePartA":false,"isMedicaidEligible":false,"maritalStatus":"Married","lastServiceBranch":"army","lastEntryDate":"2010-02-03","lastDischargeDate":"2011-03-17","dischargeType":"honorable","vaPensionType":"Yes","vaCompensationType":"none","homePhone":"2125551212","veteranAddress":{"street":"111 Test Street","city":"D.C.","postalCode":"20001","country":"USA","state":"WA"},"gender":"M","isSpanishHispanicLatino":false,"privacyAgreementAccepted":true,"veteranHomeAddress":{"street":"111 Test Street","city":"D.C.","postalCode":"20001","country":"USA","state":"WA"}}'
+    binding.pry; fail
+    HCA::Service.new(user).submit_form(JSON.parse(json))
+  end
+
   describe '#submit_form' do
     it 'increments statsd' do
       expect(StatsD).to receive(:increment).with('api.1010ez.submit_form.fail',
