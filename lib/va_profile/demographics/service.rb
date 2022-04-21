@@ -6,6 +6,7 @@ require 'va_profile/service'
 require 'va_profile/stats'
 require_relative 'configuration'
 require_relative 'demographic_response'
+require_relative 'preferred_name_response'
 
 module VAProfile
   module Demographics
@@ -24,10 +25,10 @@ module VAProfile
       #
       def get_demographics
         with_monitoring do
-          return DemographicResponse.new(404, demographic: nil) unless identifier_present?
+          return build_response(401, nil) unless identifier_present?
 
           response = perform(:get, identity_path)
-          DemographicResponse.from(response)
+          build_response(response&.status, response&.body)
         end
       rescue Common::Client::Errors::ClientError => e
         if e.status == 404
@@ -38,9 +39,9 @@ module VAProfile
             :warning
           )
 
-          return DemographicResponse.new(404, demographic: nil)
+          return build_response(404, nil)
         elsif e.status >= 400 && e.status < 500
-          return DemographicResponse.new(e.status, demographic: nil)
+          return build_response(e.status, nil)
         end
 
         handle_error(e)
@@ -48,10 +49,48 @@ module VAProfile
         handle_error(e)
       end
 
+      # PUTs an updated preferred_name to the VAProfile API
+      # @param preferred_name [VAProfile::Models::PreferredName] the preferred_name to update
+      # @return [VAProfile::Demographics::PreferredNameResponse] response wrapper around a transaction object
+      def save_preferred_name(preferred_name)
+        post_or_put_data(:post, preferred_name, 'preferred-name', PreferredNameResponse)
+      end
+
+      def post_or_put_data(method, model, path, response_class)
+        with_monitoring do
+          raise 'User does not have a valid CSP ID' unless identifier_present?
+
+          model.set_defaults(@user)
+          response = perform(method, identity_path(path), model.in_json)
+
+          return response_class.new(200, preferred_name: model) if response_successful?(response)
+
+          response_class.from(response)
+        end
+      rescue => e
+        handle_error(e)
+      end
+
+      def response_successful?(response)
+        response&.status == 200 && response&.body == {}
+      end
+
       # VA Profile demographic endpoints use the OID (Organizational Identifier), the CSP ID,
       # and the Assigning Authority ID to identify which person will be updated/retrieved.
-      def identity_path
-        "#{OID}/#{ERB::Util.url_encode(csp_id_with_aaid.to_s)}"
+      def identity_path(dir = nil)
+        path = "#{OID}/#{ERB::Util.url_encode(csp_id_with_aaid.to_s)}"
+        dir ? "#{path}/#{dir}" : path
+      end
+
+      def build_response(status, body)
+        DemographicResponse.from(
+          status: status,
+          body: body,
+          id: @user.account_id,
+          type: 'mvi_models_mvi_profiles',
+          gender: @user.gender_mpi,
+          birth_date: @user.birth_date_mpi
+        )
       end
 
       private
@@ -71,7 +110,7 @@ module VAProfile
       end
 
       def aaid
-        return '^PN^200IDME^USDVA' if @user&.idme_uuid.present?
+        return '^PN^200VIDM^USDVA' if @user&.idme_uuid.present?
         return '^PN^200VLGN^USDVA' if @user&.logingov_uuid.present?
       end
     end

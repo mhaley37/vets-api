@@ -6,10 +6,6 @@ require 'sidekiq/testing'
 RSpec.describe RapidReadyForDecision::DisabilityCompensationJob, type: :worker do
   subject { described_class }
 
-  before do
-    Sidekiq::Worker.clear_all
-  end
-
   let!(:user) { FactoryBot.create(:disabilities_compensation_user, icn: '2000163') }
   let(:auth_headers) do
     EVSS::DisabilityCompensationAuthHeaders.new(user).add_headers(EVSS::AuthHeaders.new(user).to_h)
@@ -60,7 +56,7 @@ RSpec.describe RapidReadyForDecision::DisabilityCompensationJob, type: :worker d
         end
       end
 
-      context 'the claim IS for hypertension', :vcr do
+      context 'the claim IS for hypertension' do
         before do
           # The bp reading needs to be 1 year or less old so actual API data will not test if this code is working.
           allow_any_instance_of(RapidReadyForDecision::LighthouseObservationData)

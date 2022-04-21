@@ -4,8 +4,12 @@ require 'rails_helper'
 require 'ostruct'
 require 'rapid_ready_for_decision/disability_compensation_job'
 
-RSpec.describe RapidReadyForDecision::LighthouseObservationData, :vcr do
+RSpec.describe RapidReadyForDecision::LighthouseObservationData do
   subject { described_class }
+
+  around do |example|
+    VCR.use_cassette('rrd/lighthouse_observations', &example)
+  end
 
   let(:response) do
     # Using specific test ICN below:
@@ -20,7 +24,7 @@ RSpec.describe RapidReadyForDecision::LighthouseObservationData, :vcr do
   end
 
   describe '#transform' do
-    it 'returns only bp readings from the past year', :vcr do
+    it 'returns only bp readings from the past year' do
       expect(described_class.new(response_with_recent_bp).transform)
         .to match(
           [

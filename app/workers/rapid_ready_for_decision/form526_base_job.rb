@@ -12,23 +12,18 @@ module RapidReadyForDecision
     include Sidekiq::Form526JobStatusTracker::JobTracker
 
     extend SentryLogging
-    # NOTE: This is apparently at most about 4.5 hours.
     # https://github.com/mperham/sidekiq/issues/2168#issuecomment-72079636
-    sidekiq_options retry: 8
-
-    class NoRrdProcessorForClaim < StandardError; end
+    sidekiq_options retry: 11
 
     def perform(form526_submission_id)
       form526_submission = Form526Submission.find(form526_submission_id)
 
       begin
-        processor_class = RapidReadyForDecision::Constants.processor_class(form526_submission)
-        raise NoRrdProcessorForClaim unless processor_class
+        processor = RapidReadyForDecision::Constants.processor(form526_submission)
 
         with_tracking(self.class.name, form526_submission.saved_claim_id, form526_submission_id) do
           return if form526_submission.pending_eps?
 
-          processor = processor_class.new(form526_submission)
           processor.run
         end
       rescue => e

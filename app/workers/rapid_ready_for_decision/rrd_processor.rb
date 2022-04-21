@@ -6,6 +6,7 @@ module RapidReadyForDecision
 
     def initialize(form526_submission)
       @form526_submission = form526_submission
+      @disability_struct = RapidReadyForDecision::Constants.first_disability(form526_submission)
     end
 
     def run
@@ -15,6 +16,7 @@ module RapidReadyForDecision
       add_medical_stats(assessed_data)
 
       pdf = generate_pdf(assessed_data)
+      form526_submission.add_metadata(pdf_created: true)
       upload_pdf(pdf)
 
       set_special_issue if Flipper.enabled?(:rrd_add_special_issue)
@@ -33,7 +35,10 @@ module RapidReadyForDecision
 
     # Override this method to prevent the submission from getting the PDF and special issue
     def release_pdf?
-      true
+      flipper_symbol = "rrd_#{@disability_struct[:flipper_name].downcase}_release_pdf".to_sym
+      return true unless Flipper.exist?(flipper_symbol)
+
+      Flipper.enabled?(flipper_symbol)
     end
 
     def upload_pdf(pdf)
@@ -59,23 +64,6 @@ module RapidReadyForDecision
       form526_submission.add_metadata(med_stats: med_stats_hash)
     end
 
-    def send_fast_track_engineer_email_for_testing(job_id, error_message, backtrace)
-      # TODO: This should be removed once we have basic metrics
-      # on this feature and the visibility is imporved.
-      body = <<~BODY
-        A claim errored in the #{Settings.vsp_environment} environment \
-        with Form 526 submission id: #{form526_submission.id} and Sidekiq job id: #{job_id}.<br/>
-        <br/>
-        The error was: #{error_message}. The backtrace was:\n #{backtrace.join(",<br/>\n ")}
-      BODY
-      ActionMailer::Base.mail(
-        from: ApplicationMailer.default[:from],
-        to: Settings.rrd.alerts.recipients,
-        subject: 'Rapid Ready for Decision (RRD) Job Errored',
-        body: body
-      ).deliver_now
-    end
-
     class AccountNotFoundError < StandardError; end
 
     private
@@ -91,18 +79,36 @@ module RapidReadyForDecision
     end
 
     def icn
-      account_record = account
-      raise AccountNotFoundError, "for user_uuid: #{form526_submission.user_uuid} or their edipi" unless account_record
+      account_records = accounts
+      if account_records.blank?
+        raise AccountNotFoundError, "for user_uuid: #{form526_submission.user_uuid} or their edipi"
+      end
 
-      account_record.icn.presence
+      return account_records.first.icn.presence if account_records.size == 1
+
+      icns = account_records.pluck(:icn).uniq.compact
+      # Multiple Account records should have the same ICN
+      if icns.size > 1
+        message = "Multiple ICNs found for the user '#{form526_submission.user_uuid}': #{icns}"
+        form526_submission.send_rrd_alert_email('RRD Multiple ICNs found warning', message)
+      end
+
+      icns.first
     end
 
-    def account
+    def accounts
       account = Account.lookup_by_user_uuid(form526_submission.user_uuid)
-      return account if account
+      return [account] if account
 
       edipi = form526_submission.auth_headers['va_eauth_dodedipnid'].presence
-      Account.find_by(edipi: edipi) if edipi
+      accounts_matching_edipi(edipi)
+    end
+
+    # There's no DB constraint that guarantees uniqueness of edipi, so return an array if there are multiple Accounts
+    def accounts_matching_edipi(edipi)
+      return [] unless edipi
+
+      Account.where(edipi: edipi).order(:id).to_a
     end
   end
 end

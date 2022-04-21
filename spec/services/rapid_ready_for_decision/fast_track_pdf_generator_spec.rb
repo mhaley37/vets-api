@@ -5,7 +5,7 @@ require 'rails_helper'
 # require 'prawn/table'
 require 'lighthouse/veterans_health/client'
 
-RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
+RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator do
   subject { PDF::Inspector::Text.analyze(compiled_pdf.render).strings }
 
   if ENV['_SAVE_RRD_PDF_FILE']
@@ -53,7 +53,7 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
     RapidReadyForDecision::FastTrackPdfGenerator.new(patient_name, assessed_data, disability_type)
   end
 
-  describe '#generate', :vcr do
+  describe '#generate' do
     shared_examples 'includes introduction' do
       it 'includes the veterans name' do
         expect(subject).to include 'Cat Marie Power, Jr.'
@@ -66,6 +66,10 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
 
     context 'when pdf is for hypertension' do
       let(:disability_type) { :hypertension }
+
+      around do |example|
+        VCR.use_cassette('rrd/hypertension', &example)
+      end
 
       it_behaves_like 'includes introduction'
 
@@ -106,8 +110,30 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator, :vcr do
 
     context 'when pdf is for asthma' do
       let(:disability_type) { :asthma }
+      let(:parsed_bp_data) { nil }
+      let(:parsed_medications_data) do
+        [{ 'status' => 'active',
+           'authoredOn' => '1998-02-12T02:15:52Z',
+           'description' => 'Dose Inhaler',
+           'notes' => ['Dose Inhaler'],
+           'dosageInstructions' => ['Once per day.', 'As directed by physician.'],
+           :flagged => true },
+         { 'status' => 'active',
+           'authoredOn' => '2009-03-25T01:15:52Z',
+           'description' => 'Hydrocortisone 10 MG/ML Topical Cream',
+           'notes' => ['Hydrocortisone 10 MG/ML Topical Cream'],
+           'dosageInstructions' => ['Once per day.', 'As directed by physician.'],
+           :flagged => false }]
+      end
 
       it_behaves_like 'includes introduction'
+
+      context 'when potential asthma-related medication is available' do
+        it 'flags potential asthma-related medication' do
+          expect(subject.join).to include('▶ Dose Inhaler ◀')
+          expect(subject.join).not_to include('▶ Hydrocortisone 10 MG/ML Topical Cream ◀')
+        end
+      end
     end
   end
 end

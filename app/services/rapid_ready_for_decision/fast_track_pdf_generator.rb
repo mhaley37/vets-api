@@ -10,7 +10,11 @@ module RapidReadyForDecision
       heading1: {
         margin_top: 3
       },
+      heading2: {
+        size: 22
+      },
       heading3: {
+        size: 16,
         margin_bottom: 5
       },
       heading4: {
@@ -31,11 +35,6 @@ module RapidReadyForDecision
     def self.extract_patient_name(patient_info)
       full_name = patient_info.values_at(:first, :middle, :last).reject(&:blank?).join ' '
       [full_name, patient_info[:suffix]].reject(&:blank?).join ', '
-    end
-
-    # TODO: move this into the data class
-    def self.flag_with_keyword(keywords, medication_struct)
-      keywords.any? { |keyword| medication_struct.to_s.downcase.include?(keyword) }
     end
 
     def initialize(patient_info, assessed_data, disability_type)
@@ -69,6 +68,11 @@ module RapidReadyForDecision
     def render_partial(erb_file_relative_path)
       erb_file_full_path = File.join('app/services/rapid_ready_for_decision/views', "#{erb_file_relative_path}.erb")
       ERB.new(File.new(erb_file_full_path).read).result(binding)
+    end
+
+    def link_to(url)
+      erb_path = File.new('app/services/rapid_ready_for_decision/views/shared/_link_to.erb').read
+      ERB.new(erb_path).result(binding)
     end
   end
 end
