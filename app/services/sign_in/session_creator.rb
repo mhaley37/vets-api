@@ -8,7 +8,6 @@ module SignIn
 
     def initialize(user_account:)
       @user_account = user_account
-      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -94,6 +93,10 @@ module SignIn
 
     def handle
       @handle ||= SecureRandom.uuid
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

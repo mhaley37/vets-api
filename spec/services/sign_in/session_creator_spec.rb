@@ -10,6 +10,9 @@ RSpec.describe SignIn::SessionCreator do
 
     context 'when input object is a UserAccount' do
       let(:user_account) { create(:user_account) }
+      let(:user) { create(:user, uuid: user_account.id) }
+
+      before { allow(User).to receive(:find).and_return(user) }
 
       context 'expected anti_csrf_token' do
         let(:expected_anti_csrf_token) { 'some-anti-csrf-token' }
@@ -102,6 +105,12 @@ RSpec.describe SignIn::SessionCreator do
           expect(refresh_token.user_uuid).to eq(expected_user_uuid)
           expect(refresh_token.parent_refresh_token_hash).to eq(expected_parent_refresh_token_hash)
         end
+
+        it 'logs the creation of the Refresh tokens' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info).exactly(3).times
+          subject.refresh_token
+        end
       end
 
       context 'expected access_token' do
@@ -143,6 +152,12 @@ RSpec.describe SignIn::SessionCreator do
           expect(access_token.refresh_token_hash).to eq(expected_refresh_token_hash)
           expect(access_token.parent_refresh_token_hash).to eq(expected_parent_refresh_token_hash)
           expect(access_token.last_regeneration_time).to eq(expected_last_regeneration_time)
+        end
+
+        it 'logs the creation of the Access token' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info).exactly(3).times
+          subject.access_token
         end
       end
     end

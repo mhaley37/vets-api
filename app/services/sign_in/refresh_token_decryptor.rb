@@ -6,7 +6,6 @@ module SignIn
 
     def initialize(encrypted_refresh_token:)
       @split_token_array = split_encrypted_refresh_token(encrypted_refresh_token)
-      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -62,6 +61,10 @@ module SignIn
 
     def message_encryptor
       KmsEncrypted::Box.new
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

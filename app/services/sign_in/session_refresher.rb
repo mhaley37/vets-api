@@ -8,7 +8,6 @@ module SignIn
       @refresh_token = refresh_token
       @anti_csrf_token = anti_csrf_token
       @enable_anti_csrf = enable_anti_csrf
-      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -17,7 +16,10 @@ module SignIn
       detect_token_theft
       update_session! if parent_refresh_token_in_session?
       new_tokens = create_new_tokens
-      sign_in_logger.log_session_refresh(child_refresh_token)
+      # is this necessary here if we're also logging the creation of the child tokens?
+      sign_in_logger.log_token(child_refresh_token,
+        event: 'refresh',
+        parent_refresh_token_hash: child_refresh_token.parent_refresh_token_hash)
       new_tokens
     end
 
@@ -117,6 +119,10 @@ module SignIn
 
     def access_token
       @access_token ||= create_access_token
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

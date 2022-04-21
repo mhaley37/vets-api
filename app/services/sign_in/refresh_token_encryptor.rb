@@ -11,7 +11,6 @@ module SignIn
       validate_input
       @version = refresh_token.version
       @nonce = refresh_token.nonce
-      @sign_in_logger ||= SignIn::Logger.new
     end
 
     def perform
@@ -43,6 +42,10 @@ module SignIn
 
     def message_encryptor
       KmsEncrypted::Box.new
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

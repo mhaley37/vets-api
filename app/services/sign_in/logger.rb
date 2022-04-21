@@ -3,8 +3,39 @@
 module SignIn
   class Logger
     def log_token(token, event: 'create', parent_refresh_token_hash: nil, outcome: 'success')
-      user = User.find(token&.user_uuid)
+      user_values = get_user_csp_values(token.user_uuid)
+      token_values = get_token_values(token)
+      token_log_payload = {
+        audit_id: SecureRandom.uuid,
+        token_type: token_values[:token_type],
+        session_id: token.session_handle,
+        user_id: token.user_uuid,
+        csp: user_values[:user_csp],
+        csp_id: user_values[:user_csp_id],
+        ial: user_values[:ial],
+        refresh_token_hash: token_values[:refresh_token_hash],
+        access_token_hash: token_values[:access_token_hash],
+        parent_refresh_token_hash: parent_refresh_token_hash,
+        timestamp: Time.zone.now.to_s,
+        event: event,
+        event_outcome: outcome
+      }
+      Rails.logger.info("Sign in Service Token - #{event}:", token_log_payload)
+    end
+
+    private
+
+    def get_user_csp_values(user_uuid)
+      user = User.find(user_uuid)
       user_csp = user.identity.sign_in[:service_name]
+      {
+        user_csp: user_csp,
+        user_csp_id: user_csp_id(user_csp, user),
+        ial: user.loa[:current]
+      }
+    end
+
+    def get_token_values(token)
       token_type = token.class.to_s.include?('Refresh') ? 'refresh' : 'access'
       if token_type == 'refresh'
         refresh_token_hash = Digest::SHA256.hexdigest(token.to_json)
@@ -13,40 +44,12 @@ module SignIn
         refresh_token_hash = token&.refresh_token_hash
         access_token_hash = Digest::SHA256.hexdigest(token.to_json)
       end
-
-      token_log_info = {
-        audit_id: SecureRandom.uuid,
+      {
         token_type: token_type,
-        session_id: token&.session_handle,
-        user_id: token&.user_uuid,
-        csp: user_csp,
-        csp_id: user_csp_id(user_csp, user),
-        ial: user.loa[:current],
         refresh_token_hash: refresh_token_hash,
-        access_token_hash: access_token_hash,
-        parent_refresh_token_hash: parent_refresh_token_hash,
-        timestamp: Time.zone.now.to_s,
-        event: event,
-        event_outcome: outcome
+        access_token_hash: access_token_hash
       }
-      Rails.logger.info("Sign in Service Token - #{event}:", token_log_info)
     end
-
-    def log_session_refresh(refresh_token)
-      token_log_info = {
-        session_id: refresh_token&.session_handle,
-        refresh_token_hash: Digest::SHA256.hexdigest(refresh_token.to_json),
-        parent_refresh_token_hash: refresh_token&.parent_refresh_token_hash,
-        user_id: refresh_token&.user_uuid,
-        timestamp: Time.zone.now.to_s,
-        event: 'refresh',
-        event_outcome: 'success'
-      }
-      require 'pry'; binding.pry
-      Rails.logger.info('Sign in Service - Session refreshed:', token_log_info)
-    end
-
-    private
 
     def user_csp_id(user_csp, user)
       case user_csp
