@@ -43,7 +43,7 @@ describe HCA::Service do
     form['veteranDateOfBirth'] = "1985-03-07"
     form['veteranSocialSecurityNumber'] = '111115115'
     binding.pry; fail
-    HCA::Service.new(user).submit_form(JSON.parse(json))
+    HCA::Service.new(user).submit_form(form)
   end
 
   describe '#submit_form' do
