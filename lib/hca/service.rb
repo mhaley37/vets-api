@@ -24,7 +24,6 @@ module HCA
       submission = soap.build_request(:save_submit_form, message: content)
 
       response = with_monitoring do
-        binding.pry; fail
         perform(:post, '', submission.body)
       end
 
