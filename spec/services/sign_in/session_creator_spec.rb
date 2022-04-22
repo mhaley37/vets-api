@@ -108,7 +108,8 @@ RSpec.describe SignIn::SessionCreator do
 
         it 'logs the creation of the Refresh tokens' do
           allow(Rails.logger).to receive(:info)
-          expect(Rails.logger).to receive(:info).exactly(3).times
+          expect(Rails.logger).to receive(:info).twice
+            .with('Sign in Service Token - create:', hash_including(token_type: 'refresh', user_id: user.uuid))
           subject.refresh_token
         end
       end
@@ -156,7 +157,8 @@ RSpec.describe SignIn::SessionCreator do
 
         it 'logs the creation of the Access token' do
           allow(Rails.logger).to receive(:info)
-          expect(Rails.logger).to receive(:info).exactly(3).times
+          expect(Rails.logger).to receive(:info).once
+            .with('Sign in Service Token - create:', hash_including(token_type: 'access', user_id: user.uuid))
           subject.access_token
         end
       end
