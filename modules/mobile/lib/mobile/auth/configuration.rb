@@ -16,14 +16,14 @@ module Mobile
     def base_path
       Settings.mobile_api.oauth_url
     end
-    
+
     # Service name for breakers integration
     # @return String the service name
     #
     def service_name
       'MobileAuth'
     end
-    
+
     # Faraday connection object with breakers, snakecase and json response middleware
     # @return Faraday::Connection connection to make http calls
     #
@@ -40,4 +40,3 @@ module Mobile
     end
   end
 end
-

@@ -15,7 +15,7 @@ module Mobile
     #
     class Service < Common::Client::Base
       configuration Configuration
-    
+
       # Validate a user's auth token and returns either valid active response with a set
       # of user traits or raise's an unauthorized error if the response comes back as invalid.
       #
