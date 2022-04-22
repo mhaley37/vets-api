@@ -33,11 +33,13 @@ RSpec.describe SignIn::RefreshTokenEncryptor do
       let(:expected_encrypted_component) { 'some-encrypted-component' }
       let(:expected_nonce_component) { nonce }
       let(:expected_version_component) { version }
+      let(:user) { create(:user, uuid: refresh_token.user_uuid) }
 
       before do
         allow_any_instance_of(KmsEncrypted::Box).to receive(:encrypt)
           .with(serialized_refresh_token)
           .and_return(expected_encrypted_component)
+        allow(User).to receive(:find).and_return(user)
       end
 
       it 'returns a string with an encrypted component' do
@@ -53,6 +55,14 @@ RSpec.describe SignIn::RefreshTokenEncryptor do
       it 'returns a string with a version component' do
         version_component = subject.split('.')[SignIn::Constants::RefreshToken::VERSION_POSITION]
         expect(version_component).to eq(expected_version_component)
+      end
+
+      it 'logs refresh token encryption' do
+        allow(Rails.logger).to receive(:info)
+        expect(Rails.logger).to receive(:info)
+          .once.with('Sign in Service Token - encrypt:',
+                     hash_including(token_type: 'refresh', user_id: user.uuid))
+        subject
       end
     end
   end

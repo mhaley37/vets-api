@@ -27,6 +27,7 @@ RSpec.describe SignIn::SessionRefresher do
       let(:input_anti_csrf_token) { anti_csrf_token }
       let(:session_handle) { SecureRandom.uuid }
       let(:user_uuid) { user_account.id }
+      let(:user) { create(:user, uuid: user_uuid) }
       let(:user_account) { create(:user_account) }
       let!(:session) do
         create(:oauth_session,
@@ -38,7 +39,10 @@ RSpec.describe SignIn::SessionRefresher do
       let(:session_expiration) { Time.zone.now + 5.minutes }
       let(:enable_anti_csrf) { true }
 
-      before { Timecop.freeze(Time.zone.now.floor) }
+      before do
+        Timecop.freeze(Time.zone.now.floor)
+        allow(User).to receive(:find).and_return(user)
+      end
 
       after { Timecop.return }
 
@@ -115,6 +119,14 @@ RSpec.describe SignIn::SessionRefresher do
                   expect(container.refresh_token.anti_csrf_token).to eq(expected_anti_csrf_token)
                   expect(container.refresh_token.parent_refresh_token_hash).to eq(expected_refresh_token_hash)
                 end
+
+                it 'logs the creation of the Refresh tokens' do
+                  allow(Rails.logger).to receive(:info)
+                  expect(Rails.logger).to receive(:info)
+                    .twice.with('Sign in Service Token - rotate:',
+                                hash_including(token_type: 'refresh', user_id: user.uuid))
+                  subject.refresh_token
+                end
               end
 
               context 'expected access token' do
@@ -136,6 +148,30 @@ RSpec.describe SignIn::SessionRefresher do
                   expect(container.access_token.refresh_token_hash).to eq(expected_refresh_token_hash)
                   expect(container.access_token.last_regeneration_time).to eq(expected_last_regeneration_time)
                 end
+
+                it 'logs the creation of the Access token' do
+                  allow(Rails.logger).to receive(:info)
+                  expect(Rails.logger).to receive(:info)
+                    .once.with('Sign in Service Token - rotate:',
+                               hash_including(token_type: 'access', user_id: user.uuid))
+                  subject.refresh_token
+                end
+              end
+            end
+
+            context 'refresh logging' do
+              let(:expected_refresh_token_hash) { Digest::SHA256.hexdigest(refresh_token.to_json) }
+
+              it 'logs refresh time update with child refresh token' do
+                allow(Rails.logger).to receive(:info)
+                expect(Rails.logger).to receive(:info)
+                  .once.with('Sign in Service Token - refresh:',
+                             hash_including(
+                               token_type: 'refresh',
+                               user_id: user.uuid,
+                               parent_refresh_token_hash: expected_refresh_token_hash
+                             ))
+                subject.refresh_token
               end
             end
           end

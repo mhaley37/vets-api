@@ -18,8 +18,8 @@ module SignIn
       new_tokens = create_new_tokens
       # is this necessary here if we're also logging the creation of the child tokens?
       sign_in_logger.log_token(child_refresh_token,
-        event: 'refresh',
-        parent_refresh_token_hash: child_refresh_token.parent_refresh_token_hash)
+                               event: 'refresh',
+                               parent_refresh_token_hash: child_refresh_token.parent_refresh_token_hash)
       new_tokens
     end
 

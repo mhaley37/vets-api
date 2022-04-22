@@ -11,6 +11,9 @@ RSpec.describe SignIn::AccessTokenJwtDecoder do
     let(:access_token_jwt) { SignIn::AccessTokenJwtEncoder.new(access_token: access_token).perform }
     let(:access_token) { create(:access_token) }
     let(:with_validation) { true }
+    let(:user) { create(:user, uuid: access_token.user_uuid) }
+
+    before { allow(User).to receive(:find).and_return(user) }
 
     context 'when access token jwt is expired' do
       let(:access_token_jwt) { SignIn::AccessTokenJwtEncoder.new(access_token: access_token).perform }
@@ -81,6 +84,14 @@ RSpec.describe SignIn::AccessTokenJwtDecoder do
 
         it 'returns the decoded access token' do
           expect(subject).to eq access_token
+        end
+
+        it 'logs access token decoding' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info)
+            .once.with('Sign in Service Token - decode:',
+                       hash_including(token_type: 'access', user_id: user.uuid))
+          subject
         end
       end
     end

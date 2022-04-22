@@ -62,6 +62,9 @@ RSpec.describe SignIn::RefreshTokenDecryptor do
       let(:expected_anti_csrf_token) { refresh_token.anti_csrf_token }
       let(:expected_nonce) { refresh_token.nonce }
       let(:expected_version) { refresh_token.version }
+      let(:user) { create(:user, uuid: refresh_token.user_uuid) }
+
+      before { allow(User).to receive(:find).and_return(user) }
 
       it 'returns a decrypted refresh token with expected session handle' do
         expect(subject.session_handle).to eq(expected_session_handle)
@@ -85,6 +88,14 @@ RSpec.describe SignIn::RefreshTokenDecryptor do
 
       it 'returns a decrypted refresh token with expected version' do
         expect(subject.version).to eq(expected_version)
+      end
+
+      it 'logs refresh token decryption' do
+        allow(Rails.logger).to receive(:info)
+        expect(Rails.logger).to receive(:info)
+          .once.with('Sign in Service Token - decrypt:',
+                     hash_including(token_type: 'refresh', user_id: user.uuid))
+        subject
       end
     end
   end

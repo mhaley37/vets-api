@@ -22,9 +22,11 @@ RSpec.describe SignIn::AccessTokenJwtEncoder do
       let(:expected_last_regeneration_time) { access_token.last_regeneration_time.to_i }
       let(:expected_version) { access_token.version }
       let(:expected_jti) { 'some-expected-jti' }
+      let(:user) { create(:user, uuid: access_token.user_uuid) }
 
       before do
         allow(SecureRandom).to receive(:hex).and_return(expected_jti)
+        allow(User).to receive(:find).and_return(user)
       end
 
       it 'returns an encoded jwt with expected parameters' do
@@ -42,6 +44,14 @@ RSpec.describe SignIn::AccessTokenJwtEncoder do
         expect(decoded_jwt.last_regeneration_time).to eq expected_last_regeneration_time
         expect(decoded_jwt.version).to eq expected_version
         expect(decoded_jwt.jti).to eq expected_jti
+      end
+
+      it 'logs access token encoding' do
+        allow(Rails.logger).to receive(:info)
+        expect(Rails.logger).to receive(:info)
+          .once.with('Sign in Service Token - encode:',
+                     hash_including(token_type: 'access', user_id: user.uuid))
+        subject
       end
     end
   end

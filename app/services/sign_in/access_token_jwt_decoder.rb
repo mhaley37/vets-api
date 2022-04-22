@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sign_in/logger'
+
 module SignIn
   class AccessTokenJwtDecoder
     attr_reader :access_token_jwt
@@ -10,7 +12,7 @@ module SignIn
 
     def perform(with_validation: true)
       decoded_token = jwt_decode_access_token(with_validation)
-      SignIn::AccessToken.new(
+      access_token = SignIn::AccessToken.new(
         session_handle: decoded_token.session_handle,
         user_uuid: decoded_token.sub,
         refresh_token_hash: decoded_token.refresh_token_hash,
@@ -21,6 +23,10 @@ module SignIn
         expiration_time: Time.zone.at(decoded_token.exp),
         created_time: Time.zone.at(decoded_token.iat)
       )
+      sign_in_logger.log_token(access_token,
+                               event: 'decode',
+                               parent_refresh_token_hash: access_token.parent_refresh_token_hash)
+      access_token
     end
 
     private
@@ -46,6 +52,10 @@ module SignIn
 
     def private_key
       OpenSSL::PKey::RSA.new(File.read(Settings.sign_in.jwt_encode_key))
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end
