@@ -33,6 +33,15 @@ describe HCA::Service do
       'icn' => '1012666182V203559',
       'edipi' => '1005079124'
     }
+    form = JSON.parse(json)
+    form['veteranFullName'] = {
+      "first" => "First",
+      "middle"=> "Middle",
+      "last"=> "Last",
+      "suffix"=> "Sr."
+    }
+    form['veteranDateOfBirth'] = "1985-03-07"
+    form['veteranSocialSecurityNumber'] = '111115115'
     binding.pry; fail
     HCA::Service.new(user).submit_form(JSON.parse(json))
   end
