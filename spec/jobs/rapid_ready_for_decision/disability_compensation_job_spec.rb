@@ -56,11 +56,19 @@ RSpec.describe RapidReadyForDecision::DisabilityCompensationJob, type: :worker d
         end
       end
 
-      context 'the claim IS for hypertension', :vcr do
+      context 'the claim IS for hypertension' do
         before do
           # The bp reading needs to be 1 year or less old so actual API data will not test if this code is working.
           allow_any_instance_of(RapidReadyForDecision::LighthouseObservationData)
             .to receive(:transform).and_return(mocked_observation_data)
+        end
+
+        let(:submission) do
+          create(:form526_submission, :with_uploads, :hypertension_claim_for_increase,
+                 user_uuid: user.uuid,
+                 auth_headers_json: auth_headers.to_json,
+                 saved_claim_id: saved_claim.id,
+                 submitted_claim_id: '600130094')
         end
 
         it 'finishes successfully' do
