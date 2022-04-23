@@ -28,15 +28,15 @@ describe HCA::Service do
     VCR.configure do |c|
       c.allow_http_connections_when_no_cassette = true
     end
-    json = '{"deductibleMedicalExpenses":1,"deductibleFuneralExpenses":1,"deductibleEducationExpenses":1,"veteranGrossIncome":8989,"veteranNetIncome":8989,"veteranOtherIncome":889,"spouseGrossIncome":88,"spouseNetIncome":888,"spouseOtherIncome":88,"dependents":[],"spouseFullName":{"first":"hjkhjk","last":"hjkhjk"},"spouseSocialSecurityNumber":"676766666","spouseDateOfBirth":"1980-01-01","dateOfMarriage":"2000-02-18","sameAddress":true,"discloseFinancialInformation":true,"isEssentialAcaCoverage":false,"vaMedicalFacility":"610","isCoveredByHealthInsurance":false,"isEnrolledMedicarePartA":false,"isMedicaidEligible":false,"maritalStatus":"Married","lastServiceBranch":"army","lastEntryDate":"2010-02-03","lastDischargeDate":"2011-03-17","dischargeType":"honorable","vaPensionType":"Yes","vaCompensationType":"none","homePhone":"2125551212","veteranAddress":{"street":"111 Test Street","city":"D.C.","postalCode":"20001","country":"USA","state":"WA"},"gender":"M","isSpanishHispanicLatino":false,"privacyAgreementAccepted":true,"veteranHomeAddress":{"street":"111 Test Street","city":"D.C.","postalCode":"20001","country":"USA","state":"WA"}}'
+    json = '{"isEssentialAcaCoverage":false,"vaMedicalFacility":"459GB","isCoveredByHealthInsurance":false,"medicarePartAEffectiveDate":"2008-09-17","isEnrolledMedicarePartA":true,"isMedicaidEligible":true,"deductibleMedicalExpenses":4,"deductibleFuneralExpenses":4,"deductibleEducationExpenses":4,"veteranGrossIncome":4,"veteranNetIncome":4,"veteranOtherIncome":4,"spouseGrossIncome":4,"spouseNetIncome":4,"spouseOtherIncome":4,"spouseFullName":{"first":"dfgdfg","last":"dfgdfg"},"spouseSocialSecurityNumber":"234234343","spouseDateOfBirth":"1989-01-02","dateOfMarriage":"2008-01-16","sameAddress":true,"maritalStatus":"Married","discloseFinancialInformation":true,"lastServiceBranch":"army","lastEntryDate":"2005-02-03","lastDischargeDate":"2006-02-17","dischargeType":"honorable","vaPensionType":"No","vaCompensationType":"none","gender":"F","isSpanishHispanicLatino":false,"veteranAddress":{"street":"52 W Weber Rd","city":"Columbus","postalCode":"43202","country":"USA","state":"OH"},"homePhone":"5715555551","privacyAgreementAccepted":true,"dependents":[],"veteranHomeAddress":{"street":"52 W Weber Rd","city":"Columbus","postalCode":"43202","country":"USA","state":"OH"}}'
     user = {
-      'icn' => '1012666182V203559',
-      'edipi' => '1005079124'
+      'icn' => '1013174704V087163',
+      'edipi' => nil
     }
     form = JSON.parse(json)
-    form['veteranFullName'] = {"first"=>"Greg", "middle"=>"A", "last"=>"Anderson"}
-    form['veteranDateOfBirth'] = "1933-04-05"
-    form['veteranSocialSecurityNumber'] = '796121200'
+    form['veteranFullName'] = {"first"=>"Andrea", "middle"=>"L", "last"=>"Mitchell"}
+    form['veteranDateOfBirth'] = "1989-11-11"
+    form['veteranSocialSecurityNumber'] = '111111111'
     binding.pry; fail
     HCA::Service.new(user).submit_form(form)
   end
