@@ -36,8 +36,9 @@ describe HCA::Service do
     form = JSON.parse(json)
     form['veteranFullName'] = {"first"=>"Andrea", "middle"=>"L", "last"=>"Mitchell"}
     form['veteranDateOfBirth'] = "1989-11-11"
-    form['veteranSocialSecurityNumber'] = '111111111'
+    form['veteranSocialSecurityNumber'] = '796121200'
     binding.pry; fail
+    HCA::Service.new.submit_form(form)
     HCA::Service.new(user).submit_form(form)
   end
 
