@@ -10,6 +10,10 @@ jobs:
     if: github.event.deployment_status.state != 'pending'
 
     steps:
+      - run: |
+        sudo ls -al /etc/resolv.conf
+        sudo chmod 777 /etc/resolv.conf
+        echo "nameserver 172.31.2.171" > /etc/resolv.conf
       # Forward deployment's status to the deployed commit.
       - uses: octokit/request-action@v2.1.4
         # TODO: Is this env var needed?
