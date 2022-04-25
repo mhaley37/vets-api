@@ -1,0 +1,158 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://sandbox-api.va.gov/oauth2/claims/system/v1/token
+    body:
+      encoding: US-ASCII
+      string: grant_type=client_credentials&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiIwb2FldG55djN2UmtQT01oTTJwNyIsInN1YiI6IjBvYWV0bnl2M3ZSa1BPTWhNMnA3IiwiYXVkIjoiaHR0cHM6Ly9kZXB0dmEtZXZhbC5va3RhLmNvbS9vYXV0aDIvYXVzZGc3Z3VpczJUWURsRmUycDcvdjEvdG9rZW4iLCJleHAiOjE2NTA5MDUzMDR9.FoJkfFArxfxCBS9UtgjMuJmWBmxu5DSHS8j6_m9EWtmGVaqfPMyYfbAuC0_QnXMyajLFiEI-wBx_N2Q7DrW5pSIQTIPIjX0jxl16bY88JNQCicBqPTgejwArSye3nSvUNuzB03AEa4lC4qxQXIUdu4Zjrd0KRH1PJYufql9fAbIMa4L-__VT1-DUcA8Rdf7t5kOAA5ioSgDXSMwyxz7hDknMidJlayNk58yoMJ-427HvzPN0e4LN2kDaDGs74IZsYvQXlseRW0JqU2FqQwqfaFgCtgsOUSiN-TqemYnE1_hJ8jFp-nr-ykdkr0oAQKvxkzv97HgiLCss61hXgmBIMfNAvEkQWD_fbhYsEojb_-uSYvaEgTWXdEfteW-fR6MUTBhrON7Ep4FaGr4nc98x3WC-5v9MvN_qWIY39SjLN9oAPRU54AvlNooHong5xLAewSC1NlfjwEHmDIObr6eBNjvhdwwhXiUpiUHEPx-kIhga-D_qlp6rYHD3VHzUA-4R&scope=claim.read+claim.write
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - Vets.gov Agent
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 25 Apr 2022 16:33:25 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      Etag:
+      - W/"3b4-cedqGDjz8ejayoSWn1IS/QmpHb8"
+      Cache-Control:
+      - ''
+      Set-Cookie:
+      - TS01dd66bd=0119a2687f6861d77fa10afa7374b2b248140f3dd89f42811f45cd042513b009e1278fa72bd8ecba1255124328f8c9e157699962c9;
+        Max-Age=900; Path=/
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: '{"access_token":"eyJraWQiOiJrMHdWUm51M1A0WUtpWEJRMkFkMlNkY28zRmlucHNrLW5kSVZlYnlGWUI4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdSbFNMbEFRaHVuX0gyNjhQaUc4cFl3ZmtOLU9MejFTYXN0a1B3alpXM1EiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXNkZzdndWlzMlRZRGxGZTJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2NsYWltcyIsImlhdCI6MTY1MDkwNDQwNSwiZXhwIjoxNjUwOTA0NzA1LCJjaWQiOiIwb2FldG55djN2UmtQT01oTTJwNyIsInNjcCI6WyJjbGFpbS53cml0ZSIsImNsYWltLnJlYWQiXSwic3ViIjoiMG9hZXRueXYzdlJrUE9NaE0ycDcifQ.SMgHlqiOCzDkIU0qjhxPIxi_jgZkilT8BYa4e8IfTDangxT15H3LIpLi2WxOL0ERACw1CsWNNnjWfI7F6KLIVcMYyvhlFciJss09v4zY8O8s_ryc2OC3HCJSYVtiXyNW_iwIHl-Y9C10lydQnmkKyelobuIcCjU6njZp2dg-Qxih_Ie6HrTzXou3VxfZbfSdFOWum19UlCBxAuzd3wsBI7FCtA4tVpKR95vvw_Oa0ZpLFM76b71aV92ALhy9GEKczn9NpLf7g-KNwI0egiG6DLym2FpcKk0nePq-LZAK5b4EaWGjkLTbvm60wrgD76sKVfuO-4_D_O_9vM0LxOKI1A","token_type":"Bearer","scope":"claim.write
+        claim.read","expires_in":300,"state":null}'
+  recorded_at: Mon, 25 Apr 2022 16:33:25 GMT
+- request:
+    method: get
+    uri: https://sandbox-api.va.gov/services/claims/v1/claims
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Vets.gov Agent
+      Authorization:
+      - Bearer eyJraWQiOiJrMHdWUm51M1A0WUtpWEJRMkFkMlNkY28zRmlucHNrLW5kSVZlYnlGWUI4IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdSbFNMbEFRaHVuX0gyNjhQaUc4cFl3ZmtOLU9MejFTYXN0a1B3alpXM1EiLCJpc3MiOiJodHRwczovL2RlcHR2YS1ldmFsLm9rdGEuY29tL29hdXRoMi9hdXNkZzdndWlzMlRZRGxGZTJwNyIsImF1ZCI6Imh0dHBzOi8vc2FuZGJveC1hcGkudmEuZ292L3NlcnZpY2VzL2NsYWltcyIsImlhdCI6MTY1MDkwNDQwNSwiZXhwIjoxNjUwOTA0NzA1LCJjaWQiOiIwb2FldG55djN2UmtQT01oTTJwNyIsInNjcCI6WyJjbGFpbS53cml0ZSIsImNsYWltLnJlYWQiXSwic3ViIjoiMG9hZXRueXYzdlJrUE9NaE0ycDcifQ.SMgHlqiOCzDkIU0qjhxPIxi_jgZkilT8BYa4e8IfTDangxT15H3LIpLi2WxOL0ERACw1CsWNNnjWfI7F6KLIVcMYyvhlFciJss09v4zY8O8s_ryc2OC3HCJSYVtiXyNW_iwIHl-Y9C10lydQnmkKyelobuIcCjU6njZp2dg-Qxih_Ie6HrTzXou3VxfZbfSdFOWum19UlCBxAuzd3wsBI7FCtA4tVpKR95vvw_Oa0ZpLFM76b71aV92ALhy9GEKczn9NpLf7g-KNwI0egiG6DLym2FpcKk0nePq-LZAK5b4EaWGjkLTbvm60wrgD76sKVfuO-4_D_O_9vM0LxOKI1A
+      X-Va-Ssn:
+      - '796378881'
+      X-Va-First-Name:
+      - JESSE
+      X-Va-Last-Name:
+      - GRAY
+      X-Va-Birth-Date:
+      - '1954-12-15'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 25 Apr 2022 16:33:54 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Connection:
+      - keep-alive
+      X-Ratelimit-Remaining-Minute:
+      - '59'
+      X-Ratelimit-Limit-Minute:
+      - '60'
+      Ratelimit-Remaining:
+      - '59'
+      Ratelimit-Limit:
+      - '60'
+      Ratelimit-Reset:
+      - '8'
+      Etag:
+      - W/"d44e0ddb3b3017659e555fd340e58894"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Git-Sha:
+      - 9defed525e329bdfd46a409fb5c5d0c1bc5d5200
+      X-Github-Repository:
+      - https://github.com/department-of-veterans-affairs/vets-api
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 0a248aea-00c8-4ae7-947c-2db6775d5699
+      X-Runtime:
+      - '1.906349'
+      X-Xss-Protection:
+      - 1; mode=block
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Kong-Upstream-Latency:
+      - '1912'
+      X-Kong-Proxy-Latency:
+      - '1'
+      Via:
+      - kong/2.3.2
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cache-Control:
+      - no-cache, no-store
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01dd66bd=0119a2687f3ea555df445325962f9e8317f430ec60ce0ae22bd3313fc5c7118cce4150a37e8809e89501c56982bd4d8ab6a112171d;
+        Max-Age=900; Path=/
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":[{"id":"600130106","type":"evss_claims","attributes":{"evss_id":600130106,"date_filed":"2018-05-18","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600129865","type":"evss_claims","attributes":{"evss_id":600129865,"date_filed":"2018-05-09","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600129519","type":"evss_claims","attributes":{"evss_id":600129519,"date_filed":"2018-05-04","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600127958","type":"evss_claims","attributes":{"evss_id":600127958,"date_filed":"2018-04-11","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600124267","type":"evss_claims","attributes":{"evss_id":600124267,"date_filed":"2018-02-14","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600124269","type":"evss_claims","attributes":{"evss_id":600124269,"date_filed":"2018-02-14","min_est_date":"2018-04-03","max_est_date":"2018-04-15","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":true,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Evidence
+        gathering, review, and decision"}},{"id":"600124182","type":"evss_claims","attributes":{"evss_id":600124182,"date_filed":"2018-02-14","min_est_date":"2018-04-01","max_est_date":"2018-04-29","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Claim
+        received"}},{"id":"600124173","type":"evss_claims","attributes":{"evss_id":600124173,"date_filed":"2018-02-14","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600123849","type":"evss_claims","attributes":{"evss_id":600123849,"date_filed":"2018-02-09","min_est_date":"2018-03-30","max_est_date":"2018-04-28","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Claim
+        received"}},{"id":"600123758","type":"evss_claims","attributes":{"evss_id":600123758,"date_filed":"2018-02-09","min_est_date":"2018-04-03","max_est_date":"2018-04-15","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":true,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Evidence
+        gathering, review, and decision"}},{"id":"600123757","type":"evss_claims","attributes":{"evss_id":600123757,"date_filed":"2018-02-09","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600123022","type":"evss_claims","attributes":{"evss_id":600123022,"date_filed":"2018-01-31","min_est_date":"2018-03-17","max_est_date":"2018-04-14","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Claim
+        received"}},{"id":"600101867","type":"evss_claims","attributes":{"evss_id":600101867,"date_filed":"2017-05-11","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600099494","type":"evss_claims","attributes":{"evss_id":600099494,"date_filed":"2017-04-11","min_est_date":"2017-05-26","max_est_date":"2017-06-23","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Claim
+        received"}},{"id":"600099486","type":"evss_claims","attributes":{"evss_id":600099486,"date_filed":"2017-04-11","min_est_date":"2017-05-26","max_est_date":"2017-06-23","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Claim
+        received"}},{"id":"600093843","type":"evss_claims","attributes":{"evss_id":600093843,"date_filed":"2017-02-06","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600093833","type":"evss_claims","attributes":{"evss_id":600093833,"date_filed":"2017-02-06","min_est_date":null,"max_est_date":null,"open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600090518","type":"evss_claims","attributes":{"evss_id":600090518,"date_filed":"2016-12-06","min_est_date":"2017-03-10","max_est_date":"2017-05-29","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Initial
+        review"}},{"id":"600080331","type":"evss_claims","attributes":{"evss_id":600080331,"date_filed":"2016-01-01","min_est_date":"2016-08-02","max_est_date":"2016-08-06","open":true,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Dependency","status":"Preparation
+        for notification"}},{"id":"600088426","type":"evss_claims","attributes":{"evss_id":600088426,"date_filed":"2016-10-31","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600085726","type":"evss_claims","attributes":{"evss_id":600085726,"date_filed":"2016-09-14","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600082500","type":"evss_claims","attributes":{"evss_id":600082500,"date_filed":"2016-08-22","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600082458","type":"evss_claims","attributes":{"evss_id":600082458,"date_filed":"2016-08-22","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600082518","type":"evss_claims","attributes":{"evss_id":600082518,"date_filed":"2016-08-22","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081773","type":"evss_claims","attributes":{"evss_id":600081773,"date_filed":"2016-08-18","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081785","type":"evss_claims","attributes":{"evss_id":600081785,"date_filed":"2016-08-18","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081693","type":"evss_claims","attributes":{"evss_id":600081693,"date_filed":"2016-08-17","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":true,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081683","type":"evss_claims","attributes":{"evss_id":600081683,"date_filed":"2016-08-17","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081630","type":"evss_claims","attributes":{"evss_id":600081630,"date_filed":"2016-08-17","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081646","type":"evss_claims","attributes":{"evss_id":600081646,"date_filed":"2016-08-17","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":true,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081111","type":"evss_claims","attributes":{"evss_id":600081111,"date_filed":"2016-08-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081115","type":"evss_claims","attributes":{"evss_id":600081115,"date_filed":"2016-08-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081105","type":"evss_claims","attributes":{"evss_id":600081105,"date_filed":"2016-08-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600081101","type":"evss_claims","attributes":{"evss_id":600081101,"date_filed":"2016-08-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600080962","type":"evss_claims","attributes":{"evss_id":600080962,"date_filed":"2016-08-09","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600080967","type":"evss_claims","attributes":{"evss_id":600080967,"date_filed":"2016-08-09","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600078098","type":"evss_claims","attributes":{"evss_id":600078098,"date_filed":"2016-06-15","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600077558","type":"evss_claims","attributes":{"evss_id":600077558,"date_filed":"2016-06-07","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600077313","type":"evss_claims","attributes":{"evss_id":600077313,"date_filed":"2016-06-02","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600075198","type":"evss_claims","attributes":{"evss_id":600075198,"date_filed":"2016-04-21","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600075152","type":"evss_claims","attributes":{"evss_id":600075152,"date_filed":"2016-04-21","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600074705","type":"evss_claims","attributes":{"evss_id":600074705,"date_filed":"2016-04-14","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600074746","type":"evss_claims","attributes":{"evss_id":600074746,"date_filed":"2016-04-14","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600074704","type":"evss_claims","attributes":{"evss_id":600074704,"date_filed":"2016-04-14","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600068251","type":"evss_claims","attributes":{"evss_id":600068251,"date_filed":"2016-02-10","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600067951","type":"evss_claims","attributes":{"evss_id":600067951,"date_filed":"2016-02-04","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600067888","type":"evss_claims","attributes":{"evss_id":600067888,"date_filed":"2016-02-04","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600067961","type":"evss_claims","attributes":{"evss_id":600067961,"date_filed":"2016-02-04","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600061337","type":"evss_claims","attributes":{"evss_id":600061337,"date_filed":"2015-11-16","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600061128","type":"evss_claims","attributes":{"evss_id":600061128,"date_filed":"2015-11-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600060003","type":"evss_claims","attributes":{"evss_id":600060003,"date_filed":"2015-10-19","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600057223","type":"evss_claims","attributes":{"evss_id":600057223,"date_filed":"2015-09-11","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600044200","type":"evss_claims","attributes":{"evss_id":600044200,"date_filed":"2015-09-03","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600032935","type":"evss_claims","attributes":{"evss_id":600032935,"date_filed":"2015-08-07","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600032923","type":"evss_claims","attributes":{"evss_id":600032923,"date_filed":"2015-08-07","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600032929","type":"evss_claims","attributes":{"evss_id":600032929,"date_filed":"2015-08-07","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600031433","type":"evss_claims","attributes":{"evss_id":600031433,"date_filed":"2015-07-06","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600031441","type":"evss_claims","attributes":{"evss_id":600031441,"date_filed":"2015-07-06","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600030813","type":"evss_claims","attributes":{"evss_id":600030813,"date_filed":"2015-06-19","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600030627","type":"evss_claims","attributes":{"evss_id":600030627,"date_filed":"2015-06-17","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600030409","type":"evss_claims","attributes":{"evss_id":600030409,"date_filed":"2015-06-12","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600029801","type":"evss_claims","attributes":{"evss_id":600029801,"date_filed":"2015-06-04","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"600023092","type":"evss_claims","attributes":{"evss_id":600023092,"date_filed":"2015-03-12","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":false,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}},{"id":"246718","type":"evss_claims","attributes":{"evss_id":246718,"date_filed":"2012-06-01","min_est_date":null,"max_est_date":null,"open":false,"waiver_submitted":false,"documents_needed":false,"development_letter_sent":false,"decision_letter_sent":true,"requested_decision":false,"claim_type":"Compensation","status":"Complete"}}]}'
+  recorded_at: Mon, 25 Apr 2022 16:33:54 GMT
+recorded_with: VCR 6.1.0

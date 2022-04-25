@@ -1020,6 +1020,17 @@ hqva_mobile:
 # settings va.gov uses related to lighthouse api's
 lighthouse:
   api_key: fake_key
+  benefits:
+    url: https://sandbox-api.va.gov
+    fast_tracker:
+      client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+      api_scope:
+        - "claim.read"
+        - "claim.write"
+      aud_claim_url: "https://deptva-eval.okta.com/oauth2/ausdg7guis2TYDlFe2p7/v1/token"
+      client_id: "0oaaxkp0aeXEJkMFw2p7"
+      grant_type: "client_credentials"
+      api_key: /srv/vets-api/secret/lighthouse_fast_track_api.key
   veterans_health:
     url: https://sandbox-api.va.gov
     fast_tracker:
