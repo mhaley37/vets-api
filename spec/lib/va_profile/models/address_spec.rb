@@ -136,7 +136,7 @@ describe VAProfile::Models::Address do
         address.county_code = 'bar'
         expect(address.valid?).to eq(false)
       end
-      
+
       context 'with bypass international postal code validation feature toggle on' do
         it 'international_postal_code is not required' do
           Flipper.enable(:profile_do_not_require_international_zip_code)
@@ -153,7 +153,7 @@ describe VAProfile::Models::Address do
           address.international_postal_code = ''
           expect(address.valid?).to eq(false)
         end
-      end      
+      end
 
       it 'ensures international_postal_code is < 35 characters' do
         expect(address.valid?).to eq(true)
