@@ -5,6 +5,7 @@ module SignIn
     include ActiveModel::Validations
 
     attr_reader(
+      :uuid,
       :session_handle,
       :user_uuid,
       :refresh_token_hash,
@@ -17,6 +18,7 @@ module SignIn
     )
 
     validates(
+      :uuid,
       :session_handle,
       :user_uuid,
       :refresh_token_hash,
@@ -40,6 +42,7 @@ module SignIn
                    version: Constants::AccessToken::CURRENT_VERSION,
                    expiration_time: set_expiration_time,
                    created_time: set_created_time)
+      @uuid = create_uuid
       @session_handle = session_handle
       @user_uuid = user_uuid
       @refresh_token_hash = refresh_token_hash
@@ -59,6 +62,10 @@ module SignIn
     end
 
     private
+
+    def create_uuid
+      SecureRandom.uuid
+    end
 
     def set_expiration_time
       Time.zone.now + Constants::AccessToken::VALIDITY_LENGTH_MINUTES.minutes

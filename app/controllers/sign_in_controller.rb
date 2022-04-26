@@ -23,6 +23,7 @@ class SignInController < ApplicationController
     state = SignIn::CodeChallengeStateMapper.new(code_challenge: code_challenge,
                                                  code_challenge_method: code_challenge_method,
                                                  client_state: client_state).perform
+    Rails.logger.info('Sign in Service Authorization Attempt', { state: client_state, request_url: request.original_url })
     render body: auth_service(type).render_auth(state: state), content_type: 'text/html'
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -37,6 +38,9 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError unless code && state
 
     login_code, client_state = login(type, state, code)
+    Rails.logger.info('Sign in Service Authorization Callback', { state: client_state,
+                                                                  code: code,
+                                                                  request_url: request.original_url })
     redirect_to login_redirect_url(login_code, client_state)
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -51,7 +55,9 @@ class SignInController < ApplicationController
 
     user_account = SignIn::CodeValidator.new(code: code, code_verifier: code_verifier, grant_type: grant_type).perform
     session_container = SignIn::SessionCreator.new(user_account: user_account).perform
-
+    Rails.logger.info('Sign in Service Token Response', { code: code,
+                                                          access_token: session_container.access_token.uuid,
+                                                          request_url: request.original_url })
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized

@@ -3,6 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe SignInController, type: :controller do
+  let(:user_account) { create(:user_account) }
+  let(:user_account_uuid) { user_account.id }
+  let(:user) { create(:user, uuid: user_account_uuid) }
+
+  before { allow(User).to receive(:find).and_return(user) }
+
   describe 'GET authorize' do
     subject do
       get(:authorize, params: {}.merge(type).merge(code_challenge).merge(code_challenge_method).merge(client_state))
@@ -89,6 +95,9 @@ RSpec.describe SignInController, type: :controller do
         context 'and code_challenge is properly URL encoded' do
           let(:code_challenge) { { code_challenge: Base64.urlsafe_encode64('some-safe-code-challenge') } }
           let(:state) { 'some-random-state' }
+          let(:authorize_url) do
+            "http://www.example.com/sign_in/#{type[:type]}/authorize?code_challenge=#{code_challenge[:code_challenge]}&code_challenge_method=S256"
+          end
 
           before do
             allow(SecureRandom).to receive(:hex).and_return(state)
@@ -136,6 +145,13 @@ RSpec.describe SignInController, type: :controller do
             it 'returns bad_request status' do
               expect(subject).to have_http_status(:bad_request)
             end
+          end
+
+          it 'logs the authentication attempt' do
+            allow(Rails.logger).to receive(:info)
+            expect(Rails.logger).to receive(:info)
+              .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
+            subject
           end
         end
       end
@@ -204,6 +220,9 @@ RSpec.describe SignInController, type: :controller do
         context 'and code_challenge is properly URL encoded' do
           let(:code_challenge) { { code_challenge: Base64.urlsafe_encode64('some-safe-code-challenge') } }
           let(:state) { 'some-random-state' }
+          let(:authorize_url) do
+            "http://www.example.com/sign_in/#{type[:type]}/authorize?code_challenge=#{code_challenge[:code_challenge]}&code_challenge_method=S256"
+          end
 
           before do
             allow(SecureRandom).to receive(:hex).and_return(state)
@@ -251,6 +270,13 @@ RSpec.describe SignInController, type: :controller do
             it 'returns bad_request status' do
               expect(subject).to have_http_status(:bad_request)
             end
+          end
+
+          it 'logs the authentication attempt' do
+            allow(Rails.logger).to receive(:info)
+            expect(Rails.logger).to receive(:info)
+              .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
+            subject
           end
         end
       end
@@ -369,8 +395,6 @@ RSpec.describe SignInController, type: :controller do
                  user_account_uuid: user_account_uuid)
         end
         let(:code_challenge) { 'some-code-challenge' }
-        let(:user_account_uuid) { user_account.id }
-        let(:user_account) { create(:user_account) }
 
         context 'and code_verifier does not match expected code_challenge value' do
           let(:code_verifier_value) { 'some-arbitrary-code-verifier-value' }
@@ -570,6 +594,9 @@ RSpec.describe SignInController, type: :controller do
           let(:client_code) { 'some-client-code' }
           let(:client_state) { SecureRandom.alphanumeric(SignIn::Constants::Auth::CLIENT_STATE_MINIMUM_LENGTH) }
           let(:expected_url) { "#{Settings.sign_in.redirect_uri}?code=#{client_code}&state=#{client_state}" }
+          let(:callback_url) do
+            "http://www.example.com/sign_in/#{type[:type]}/callback?code=#{code[:code]}&state=#{state[:state]}"
+          end
 
           before do
             allow(SecureRandom).to receive(:uuid).and_return(client_code)
@@ -581,6 +608,13 @@ RSpec.describe SignInController, type: :controller do
 
           it 'redirects to expected url' do
             expect(subject).to redirect_to(expected_url)
+          end
+
+          it 'logs the authentication attempt' do
+            allow(Rails.logger).to receive(:info)
+            expect(Rails.logger).to receive(:info)
+              .with('Sign in Service Authorization Callback', hash_including(state: state[:state], code: code[:code], request_url: callback_url))
+            subject
           end
         end
       end
