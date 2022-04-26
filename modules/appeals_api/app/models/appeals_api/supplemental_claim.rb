@@ -46,12 +46,32 @@ module AppealsApi
       ).new(self)
     end
 
+    def claimant
+      @claimant ||= Appellant.new(
+        type: :claimant,
+        auth_headers: auth_headers,
+        form_data: data_attributes&.dig('claimant')
+      )
+    end
+
+    def signing_appellant
+      claimant.signing_appellant? ? claimant : veteran
+    end
+
+    def appellant_local_time
+      signing_appellant.timezone ? created_at.in_time_zone(signing_appellant.timezone) : created_at.utc
+    end
+
     def veteran_first_name
       auth_headers['X-VA-First-Name']
     end
 
     def veteran_middle_initial
       auth_headers['X-VA-Middle-Initial']
+    end
+
+    def claimant_middle_initial
+      auth_headers['X-VA-Claimant-Middle-Initial']
     end
 
     def veteran_last_name
@@ -254,11 +274,6 @@ module AppealsApi
 
     def veteran
       data_attributes&.dig('veteran')
-    end
-
-    def claimant
-      # TODO: Flesh out when Non-Veteran Claimant research completes
-      nil
     end
 
     def evidence_submission
