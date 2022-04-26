@@ -123,8 +123,8 @@ RSpec.describe SignIn::SessionRefresher do
                 it 'logs the creation of the Refresh tokens' do
                   allow(Rails.logger).to receive(:info)
                   expect(Rails.logger).to receive(:info)
-                    .twice.with('Sign in Service Token - rotate:',
-                                hash_including(token_type: 'refresh', user_id: user.uuid))
+                    .once.with('Sign in Service Token - rotate:',
+                               hash_including(token_type: 'refresh', user_id: user.uuid))
                   subject.refresh_token
                 end
               end
@@ -156,22 +156,6 @@ RSpec.describe SignIn::SessionRefresher do
                                hash_including(token_type: 'access', user_id: user.uuid))
                   subject.refresh_token
                 end
-              end
-            end
-
-            context 'refresh logging' do
-              let(:expected_refresh_token_hash) { Digest::SHA256.hexdigest(refresh_token.to_json) }
-
-              it 'logs refresh time update with child refresh token' do
-                allow(Rails.logger).to receive(:info)
-                expect(Rails.logger).to receive(:info)
-                  .once.with('Sign in Service Token - refresh:',
-                             hash_including(
-                               token_type: 'refresh',
-                               user_id: user.uuid,
-                               parent_refresh_token_hash: expected_refresh_token_hash
-                             ))
-                subject.refresh_token
               end
             end
           end

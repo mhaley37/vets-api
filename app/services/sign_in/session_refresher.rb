@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sign_in/logger'
+
 module SignIn
   class SessionRefresher
     attr_reader :refresh_token, :anti_csrf_token, :enable_anti_csrf, :session
@@ -15,12 +17,7 @@ module SignIn
       find_valid_oauth_session
       detect_token_theft
       update_session! if parent_refresh_token_in_session?
-      new_tokens = create_new_tokens
-      # is this necessary here if we're also logging the creation of the child tokens?
-      sign_in_logger.log_token(child_refresh_token,
-                               event: 'refresh',
-                               parent_refresh_token_hash: child_refresh_token.parent_refresh_token_hash)
-      new_tokens
+      create_new_tokens
     end
 
     private

@@ -55,9 +55,7 @@ class SignInController < ApplicationController
 
     user_account = SignIn::CodeValidator.new(code: code, code_verifier: code_verifier, grant_type: grant_type).perform
     session_container = SignIn::SessionCreator.new(user_account: user_account).perform
-    Rails.logger.info('Sign in Service Token Response', { code: code,
-                                                          access_token: session_container.access_token.uuid,
-                                                          request_url: request.original_url })
+    Rails.logger.info('Sign in Service Token Response', { code: code, access_token: session_container.access_token.uuid })
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -72,7 +70,7 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError if enable_anti_csrf && anti_csrf_token.nil?
 
     session_container = refresh_session(refresh_token, anti_csrf_token, enable_anti_csrf)
-
+    Rails.logger.info('Sign in Service Tokens Refresh', { access_token: session_container.access_token.uuid })
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -116,7 +114,10 @@ class SignInController < ApplicationController
 
   def authenticate_access_token
     access_token = bearer_token
+
     @current_user = SignIn::UserLoader.new(access_token: access_token).perform
+    Rails.logger.info('Sign in Service User Access Token Authenticated',
+                      { user: access_token.user_uuid, access_token: access_token.uuid, uri: request.url })
   rescue => e
     render json: { errors: e }, status: :unauthorized
   end

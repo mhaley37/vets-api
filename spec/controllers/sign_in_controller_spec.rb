@@ -1058,6 +1058,13 @@ RSpec.describe SignInController, type: :controller do
         it 'returns expected body with anti csrf token token' do
           expect(JSON.parse(subject.body)['data']).to have_key('anti_csrf_token')
         end
+
+        it 'logs the token refresh' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info)
+            .with('Sign in Service Tokens Refresh', { access_token: session_container.access_token.uuid })
+          subject
+        end
       end
     end
 
@@ -1138,6 +1145,7 @@ RSpec.describe SignInController, type: :controller do
         let!(:user) { create(:user, :loa3, uuid: access_token_object.user_uuid) }
         let(:user_serializer) { SignIn::IntrospectSerializer.new(user) }
         let(:expected_introspect_response) { JSON.parse(user_serializer.to_json) }
+        let(:expected_uri) { 'http://www.example.com/sign_in/introspect' }
 
         it 'renders expected user data' do
           expect(JSON.parse(subject.body)['data']['attributes']).to eq(expected_introspect_response)
@@ -1145,6 +1153,14 @@ RSpec.describe SignInController, type: :controller do
 
         it 'returns ok status' do
           expect(subject).to have_http_status(:ok)
+        end
+
+        it 'logs the access_token authentication' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info)
+            .once.with('Sign in Service User Access Token Authenticated',
+                       { user: access_token_object.user_uuid, access_token: access_token_object.uuid, uri: expected_uri })
+          subject
         end
       end
     end
