@@ -3,11 +3,7 @@
 require 'rails_helper'
 require 'sidekiq/testing'
 
-RSpec.describe RapidReadyForDecision::HypertensionProcessor, type: :worker do
-  before do
-    Sidekiq::Worker.clear_all
-  end
-
+RSpec.describe RapidReadyForDecision::HypertensionProcessor do
   around do |example|
     VCR.use_cassette('evss/claims/claims_without_open_compensation_claims') do
       VCR.use_cassette('rrd/hypertension', &example)
@@ -28,7 +24,7 @@ RSpec.describe RapidReadyForDecision::HypertensionProcessor, type: :worker do
                     'unit' => 'mm[Hg]' } }]
   end
 
-  describe '#perform', :vcr do
+  describe '#perform' do
     before do
       # The bp reading needs to be 1 year or less old so actual API data will not test if this code is working.
       allow_any_instance_of(RapidReadyForDecision::LighthouseObservationData)
