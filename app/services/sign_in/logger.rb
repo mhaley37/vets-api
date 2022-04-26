@@ -6,7 +6,7 @@ module SignIn
       user_values = get_user_csp_values(token.user_uuid)
       token_values = get_token_values(token)
       token_log_payload = {
-        audit_id: SecureRandom.uuid,
+        access_token_id: token_values[:access_token_id],
         token_type: token_values[:token_type],
         session_id: token.session_handle,
         user_id: token.user_uuid,
@@ -37,17 +37,12 @@ module SignIn
 
     def get_token_values(token)
       token_type = token.class.to_s.include?('Refresh') ? 'refresh' : 'access'
-      if token_type == 'refresh'
-        refresh_token_hash = Digest::SHA256.hexdigest(token.to_json)
-        access_token_hash = nil
-      else
-        refresh_token_hash = token&.refresh_token_hash
-        access_token_hash = Digest::SHA256.hexdigest(token.to_json)
-      end
+      refresh_token = token_type == 'refresh'
       {
         token_type: token_type,
-        refresh_token_hash: refresh_token_hash,
-        access_token_hash: access_token_hash
+        refresh_token_hash: refresh_token ? Digest::SHA256.hexdigest(token.to_json) : token.refresh_token_hash,
+        access_token_id: refresh_token ? nil : token.uuid,
+        access_token_hash: refresh_token ? nil : Digest::SHA256.hexdigest(token.to_json)
       }
     end
 
