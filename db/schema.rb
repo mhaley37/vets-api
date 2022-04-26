@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_24_182532) do
+ActiveRecord::Schema.define(version: 2022_04_26_212418) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -345,6 +345,12 @@ ActiveRecord::Schema.define(version: 2022_03_24_182532) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_account_id"], name: "index_deprecated_user_accounts_on_user_account_id", unique: true
     t.index ["user_verification_id"], name: "index_deprecated_user_accounts_on_user_verification_id", unique: true
+  end
+
+  create_table "devices", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "directory_applications", force: :cascade do |t|
