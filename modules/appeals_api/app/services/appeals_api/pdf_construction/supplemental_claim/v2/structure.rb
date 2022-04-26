@@ -29,6 +29,7 @@ module AppealsApi
               form_fields.veteran_service_number => form_data.veteran_service_number,
               form_fields.insurance_policy_number => form_data.insurance_policy_number,
 
+              form_fields.claimant_middle_initial => form_data.claimant_middle_initial,
               form_fields.claimant_type => 1, # default to check 'veteran' for now
 
               form_fields.mailing_address_state => form_data.mailing_address_state,
@@ -116,6 +117,10 @@ module AppealsApi
               fill_text pdf, :veteran_last_name
               fill_text pdf, :mailing_address_number_and_street
               fill_text pdf, :email, long_text_override: 'See attached page for veteran email'
+
+              fill_text pdf, :claimant_first_name
+              fill_text pdf, :claimant_last_name
+
               fill_contestable_issues_text pdf
               pdf.start_new_page
 

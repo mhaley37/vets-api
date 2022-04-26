@@ -18,8 +18,11 @@ module AppealsApi
                    :insurance_policy_number, :mailing_address_number_and_street,
                    :mailing_address_apartment_or_unit_number, :mailing_address_city_and_box, :mailing_address_state,
                    :mailing_address_country, :zip_code_5, :phone, :email, :contestable_issues, :soc_opt_in,
-                   :new_evidence_locations, :new_evidence_dates, :date_signed,
+                   :new_evidence_locations, :new_evidence_dates, :date_signed, :claimant,
                    to: :supplemental_claim
+
+          delegate :first_name, :last_name, :middle_initial, :phone_data, :number_and_street, :city, :zip_code, :email,
+                   to: :claimant, prefix: true
 
           def ssn_first_three
             ssn.first(3)
@@ -31,6 +34,38 @@ module AppealsApi
 
           def ssn_last_four
             ssn.last(4)
+          end
+
+          def claimant_phone_string
+            claimant.phone_formatted.to_s
+          end
+
+          def claimant_area_code
+            return unless claimant.domestic_phone?
+
+            claimant_phone_data&.dig('areaCode')
+          end
+
+          def claimant_phone_prefix
+            return unless claimant.domestic_phone?
+
+            claimant_phone_data&.dig('phoneNumber')&.first(3)
+          end
+
+          def claimant_phone_line_number
+            return unless claimant.domestic_phone?
+
+            claimant_phone_data&.dig('phoneNumber')&.last(4)
+          end
+
+          def claimant_international_number
+            return if claimant.domestic_phone?
+
+            claimant_phone_string
+          end
+
+          def claimant_phone_ext
+            claimant_phone_data&.dig('phoneNumberExt')
           end
 
           def benefit_type

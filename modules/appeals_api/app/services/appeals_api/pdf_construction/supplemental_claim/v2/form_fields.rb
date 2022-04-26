@@ -9,6 +9,10 @@ module AppealsApi
             'form1[0].#subform[2].VeteransMiddleInitial1[0]'
           end
 
+          def claimant_middle_initial
+            'form1[0].#subform[2].ClaimantsMiddleInitial1[0]'
+          end
+
           def ssn_first_three
             'form1[0].#subform[2].SocialSecurityNumber_FirstThreeNumbers[0]'
           end
@@ -35,6 +39,10 @@ module AppealsApi
 
           def veteran_dob_year
             'form1[0].#subform[2].DOByear[0]'
+          end
+
+          def claimant_dob
+            'F[0].Page_1[0].DateSigned[1]'
           end
 
           def veteran_service_number
@@ -136,6 +144,9 @@ module AppealsApi
               mailing_address_apartment_or_unit_number: { at: [60, 401], width: 78 },
               mailing_address_city_and_box: { at: [195, 402], width: 308 },
               email: { at: [286, 347], width: 244 },
+
+              claimant_first_name: { at: [3, 485], width: 195 },
+              claimant_last_name: { at: [238, 485], width: 300 },
 
               contestable_issues: contestable_issues_coordinates,
               decision_dates: decision_dates_coordinates,
