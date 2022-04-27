@@ -613,7 +613,8 @@ RSpec.describe SignInController, type: :controller do
           it 'logs the authentication attempt' do
             allow(Rails.logger).to receive(:info)
             expect(Rails.logger).to receive(:info)
-              .with('Sign in Service Authorization Callback', hash_including(state: state[:state], code: code[:code], request_url: callback_url))
+              .with('Sign in Service Authorization Callback', hash_including(state: state[:state], code: code[:code],
+                                                                             request_url: callback_url))
             subject
           end
         end
@@ -1070,9 +1071,10 @@ RSpec.describe SignInController, type: :controller do
 
         it 'logs the token refresh' do
           allow(Rails.logger).to receive(:info)
+          response = subject
+          uuid = JWT.decode(JSON.parse(response.body)['data']['access_token'], nil, false).first['jti']
           expect(Rails.logger).to receive(:info)
-            .with('Sign in Service Tokens Refresh', { access_token: session_container.access_token.uuid })
-          subject
+            .with('Sign in Service Tokens Refresh', { access_token: uuid })
         end
       end
     end
@@ -1168,7 +1170,8 @@ RSpec.describe SignInController, type: :controller do
           allow(Rails.logger).to receive(:info)
           expect(Rails.logger).to receive(:info)
             .once.with('Sign in Service User Access Token Authenticated',
-                       { user: access_token_object.user_uuid, access_token: access_token_object.uuid, uri: expected_uri })
+                       { user: access_token_object.user_uuid, access_token: access_token_object.uuid,
+                         uri: expected_uri })
           subject
         end
       end

@@ -22,7 +22,7 @@ module SignIn
         iss: Constants::AccessToken::ISSUER,
         aud: Constants::AccessToken::MOBILE_AUDIENCE,
         client_id: Constants::AccessToken::MOBILE_CLIENT_ID,
-        jti: random_number,
+        jti: access_token.uuid,
         sub: access_token.user_uuid,
         exp: access_token.expiration_time.to_i,
         iat: access_token.created_time.to_i,
@@ -33,10 +33,6 @@ module SignIn
         last_regeneration_time: access_token.last_regeneration_time.to_i,
         version: access_token.version
       }
-    end
-
-    def random_number
-      SecureRandom.hex
     end
 
     def jwt_encode_access_token

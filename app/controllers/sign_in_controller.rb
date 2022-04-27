@@ -55,7 +55,8 @@ class SignInController < ApplicationController
 
     user_account = SignIn::CodeValidator.new(code: code, code_verifier: code_verifier, grant_type: grant_type).perform
     session_container = SignIn::SessionCreator.new(user_account: user_account).perform
-    Rails.logger.info('Sign in Service Token Response', { code: code, access_token: session_container.access_token.uuid })
+    Rails.logger.info('Sign in Service Token Response',
+                      { code: code, access_token: session_container.access_token.uuid })
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized

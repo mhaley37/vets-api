@@ -33,7 +33,8 @@ module SignIn
     validates :version, inclusion: Constants::AccessToken::VERSION_LIST
 
     # rubocop:disable Metrics/ParameterLists
-    def initialize(session_handle:,
+    def initialize(uuid: create_uuid,
+                   session_handle:,
                    user_uuid:,
                    refresh_token_hash:,
                    anti_csrf_token:,
@@ -42,7 +43,7 @@ module SignIn
                    version: Constants::AccessToken::CURRENT_VERSION,
                    expiration_time: set_expiration_time,
                    created_time: set_created_time)
-      @uuid = create_uuid
+      @uuid = uuid
       @session_handle = session_handle
       @user_uuid = user_uuid
       @refresh_token_hash = refresh_token_hash
