@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby '~> 2.7.4'
+ruby '~> 2.7.6'
 
 # Modules
 path 'modules' do
@@ -18,6 +18,7 @@ path 'modules' do
   gem 'identity'
   gem 'meb_api'
   gem 'mobile'
+  gem 'my_health'
   gem 'openid_auth'
   gem 'test_user_dashboard'
   gem 'va_forms'
@@ -29,7 +30,7 @@ path 'modules' do
   gem 'veteran_verification'
 end
 
-gem 'rails', '~> 6.1'
+gem 'rails', '~> 6.1.5'
 
 gem 'aasm'
 gem 'active_model_serializers', git: 'https://github.com/department-of-veterans-affairs/active_model_serializers', branch: 'master'
@@ -60,6 +61,7 @@ gem 'faraday_middleware'
 gem 'fastimage'
 gem 'fast_jsonapi'
 gem 'fhir_client'
+gem 'fitbit_api'
 gem 'flipper'
 gem 'flipper-active_record'
 gem 'flipper-active_support_cache_store'
@@ -80,6 +82,7 @@ gem 'json'
 gem 'jsonapi-parser'
 gem 'json-schema'
 gem 'json_schemer'
+gem 'jwe'
 gem 'jwt'
 gem 'kms_encrypted'
 gem 'levenshtein-ffi'
@@ -105,8 +108,9 @@ gem 'pdf-reader'
 gem 'pg'
 gem 'pg_query'
 gem 'pg_search'
+gem 'pkce_challenge'
 gem 'prawn'
-gem 'prawn-markup'
+gem 'prawn-markup', github: 'puzzle/prawn-markup', ref: 'f7956009df696c9d126843d2d35ff270b9c031cd' # TODO: Remove ref once a new release has been made.
 gem 'prawn-table'
 gem 'puma'
 gem 'puma-plugin-statsd'
@@ -117,7 +121,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'rails_semantic_logger'
 gem 'rails-session_cookie'
 gem 'redis'
-gem 'redis-namespace'
+gem 'redis-namespace', github: 'resque/redis-namespace', ref: 'de6c3b9b01658b37e3ea776c52cf2eec3a89dcb3' # TODO: Remove ref once a new release has been made
 gem 'request_store'
 gem 'restforce'
 gem 'rgeo-geojson'

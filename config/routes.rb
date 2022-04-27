@@ -20,8 +20,13 @@ Rails.application.routes.draw do
       to: 'sign_in#callback',
       constraints: ->(request) { SignInController::REDIRECT_URLS.include?(request.path_parameters[:type]) }
   post '/sign_in/refresh', to: 'sign_in#refresh'
+  post '/sign_in/revoke', to: 'sign_in#revoke'
   post '/sign_in/token', to: 'sign_in#token'
   get '/sign_in/introspect', to: 'sign_in#introspect'
+
+  get '/inherited_proofing/auth', to: 'inherited_proofing#auth'
+  get '/inherited_proofing/user_attributes', to: 'inherited_proofing#user_attributes'
+  get '/inherited_proofing/callback', to: 'inherited_proofing#callback'
 
   namespace :v0, defaults: { format: 'json' } do
     resources :onsite_notifications, only: %i[create index update]
@@ -31,12 +36,15 @@ Rails.application.routes.draw do
     resources :disability_compensation_in_progress_forms, only: %i[index show update destroy]
     resource :claim_documents, only: [:create]
     resource :claim_attachments, only: [:create], controller: :claim_documents
-    resources :debts, only: :index
+    resources :debts, only: %i[index show]
     resources :debt_letters, only: %i[index show]
     resources :education_career_counseling_claims, only: :create
     resources :veteran_readiness_employment_claims, only: :create
     resource :virtual_agent_token, only: [:create], controller: :virtual_agent_token
     resources :preferred_facilities, only: %i[index create destroy]
+
+    get 'form1095_bs/download/:tax_year', to: 'form1095_bs#download'
+    get 'form1095_bs/available_forms', to: 'form1095_bs#available_forms'
 
     resources :medical_copays, only: %i[index show]
     get 'medical_copays/get_pdf_statement_by_id/:statement_id', to: 'medical_copays#get_pdf_statement_by_id'
@@ -290,6 +298,8 @@ Rails.application.routes.draw do
 
       resources :ch33_bank_accounts, only: %i[index]
       put 'ch33_bank_accounts', to: 'ch33_bank_accounts#update'
+      resource :gender_identities, only: :update
+      resource :preferred_names, only: :update
     end
 
     resources :search, only: :index
@@ -418,6 +428,7 @@ Rails.application.routes.draw do
   mount HealthQuest::Engine, at: '/health_quest'
   mount MebApi::Engine, at: '/meb_api'
   mount Mobile::Engine, at: '/mobile'
+  mount MyHealth::Engine, at: '/my_health', as: 'my_health'
   mount VAOS::Engine, at: '/vaos'
   # End Modules
 

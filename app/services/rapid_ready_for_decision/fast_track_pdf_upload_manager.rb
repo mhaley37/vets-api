@@ -4,16 +4,21 @@ module RapidReadyForDecision
   class FastTrackPdfUploadManager
     attr_accessor :submission
 
-    DOCUMENT_TITLE = 'VAMC_Hypertension_Rapid_Decision_Evidence'
+    DOCUMENT_NAME_PREFIX = 'VAMC'
+    DOCUMENT_NAME_SUFFIX = 'Rapid_Decision_Evidence'
 
-    def initialize(submission)
+    def initialize(submission, metadata_hash = {}, disability_struct = nil)
       @submission = submission
+      @metadata_hash = metadata_hash
+      @disability_struct = disability_struct || RapidReadyForDecision::Constants.first_disability(submission)
     end
 
     def file_upload_name
       @file_upload_name ||= begin
         search_date = Time.zone.today.strftime('%Y%m%d')
-        "#{DOCUMENT_TITLE}-#{search_date}.pdf"
+        contention = @disability_struct[:label].capitalize
+        document_title = "#{DOCUMENT_NAME_PREFIX}_#{contention}_#{DOCUMENT_NAME_SUFFIX}"
+        "#{document_title}-#{search_date}.pdf"
       end
     end
 
@@ -32,14 +37,8 @@ module RapidReadyForDecision
       submission
     end
 
-    def already_has_summary_file
-      data = JSON.parse(submission.form_json)
-      uploads = data['form526_uploads'] || []
-      uploads.any? { |upload| upload['name'].start_with? DOCUMENT_TITLE }
-    end
-
     def handle_attachment(pdf_body, add_to_submission: true)
-      if already_has_summary_file
+      if submission.rrd_pdf_added_for_uploading?
         submission
       else
         supporting_evidence_attachment = SupportingEvidenceAttachment.new
@@ -47,6 +46,7 @@ module RapidReadyForDecision
         supporting_evidence_attachment.set_file_data!(file)
         supporting_evidence_attachment.save!
         confirmation_code = supporting_evidence_attachment.guid
+        @metadata_hash[:pdf_guid] = confirmation_code
 
         add_upload(confirmation_code) if add_to_submission && confirmation_code.present?
       end

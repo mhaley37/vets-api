@@ -92,12 +92,8 @@ RSpec.describe 'discovery', type: :request do
           let(:headers) do
             token = JWT.encode identity_args, 'fake_secret', 'HS256'
             {
-              'Authorization' => "Bearer #{token}",
+              'Authorization' => "Bearer #{token}"
             }
-          end
-
-          before do
-
           end
 
           it 'returns a 200' do

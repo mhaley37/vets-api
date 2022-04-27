@@ -9,7 +9,7 @@ module Mobile
     end
 
     def find_or_create_session_token
-      decoded_token = JWT.decode(@access_token, Settings.mobile_api.secret, true, { algorithm: 'HS256' })
+      decoded_token = JWT.decode(@access_token, Settings.mobile_api.test_session_secret, true, { algorithm: 'HS256' })
 
       identity_args = decoded_token.first
       token = redis.get(identity_args['uuid'])

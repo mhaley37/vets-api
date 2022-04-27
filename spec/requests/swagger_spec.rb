@@ -2275,7 +2275,9 @@ RSpec.describe 'the API documentation', type: %i[apivore request], order: :defin
       it 'supports getting personal information data' do
         expect(subject).to validate(:get, '/v0/profile/personal_information', 401)
         VCR.use_cassette('mpi/find_candidate/valid') do
-          expect(subject).to validate(:get, '/v0/profile/personal_information', 200, headers)
+          VCR.use_cassette('va_profile/demographics/demographics') do
+            expect(subject).to validate(:get, '/v0/profile/personal_information', 200, headers)
+          end
         end
       end
 
@@ -2449,6 +2451,36 @@ RSpec.describe 'the API documentation', type: %i[apivore request], order: :defin
             '/v0/profile/telephones',
             200,
             headers.merge('_data' => telephone.as_json)
+          )
+        end
+      end
+
+      it 'supports putting va_profile preferred-name data' do
+        expect(subject).to validate(:put, '/v0/profile/preferred_names', 401)
+
+        VCR.use_cassette('va_profile/demographics/post_preferred_name_success') do
+          preferred_name = VAProfile::Models::PreferredName.new(text: 'Pat')
+
+          expect(subject).to validate(
+            :put,
+            '/v0/profile/preferred_names',
+            200,
+            headers.merge('_data' => preferred_name.as_json)
+          )
+        end
+      end
+
+      it 'supports putting va_profile gender-identity data' do
+        expect(subject).to validate(:put, '/v0/profile/gender_identities', 401)
+
+        VCR.use_cassette('va_profile/demographics/post_gender_identity_success') do
+          gender_identity = VAProfile::Models::GenderIdentity.new(code: 'F')
+
+          expect(subject).to validate(
+            :put,
+            '/v0/profile/gender_identities',
+            200,
+            headers.merge('_data' => gender_identity.as_json)
           )
         end
       end
@@ -2908,7 +2940,9 @@ RSpec.describe 'the API documentation', type: %i[apivore request], order: :defin
         allow_any_instance_of(MPI::Models::MviProfile).to receive(:birth_date).and_return(nil)
 
         VCR.use_cassette('mpi/find_candidate/missing_birthday_and_gender') do
-          expect(subject).to validate(:get, '/v0/profile/personal_information', 502, headers)
+          VCR.use_cassette('va_profile/demographics/demographics') do
+            expect(subject).to validate(:get, '/v0/profile/personal_information', 502, headers)
+          end
         end
       end
     end

@@ -237,6 +237,66 @@ RSpec.describe HealthCareApplication, type: :model do
   end
 
   describe 'validations' do
+    context 'long form validations' do
+      let(:health_care_application) { build(:health_care_application) }
+
+      before do
+        %w[
+          maritalStatus
+          isEnrolledMedicarePartA
+          lastServiceBranch
+          lastEntryDate
+          lastDischargeDate
+        ].each do |attr|
+          health_care_application.parsed_form.delete(attr)
+        end
+      end
+
+      context 'with a va compensation type of highDisability' do
+        before do
+          health_care_application.parsed_form['vaCompensationType'] = 'highDisability'
+        end
+
+        it 'doesnt require the long form fields' do
+          expect(health_care_application.valid?).to eq(true)
+        end
+      end
+
+      context 'with a va compensation type of none' do
+        before do
+          health_care_application.parsed_form['vaCompensationType'] = 'none'
+        end
+
+        it 'allows false for boolean fields' do
+          health_care_application.parsed_form['isEnrolledMedicarePartA'] = false
+
+          health_care_application.valid?
+
+          expect(health_care_application.errors[:form]).to eq(
+            [
+              "maritalStatus can't be null",
+              "lastServiceBranch can't be null",
+              "lastEntryDate can't be null",
+              "lastDischargeDate can't be null"
+            ]
+          )
+        end
+
+        it 'requires the long form fields' do
+          health_care_application.valid?
+          expect(health_care_application.errors[:form]).to eq(
+            [
+              "maritalStatus can't be null",
+              "isEnrolledMedicarePartA can't be null",
+              "lastServiceBranch can't be null",
+              "lastEntryDate can't be null",
+              "lastDischargeDate can't be null"
+            ]
+          )
+        end
+      end
+    end
+
     it 'validates presence of state' do
       health_care_application = described_class.new(state: nil)
       expect_attr_invalid(health_care_application, :state, "can't be blank")
