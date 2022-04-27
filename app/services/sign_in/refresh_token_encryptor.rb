@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sign_in/logger'
-
 module SignIn
   class RefreshTokenEncryptor
     attr_reader :refresh_token, :version, :nonce

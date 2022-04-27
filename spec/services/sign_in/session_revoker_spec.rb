@@ -28,6 +28,7 @@ RSpec.describe SignIn::SessionRevoker do
       let(:session_handle) { SecureRandom.uuid }
       let(:user_uuid) { user_account.id }
       let(:user_account) { create(:user_account) }
+      let(:user) { create(:user, uuid: user_uuid) }
       let!(:session) do
         create(:oauth_session,
                refresh_expiration: session_expiration,
@@ -38,7 +39,10 @@ RSpec.describe SignIn::SessionRevoker do
       let(:session_expiration) { Time.zone.now + 5.minutes }
       let(:enable_anti_csrf) { true }
 
-      before { Timecop.freeze(Time.zone.now.floor) }
+      before do
+        Timecop.freeze(Time.zone.now.floor)
+        allow(User).to receive(:find).and_return(user)
+      end
 
       after { Timecop.return }
 
@@ -65,6 +69,14 @@ RSpec.describe SignIn::SessionRevoker do
             it 'destroys the session' do
               session_revoker.perform
               expect { session.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            end
+
+            it 'logs refresh token revocation' do
+              allow(Rails.logger).to receive(:info)
+              expect(Rails.logger).to receive(:info)
+                .once.with('Sign in Service Token - revoke:',
+                           hash_including(token_type: 'refresh', user_id: user_uuid))
+              subject
             end
           end
 

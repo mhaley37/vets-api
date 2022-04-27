@@ -57,7 +57,16 @@ module SignIn
     end
 
     def delete_session!
+      sign_in_logger.log_token(refresh_token,
+                               event: 'revoke',
+                               parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
+      session_handle = session.handle
       session.destroy!
+      session_handle
+    end
+
+    def sign_in_logger
+      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

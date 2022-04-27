@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sign_in/logger'
-
 module SignIn
   class SessionRefresher
     attr_reader :refresh_token, :anti_csrf_token, :enable_anti_csrf, :session

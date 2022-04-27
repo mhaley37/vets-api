@@ -844,6 +844,8 @@ RSpec.describe SignInController, type: :controller do
       end
 
       context 'when refresh token is unmodified and valid' do
+        let(:expected_session_handle) { session_container.session.handle }
+
         it 'returns ok status' do
           expect(subject).to have_http_status(:ok)
         end
@@ -851,6 +853,13 @@ RSpec.describe SignInController, type: :controller do
         it 'destroys user session' do
           subject
           expect { session_container.session.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it 'logs the session revocation' do
+          allow(Rails.logger).to receive(:info)
+          expect(Rails.logger).to receive(:info)
+            .with('Sign in Service Session Revoke', { session: expected_session_handle })
+          subject
         end
       end
     end

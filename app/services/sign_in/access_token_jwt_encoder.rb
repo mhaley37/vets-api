@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'sign_in/logger'
-
 module SignIn
   class AccessTokenJwtEncoder
     attr_reader :access_token

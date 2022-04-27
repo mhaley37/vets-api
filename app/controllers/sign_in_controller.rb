@@ -84,8 +84,8 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError unless refresh_token
     raise SignIn::Errors::MalformedParamsError if enable_anti_csrf && anti_csrf_token.nil?
 
-    revoke_session(refresh_token, anti_csrf_token, enable_anti_csrf)
-
+    session_handle = revoke_session(refresh_token, anti_csrf_token, enable_anti_csrf)
+    Rails.logger.info('Sign in Service Session Revoke', { session: session_handle })
     render status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
