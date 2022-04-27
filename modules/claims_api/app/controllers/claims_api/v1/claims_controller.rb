@@ -21,11 +21,16 @@ module ClaimsApi
         raise ::Common::Exceptions::ResourceNotFound.new(detail: 'Claims not found')
       end
 
-      def show
+      def show # rubocop:disable Metrics/MethodLength
         claim = ClaimsApi::AutoEstablishedClaim.find_by(id: params[:id])
 
         if claim && claim.status == 'errored'
-          fetch_errored(claim)
+          # This is a released API and we can't start revealing 'errored' as a status,
+          #  without potentially breaking existing consumers.
+          #  So display the 'status' as 'pending'
+          #  Ref :: API-15406
+          claim.status = ClaimsApi::AutoEstablishedClaim::PENDING
+          render json: claim, serializer: ClaimsApi::AutoEstablishedClaimSerializer
         elsif claim && claim.evss_id.blank?
           render json: claim, serializer: ClaimsApi::AutoEstablishedClaimSerializer
         elsif claim && claim.evss_id.present?
@@ -45,25 +50,6 @@ module ClaimsApi
         raise if e.is_a?(::Common::Exceptions::UnprocessableEntity)
 
         raise ::Common::Exceptions::ResourceNotFound.new(detail: 'Claim not found')
-      end
-
-      private
-
-      def fetch_errored(claim)
-        if claim.evss_response&.any?
-          errors = format_evss_errors(claim.evss_response)
-          raise ::Common::Exceptions::UnprocessableEntity.new(errors: errors)
-        else
-          message = 'Unknown EVSS Async Error'
-          raise ::Common::Exceptions::UnprocessableEntity.new(detail: message)
-        end
-      end
-
-      def format_evss_errors(errors)
-        errors.map do |error|
-          formatted = error['key'] ? error['key'].gsub('.', '/') : error['key']
-          { status: 422, detail: "#{error['severity']} #{error['detail'] || error['text']}".squish, source: formatted }
-        end
       end
     end
   end
