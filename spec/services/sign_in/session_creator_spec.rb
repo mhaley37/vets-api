@@ -12,7 +12,10 @@ RSpec.describe SignIn::SessionCreator do
       let(:user_account) { create(:user_account) }
       let(:user) { create(:user, uuid: user_account.id) }
 
-      before { allow(User).to receive(:find).and_return(user) }
+      before do
+        allow(User).to receive(:find).and_return(user)
+        allow(Rails.logger).to receive(:info)
+      end
 
       context 'expected anti_csrf_token' do
         let(:expected_anti_csrf_token) { 'some-anti-csrf-token' }
@@ -107,7 +110,6 @@ RSpec.describe SignIn::SessionCreator do
         end
 
         it 'logs the creation of the Refresh tokens' do
-          allow(Rails.logger).to receive(:info)
           expect(Rails.logger).to receive(:info).twice
                                                 .with('Sign in Service Token - create:', hash_including(
                                                                                            token_type: 'refresh', user_id: user.uuid
@@ -158,7 +160,6 @@ RSpec.describe SignIn::SessionCreator do
         end
 
         it 'logs the creation of the Access token' do
-          allow(Rails.logger).to receive(:info)
           expect(Rails.logger).to receive(:info).once
                                                 .with('Sign in Service Token - create:', hash_including(
                                                                                            token_type: 'access', user_id: user.uuid

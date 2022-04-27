@@ -11,13 +11,15 @@ RSpec.describe SignIn::Logger do
     let(:refresh_token) { create(:refresh_token, user_uuid: user_account.id) }
     let(:expected_token_hash) { Digest::SHA256.hexdigest(json_token) }
 
-    before { allow(User).to receive(:find).and_return(user) }
+    before do
+      allow(User).to receive(:find).and_return(user)
+      allow(Rails.logger).to receive(:info)
+    end
 
     context 'refresh token' do
       let(:json_token) { refresh_token.to_json }
 
       it 'logs the refresh token' do
-        allow(Rails.logger).to receive(:info)
         expect(Rails.logger).to receive(:info)
           .with('Sign in Service Token - create:',
                 hash_including(
@@ -35,7 +37,6 @@ RSpec.describe SignIn::Logger do
       let(:json_token) { access_token.to_json }
 
       it 'logs the access token' do
-        allow(Rails.logger).to receive(:info)
         expect(Rails.logger).to receive(:info)
           .with('Sign in Service Token - create:',
                 hash_including(

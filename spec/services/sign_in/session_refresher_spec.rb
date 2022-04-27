@@ -42,6 +42,7 @@ RSpec.describe SignIn::SessionRefresher do
       before do
         Timecop.freeze(Time.zone.now.floor)
         allow(User).to receive(:find).and_return(user)
+        allow(Rails.logger).to receive(:info)
       end
 
       after { Timecop.return }
@@ -121,7 +122,6 @@ RSpec.describe SignIn::SessionRefresher do
                 end
 
                 it 'logs the creation of the Refresh tokens' do
-                  allow(Rails.logger).to receive(:info)
                   expect(Rails.logger).to receive(:info)
                     .once.with('Sign in Service Token - rotate:',
                                hash_including(token_type: 'refresh', user_id: user.uuid))
@@ -150,7 +150,6 @@ RSpec.describe SignIn::SessionRefresher do
                 end
 
                 it 'logs the creation of the Access token' do
-                  allow(Rails.logger).to receive(:info)
                   expect(Rails.logger).to receive(:info)
                     .once.with('Sign in Service Token - rotate:',
                                hash_including(token_type: 'access', user_id: user.uuid))

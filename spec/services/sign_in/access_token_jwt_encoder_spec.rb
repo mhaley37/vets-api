@@ -21,7 +21,7 @@ RSpec.describe SignIn::AccessTokenJwtEncoder do
       let(:expected_anti_csrf_token) { access_token.anti_csrf_token }
       let(:expected_last_regeneration_time) { access_token.last_regeneration_time.to_i }
       let(:expected_version) { access_token.version }
-      let(:expected_jti) { 'some-expected-jti' }
+      let(:expected_jti) { access_token.uuid }
       let(:user) { create(:user, uuid: access_token.user_uuid) }
 
       before do

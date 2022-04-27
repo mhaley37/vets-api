@@ -7,7 +7,10 @@ RSpec.describe SignInController, type: :controller do
   let(:user_account_uuid) { user_account.id }
   let(:user) { create(:user, uuid: user_account_uuid) }
 
-  before { allow(User).to receive(:find).and_return(user) }
+  before do
+    allow(User).to receive(:find).and_return(user)
+    allow(Rails.logger).to receive(:info)
+  end
 
   describe 'GET authorize' do
     subject do
@@ -148,7 +151,6 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            allow(Rails.logger).to receive(:info)
             expect(Rails.logger).to receive(:info)
               .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
             subject
@@ -273,7 +275,6 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            allow(Rails.logger).to receive(:info)
             expect(Rails.logger).to receive(:info)
               .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
             subject
@@ -611,7 +612,6 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            allow(Rails.logger).to receive(:info)
             expect(Rails.logger).to receive(:info)
               .with('Sign in Service Authorization Callback', hash_including(state: state[:state], code: code[:code],
                                                                              request_url: callback_url))
@@ -857,7 +857,6 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the session revocation' do
-          allow(Rails.logger).to receive(:info)
           expect(Rails.logger).to receive(:info)
             .with('Sign in Service Session Revoke', { session: expected_session_handle })
           subject
@@ -1070,7 +1069,6 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the token refresh' do
-          allow(Rails.logger).to receive(:info)
           response = subject
           uuid = JWT.decode(JSON.parse(response.body)['data']['access_token'], nil, false).first['jti']
           expect(Rails.logger).to receive(:info)
@@ -1167,7 +1165,6 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the access_token authentication' do
-          allow(Rails.logger).to receive(:info)
           expect(Rails.logger).to receive(:info)
             .once.with('Sign in Service User Access Token Authenticated',
                        { user: access_token_object.user_uuid, access_token: access_token_object.uuid,
