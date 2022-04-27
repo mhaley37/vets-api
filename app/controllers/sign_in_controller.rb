@@ -12,6 +12,7 @@ class SignInController < ApplicationController
 
   def authorize
     type = authorize_params[:type]
+    client_state = authorize_params[:state]
     code_challenge = authorize_params[:code_challenge]
     code_challenge_method = authorize_params[:code_challenge_method]
 
@@ -19,7 +20,8 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError unless code_challenge && code_challenge_method
 
     state = SignIn::CodeChallengeStateMapper.new(code_challenge: code_challenge,
-                                                 code_challenge_method: code_challenge_method).perform
+                                                 code_challenge_method: code_challenge_method,
+                                                 client_state: client_state).perform
     render body: auth_service(type).render_auth(state: state), content_type: 'text/html'
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -33,8 +35,8 @@ class SignInController < ApplicationController
     raise SignIn::Errors::CallbackInvalidType unless SignInController::REDIRECT_URLS.include?(type)
     raise SignIn::Errors::MalformedParamsError unless code && state
 
-    login_code = login(type, state, code)
-    redirect_to login_redirect_url(login_code)
+    login_code, client_state = login(type, state, code)
+    redirect_to login_redirect_url(login_code, client_state)
   rescue => e
     render json: { errors: e }, status: :bad_request
   end
@@ -65,6 +67,21 @@ class SignInController < ApplicationController
     session_container = refresh_session(refresh_token, anti_csrf_token, enable_anti_csrf)
 
     render json: session_token_response(session_container), status: :ok
+  rescue => e
+    render json: { errors: e }, status: :unauthorized
+  end
+
+  def revoke
+    refresh_token = refresh_params[:refresh_token]
+    anti_csrf_token = refresh_params[:anti_csrf_token]
+    enable_anti_csrf = Settings.sign_in.enable_anti_csrf
+
+    raise SignIn::Errors::MalformedParamsError unless refresh_token
+    raise SignIn::Errors::MalformedParamsError if enable_anti_csrf && anti_csrf_token.nil?
+
+    revoke_session(refresh_token, anti_csrf_token, enable_anti_csrf)
+
+    render status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
   end
@@ -110,11 +127,19 @@ class SignInController < ApplicationController
   end
 
   def refresh_session(refresh_token, anti_csrf_token, enable_anti_csrf)
-    decrypted_refresh_token = SignIn::RefreshTokenDecryptor.new(encrypted_refresh_token: refresh_token).perform
-
-    SignIn::SessionRefresher.new(refresh_token: decrypted_refresh_token,
+    SignIn::SessionRefresher.new(refresh_token: decrypted_refresh_token(refresh_token),
                                  anti_csrf_token: anti_csrf_token,
                                  enable_anti_csrf: enable_anti_csrf).perform
+  end
+
+  def revoke_session(refresh_token, anti_csrf_token, enable_anti_csrf)
+    SignIn::SessionRevoker.new(refresh_token: decrypted_refresh_token(refresh_token),
+                               anti_csrf_token: anti_csrf_token,
+                               enable_anti_csrf: enable_anti_csrf).perform
+  end
+
+  def decrypted_refresh_token(refresh_token)
+    SignIn::RefreshTokenDecryptor.new(encrypted_refresh_token: refresh_token).perform
   end
 
   def login(type, state, code)
@@ -129,9 +154,12 @@ class SignInController < ApplicationController
     SignIn::UserCreator.new(user_attributes: normalized_attributes, state: state).perform
   end
 
-  def login_redirect_url(login_code)
+  def login_redirect_url(login_code, client_state = nil)
+    redirect_uri_params = { code: login_code }
+    redirect_uri_params[:state] = client_state if client_state.present?
+
     redirect_uri = URI.parse(Settings.sign_in.redirect_uri)
-    redirect_uri.query = { code: login_code }.to_query
+    redirect_uri.query = redirect_uri_params.to_query
     redirect_uri.to_s
   end
 
@@ -157,7 +185,7 @@ class SignInController < ApplicationController
   end
 
   def authorize_params
-    params.permit(:type, :code_challenge, :code_challenge_method)
+    params.permit(:type, :state, :code_challenge, :code_challenge_method)
   end
 
   def callback_params
