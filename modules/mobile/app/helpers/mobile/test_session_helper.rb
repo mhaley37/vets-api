@@ -37,7 +37,7 @@ module Mobile
     end
 
     def redis
-      @redis ||= Redis::Namespace.new(REDIS_NAMESPACE, redis: Redis.current)
+      @redis ||= Redis::Namespace.new(REDIS_NAMESPACE, redis: $redis)
     end
   end
 end

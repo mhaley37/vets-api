@@ -5,6 +5,32 @@ require_relative '../support/iam_session_helper'
 require_relative '../support/matchers/json_schema_matcher'
 
 RSpec.describe 'discovery', type: :request do
+  let(:identity_args) do
+    {
+      birth_date: '1953-04-01',
+      email: 'judy.morrison@id.me',
+      expiration_timestamp: Time.now.to_i + 60 * 5,
+      first_name: 'JUDY',
+      gender: 'F',
+      iam_edipi: '1259897978',
+      iam_mhv_id: '16701377',
+      iam_sec_id: '0000027819',
+      icn: '1012845331V153043',
+      last_name: 'MORRISON',
+      loa: {
+        current: 3,
+        highest: 3
+      },
+      middle_name: 'SNOW',
+      sign_in: { service_name: 'oauth_IDME', account_type: '3' },
+      ssn: '796061976',
+      uuid: '16c9faba-2d6f-4458-8b33-1063070b9ed0'
+    }
+  end
+
+  let(:token) { JWT.encode identity_args, 'fake_secret', 'HS256' }
+  let(:headers) { { 'Authorization' => "Bearer #{token}" } }
+
   describe 'GET ../' do
     before { get '/mobile' }
 
@@ -29,11 +55,11 @@ RSpec.describe 'discovery', type: :request do
     context 'in the production environment' do
       before do
         Settings.hostname = 'api.va.gov'
-        get '/mobile/token'
+        get '/mobile/token', headers: headers
       end
 
-      it 'returns a 401' do
-        expect(response).to have_http_status(:unauthorized)
+      it 'returns a 404' do
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -45,59 +71,54 @@ RSpec.describe 'discovery', type: :request do
       context 'when the feature flag is disabled' do
         before do
           Flipper.disable(:mobile_api_test_sessions)
-          get '/mobile/token'
+          get '/mobile/token', headers: headers
         end
 
-        it 'returns a 401' do
-          expect(response).to have_http_status(:unauthorized)
+        it 'returns a 404' do
+          expect(response).to have_http_status(:not_found)
         end
       end
 
       context 'when the feature flag is enabled' do
+        let(:expected_token) { 'F3fAMjQvIVjUv0FC' }
+
         before do
           Flipper.enable(:mobile_api_test_sessions)
-          get '/mobile/token'
+          allow(SecureRandom).to receive(:alphanumeric).and_return(expected_token)
+          get '/mobile/token', headers: headers
         end
 
         context 'with no access token' do
+          let(:headers) { { 'Authorization' => 'Bearer' } }
+
+          it 'returns a 401' do
+            expect(response).to have_http_status(:unauthorized)
+          end
+        end
+
+        context 'with an invalid access token' do
+          let(:headers) { { 'Authorization' => "Bearer #{SecureRandom.uuid}" } }
+
           it 'returns a 401' do
             expect(response).to have_http_status(:unauthorized)
           end
         end
 
         context 'with an access token that contains a valid user' do
-          let(:identity_args) do
-            {
-              birth_date: '1953-04-01',
-              email: 'judy.morrison@id.me',
-              expiration_timestamp: Time.now.to_i + 60 * 5,
-              first_name: 'JUDY',
-              gender: 'F',
-              iam_edipi: '1259897978',
-              iam_mhv_id: '16701377',
-              iam_sec_id: '0000027819',
-              icn: '1012845331V153043',
-              last_name: 'MORRISON',
-              loa: {
-                current: 3,
-                highest: 3
-              },
-              middle_name: 'SNOW',
-              sign_in: { service_name: 'oauth_IDME', account_type: '3' },
-              ssn: '796061976',
-              uuid: '16c9faba-2d6f-4458-8b33-1063070b9ed0'
-            }
-          end
-
-          let(:headers) do
-            token = JWT.encode identity_args, 'fake_secret', 'HS256'
-            {
-              'Authorization' => "Bearer #{token}"
-            }
-          end
-
           it 'returns a 200' do
-            expect(response).to have_http_status(:unauthorized)
+            expect(response).to have_http_status(:ok)
+          end
+
+          it 'returns a token' do
+            expect(response.parsed_body).to eq(
+              {
+                'data' => {
+                  'attributes' => {
+                    'token' => expected_token
+                  }
+                }
+              }
+            )
           end
         end
       end
