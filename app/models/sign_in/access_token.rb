@@ -33,12 +33,8 @@ module SignIn
     validates :version, inclusion: Constants::AccessToken::VERSION_LIST
 
     # rubocop:disable Metrics/ParameterLists
-    def initialize(uuid: create_uuid,
-                   session_handle:,
-                   user_uuid:,
-                   refresh_token_hash:,
-                   anti_csrf_token:,
-                   last_regeneration_time:,
+    def initialize(session_handle:, user_uuid:, refresh_token_hash:, anti_csrf_token:, last_regeneration_time:,
+                   uuid: create_uuid,
                    parent_refresh_token_hash: nil,
                    version: Constants::AccessToken::CURRENT_VERSION,
                    expiration_time: set_expiration_time,
