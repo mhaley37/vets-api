@@ -46,6 +46,14 @@ module AppealsApi
       ).new(self)
     end
 
+    def veteran
+      @veteran ||= Appellant.new(
+        type: :veteran,
+        auth_headers: auth_headers,
+        form_data: data_attributes&.dig('veteran')
+      )
+    end
+
     def claimant
       @claimant ||= Appellant.new(
         type: :claimant,
@@ -111,7 +119,7 @@ module AppealsApi
     end
 
     def mailing_address_number_and_street
-      address_combined
+      address_combined || 'USE ADDRESS ON FILE'
     end
 
     def mailing_address_city
@@ -143,11 +151,11 @@ module AppealsApi
     end
 
     def veteran_phone_data
-      veteran&.dig('phone')
+      veteran_data&.dig('phone')
     end
 
     def email
-      veteran&.dig('email')&.strip
+      veteran_data&.dig('email')&.strip
     end
 
     def consumer_name
@@ -272,7 +280,7 @@ module AppealsApi
       form_data&.dig('data', 'attributes')
     end
 
-    def veteran
+    def veteran_data
       data_attributes&.dig('veteran')
     end
 
@@ -289,7 +297,7 @@ module AppealsApi
     end
 
     def veteran_phone
-      AppealsApi::HigherLevelReview::Phone.new veteran&.dig('phone')
+      AppealsApi::HigherLevelReview::Phone.new veteran_data&.dig('phone')
     end
 
     def veterans_local_time
@@ -297,7 +305,7 @@ module AppealsApi
     end
 
     def veterans_timezone
-      veteran&.dig('timezone').presence&.strip
+      veteran_data&.dig('timezone').presence&.strip
     end
 
     # validation (header)
@@ -339,7 +347,7 @@ module AppealsApi
     end
 
     def clear_memoized_values
-      @contestable_issues = @address_combined = nil
+      @contestable_issuess = @veteran = @claimant = @address_combined = nil
     end
   end
 end

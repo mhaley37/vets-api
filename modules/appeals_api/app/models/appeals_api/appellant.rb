@@ -24,6 +24,18 @@ module AppealsApi
       auth_headers["X-VA#{header_prefix}-SSN"]
     end
 
+    def ssn_first_three
+      ssn[0..2] unless ssn.nil?
+    end
+
+    def ssn_second_two
+      ssn[3..4] unless ssn.nil?
+    end
+
+    def ssn_last_four
+      ssn[5..9] unless ssn.nil?
+    end
+
     def birth_date_string
       auth_headers["X-VA#{header_prefix}-Birth-Date"]
     end
@@ -104,6 +116,34 @@ module AppealsApi
 
     def phone_formatted
       AppealsApi::HigherLevelReview::Phone.new phone_data
+    end
+
+    def phone_string
+      phone_data.to_s
+    end
+
+    def area_code
+      return unless domestic_phone?
+
+      phone_data&.dig('areaCode')
+    end
+
+    def phone_prefix
+      return unless domestic_phone?
+
+      phone_data&.dig('phoneNumber')&.first(3)
+    end
+
+    def phone_line_number
+      return unless domestic_phone?
+
+      phone_data&.dig('phoneNumber')&.last(4)
+    end
+
+    def international_number
+      return if domestic_phone?
+
+      phone_string
     end
 
     def phone_country_code
