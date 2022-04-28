@@ -6,11 +6,11 @@ RSpec.describe VeteranDeviceRecord, type: :model do
   describe 'Veteran Device Record' do
     let(:current_user) { FactoryBot.build(:user) }
 
-    before(:each) do
+    before do
       @device = Device.create(name: 'Test Device')
     end
 
-    after(:each) do
+    after do
       Device.delete(@device.name)
     end
 
@@ -32,12 +32,21 @@ RSpec.describe VeteranDeviceRecord, type: :model do
     end
 
     it 'has a device' do
-      vdr = VeteranDeviceRecord.new(
-        user_uuid: current_user.uuid,
-        device_id: @device.id,
-        active: true
-      )
+      vdr = create(:veteran_device_record, device_id: @device.id)
       expect(vdr.device).to eq(@device)
+    end
+
+    it '#active_devices()' do
+      vdr = create(:veteran_device_record, device_id: @device.id, user_uuid: current_user.uuid)
+      veteran_active_devices = VeteranDeviceRecord.active_devices(current_user)
+      expect(veteran_active_devices.first).to eq(vdr)
+    end
+
+    it 'will not create record if user ID and device ID combination exist' do
+      VeteranDeviceRecord.create(device_id: @device.id, user_uuid: current_user.uuid, active: true)
+      expect(VeteranDeviceRecord.create(user_uuid: current_user.uuid, device_id: @device.id,
+                                        active: true)).not_to be_valid
+      VeteranDeviceRecord.delete_all
     end
   end
 end

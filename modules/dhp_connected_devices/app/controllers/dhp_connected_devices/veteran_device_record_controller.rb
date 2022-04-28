@@ -4,8 +4,8 @@ module DhpConnectedDevices
   class VeteranDeviceRecordController < ApplicationController
     # skip_before_action :authenticate
 
-    def record
-      render json: 'Record'
+    def index
+      render json: VeteranDeviceRecordSerializer.serialize(VeteranDeviceRecord.active_devices(current_user))
     end
   end
 end
