@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_26_212418) do
+ActiveRecord::Schema.define(version: 2022_04_27_215503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -957,6 +957,15 @@ ActiveRecord::Schema.define(version: 2022_04_26_212418) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  create_table "veteran_device_records", force: :cascade do |t|
+    t.bigint "device_id", null: false
+    t.boolean "active"
+    t.string "user_uuid", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["device_id"], name: "index_veteran_device_records_on_device_id"
+  end
+
   create_table "veteran_organizations", id: false, force: :cascade do |t|
     t.string "poa", limit: 3
     t.string "name"
@@ -1043,4 +1052,5 @@ ActiveRecord::Schema.define(version: 2022_04_26_212418) do
   add_foreign_key "inherited_proof_verified_user_accounts", "user_accounts"
   add_foreign_key "oauth_sessions", "user_accounts"
   add_foreign_key "user_verifications", "user_accounts"
+  add_foreign_key "veteran_device_records", "devices"
 end
