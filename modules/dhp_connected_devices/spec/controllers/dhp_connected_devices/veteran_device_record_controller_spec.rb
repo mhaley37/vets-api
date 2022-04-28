@@ -35,8 +35,8 @@ Rspec.describe DhpConnectedDevices::VeteranDeviceRecordController, type: :reques
       end
 
       it 'returns veteran device record' do
-        res = get_vdr
-        expect(res.body).to eq('Record')
+        response = get_vdr
+        expect(response.body).to eq('Record')
       end
     end
   end
