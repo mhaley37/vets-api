@@ -20,7 +20,8 @@ task mobile_test_tokens: :environment do
       sign_in: {
         service_name: 'oauth_IDME',
         account_type: '3'
-      }
+      },
+      expiration_timestamp: Time.now.to_i + 60 * 5
     )
 
     puts '---------------------------------------------------------------------'
