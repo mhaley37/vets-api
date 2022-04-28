@@ -1056,8 +1056,6 @@ RSpec.describe SignInController, type: :controller do
       end
 
       context 'and refresh token is unmodified and valid' do
-        let(:access_token) { JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first }
-
         it 'returns ok status' do
           expect(subject).to have_http_status(:ok)
         end
@@ -1075,11 +1073,12 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the token refresh' do
-          expect(Rails.logger).to receive(:info).once.with(
+          access_token = JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first
+
+          expect(Rails.logger).to have_received(:info).once.with(
             'Sign in Service Tokens Refresh',
             { session: access_token['session_handle'], access_token: access_token['jti'] }
           )
-          subject
         end
       end
     end
