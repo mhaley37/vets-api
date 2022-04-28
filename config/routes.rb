@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       to: 'sign_in#callback',
       constraints: ->(request) { SignInController::REDIRECT_URLS.include?(request.path_parameters[:type]) }
   post '/sign_in/refresh', to: 'sign_in#refresh'
+  post '/sign_in/revoke', to: 'sign_in#revoke'
   post '/sign_in/token', to: 'sign_in#token'
   get '/sign_in/introspect', to: 'sign_in#introspect'
 
@@ -427,6 +428,7 @@ Rails.application.routes.draw do
   mount HealthQuest::Engine, at: '/health_quest'
   mount MebApi::Engine, at: '/meb_api'
   mount Mobile::Engine, at: '/mobile'
+  mount MyHealth::Engine, at: '/my_health', as: 'my_health'
   mount VAOS::Engine, at: '/vaos'
   # End Modules
 
