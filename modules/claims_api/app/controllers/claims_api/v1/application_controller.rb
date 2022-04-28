@@ -40,6 +40,9 @@ module ClaimsApi
 
         mpi_add_response = target_veteran.mpi.add_person
         raise mpi_add_response.error unless mpi_add_response.ok?
+
+      rescue ::Common::Exceptions::UnprocessableEntity
+        raise ::Common::Exceptions::UnprocessableEntity.new(detail: 'User is missing EDIPI. Please contact _fill_this_in_ to resolve this issue.')
       rescue ArgumentError
         raise ::Common::Exceptions::UnprocessableEntity.new(
           detail: 'Required values are missing. Please double check the accuracy of any request header values.'

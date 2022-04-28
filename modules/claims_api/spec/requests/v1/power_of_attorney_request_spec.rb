@@ -102,6 +102,21 @@ RSpec.describe 'Power of Attorney ', type: :request do
                 end
               end
             end
+
+            context 'when consumer is Veteran and missing EDIPI' do
+              it 'catches a raised 422' do
+                with_okta_user(scopes) do |auth_header|
+                  VCR.use_cassette('bgs/intent_to_file_web_service/insert_intent_to_file') do
+                        expect_any_instance_of(MPIData).to receive(:add_person).once.and_call_original
+                        post path, params: data, headers: auth_header
+
+                        response_body = JSON.parse response.body
+                        expect(response.status).to eq(422)
+                        expect(response_body['errors'][0]['detail']).to eq('User is missing EDIPI. Please contact _fill_this_in_ to resolve this issue.')
+                  end
+                end
+              end
+            end
           end
 
           context 'when Veteran has participant_id' do
