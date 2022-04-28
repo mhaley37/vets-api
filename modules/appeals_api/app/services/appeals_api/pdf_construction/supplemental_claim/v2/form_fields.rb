@@ -17,7 +17,7 @@ module AppealsApi
             'form1[0].#subform[2].SocialSecurityNumber_FirstThreeNumbers[0]'
           end
 
-          def ssn_middle_two
+          def ssn_second_two
             'form1[0].#subform[2].SocialSecurityNumber_SecondTwoNumbers[0]'
           end
 
@@ -25,19 +25,31 @@ module AppealsApi
             'form1[0].#subform[2].SocialSecurityNumber_LastFourNumbers[0]'
           end
 
+          def claimant_ssn_first_three
+            'form1[0].#subform[2].ClaimantsSocialSecurityNumber_FirstThreeNumbers[1]'
+          end
+  
+          def claimant_ssn_second_two
+            'form1[0].#subform[2].ClaimantsSocialSecurityNumber_SecondTwoNumbers[1]'
+          end
+  
+          def claimant_ssn_last_four
+            'form1[0].#subform[2].ClaimantsSocialSecurityNumber_LastFourNumbers[1]'
+          end
+  
           def file_number
             'form1[0].#subform[2].VAFileNumber[0]'
           end
 
-          def veteran_dob_month
+          def birth_month
             'form1[0].#subform[2].DOBmonth[0]'
           end
 
-          def veteran_dob_day
+          def birth_day
             'form1[0].#subform[2].DOBday[0]'
           end
 
-          def veteran_dob_year
+          def birth_year
             'form1[0].#subform[2].DOByear[0]'
           end
 
@@ -65,6 +77,10 @@ module AppealsApi
             'form1[0].#subform[2].CurrentMailingAddress_ZIPOrPostalCode_FirstFiveNumbers[0]'
           end
 
+          def veteran_homeless
+            'form1[0].#subform[2].ClaimantType[0]'
+          end
+  
           # TODO: unsused at the moment
           def zip_code_4
             'form1[0].#subform[2].CurrentMailingAddress_ZIPOrPostalCode_LastFourNumbers[0]'
@@ -74,6 +90,22 @@ module AppealsApi
             'form1[0].#subform[2].TELEPHONE[0]'
           end
 
+          def veteran_phone_area_code
+            'form1[0].#subform[2].Daytime_Phone_Number_Area_Code[0]'
+          end
+  
+          def veteran_phone_prefix
+            'form1[0].#subform[2].Daytime_Phone_Middle_Three_Numbers[0]'
+          end
+  
+          def veteran_phone_line_number
+            'form1[0].#subform[2].Daytime_Phone_Last_Four_Numbers[0]'
+          end
+  
+          def veteran_phone_international_number
+            'form1[0].#subform[2].International_Telephone_Number_If_Applicable[0]'
+          end
+  
           def claimant_type
             'form1[0].#subform[2].RadioButtonList[1]'
           end
@@ -140,13 +172,21 @@ module AppealsApi
               # PAGE 3 '#subform[2]'
               veteran_first_name: { at: [3, 592], width: 195 },
               veteran_last_name: { at: [238, 591], width: 300 },
-              mailing_address_number_and_street: { at: [23, 423], width: 510 },
-              mailing_address_apartment_or_unit_number: { at: [60, 401], width: 78 },
-              mailing_address_city_and_box: { at: [195, 402], width: 308 },
-              email: { at: [286, 347], width: 244 },
-
-              claimant_first_name: { at: [3, 485], width: 195 },
-              claimant_last_name: { at: [238, 485], width: 300 },
+              veteran_number_and_street: { at: [29, 425], width: 512 },
+              veteran_city: { at: [200, 405], width: 307 },
+              veteran_zip_code: { at: [297, 418], width: 82 },
+              veteran_email: { at: [297, 378], width: 513 },
+              veteran_phone_extension: { at: [225, 378], width: 50, height: 10 },
+              veteran_international_number: { at: [381, 367], width: 115, height: 13 },
+  
+              claimant_first_name: { at: [3, 485], width: 192 },
+              claimant_last_name: { at: [238, 485], width: 295 },
+              claimant_number_and_street: { at: [29, 425], width: 512 },
+              claimant_city: { at: [200, 403], width: 307 },
+              claimant_zip_code: { at: [297, 176], width: 82 },
+              claimant_email: { at: [297, 378], width: 513 },
+              claimant_phone_extension: { at: [225, 157], width: 50, height: 10 },
+              claimant_international_number: { at: [382, 144], width: 115, height: 13 },
 
               contestable_issues: contestable_issues_coordinates,
               decision_dates: decision_dates_coordinates,

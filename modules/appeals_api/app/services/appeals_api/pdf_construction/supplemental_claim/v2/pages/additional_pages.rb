@@ -14,7 +14,7 @@ module AppealsApi
           def build!
             pdf.start_new_page
 
-            pdf.text "\n<b>Veteran Email:</b>\n#{form_data.email}\n", inline_format: true unless short_veteran_email?
+            pdf.text "\n<b>Veteran Email:</b>\n#{form_data.veteran.email}\n", inline_format: true unless short_veteran_email?
 
             pdf.text("\n<b>Additional Issues</b>\n", inline_format: true)
             pdf.table(extra_issues_table_data, width: 540, header: true)
@@ -22,7 +22,7 @@ module AppealsApi
             pdf.text("\n<b>Additional Evidence Names and Locations</b>\n", inline_format: true)
             pdf.table(extra_locations_table_data, width: 540, header: true)
 
-            pdf.text("\n\n\n\n\n<b>Signature of veteran claimant or representative:</b>\n #{form_data.full_name[0...180]}\n - Signed by digital authentication to api.va.gov", inline_format: true)
+            pdf.text("\n\n\n\n\n<b>Signature of veteran claimant or representative:</b>\n #{form_data.veteran.full_name[0...180]}\n - Signed by digital authentication to api.va.gov", inline_format: true)
 
             pdf
           end
@@ -70,7 +70,7 @@ module AppealsApi
           end
 
           def short_veteran_email?
-            form_data.email.length <= short_email_length
+            form_data.veteran.email.length <= short_email_length
           end
         end
       end

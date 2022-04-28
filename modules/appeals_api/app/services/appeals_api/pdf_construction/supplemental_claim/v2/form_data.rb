@@ -13,60 +13,19 @@ module AppealsApi
             @supplemental_claim = supplemental_claim
           end
 
-          delegate :veteran_first_name, :veteran_middle_initial, :veteran_last_name, :ssn, :file_number,
-                   :full_name, :veteran_dob_month, :veteran_dob_year, :veteran_dob_day, :veteran_service_number,
-                   :insurance_policy_number, :mailing_address_number_and_street,
-                   :mailing_address_apartment_or_unit_number, :mailing_address_city_and_box, :mailing_address_state,
-                   :mailing_address_country, :zip_code_5, :phone, :email, :contestable_issues, :soc_opt_in,
-                   :new_evidence_locations, :new_evidence_dates, :date_signed, :claimant,
+          delegate :file_number, :insurance_policy_number, :veteran_service_number,
+                   :contestable_issues, :soc_opt_in, :new_evidence_locations, :new_evidence_dates, :date_signed,
+                   :signing_appellant, :appellant_local_time, :veteran_homeless?,
+                   :claimant, :veteran,
                    to: :supplemental_claim
 
-          delegate :first_name, :last_name, :middle_initial, :phone_data, :number_and_street, :city, :zip_code, :email,
+          delegate :first_name, :last_name, :middle_initial, :phone_data, :number_and_street, :city, :zip_code, :email, :full_name,
+                   :international_number, :area_code, :phone_prefix, :phone_number,
+                   to: :veteran, prefix: true
+
+          delegate :first_name, :last_name, :middle_initial, :phone_data, :number_and_street, :city, :zip_code, :email, :full_name,
+                   :international_number, :area_code, :phone_prefix, :phone_number,
                    to: :claimant, prefix: true
-
-          def ssn_first_three
-            ssn.first(3)
-          end
-
-          def ssn_middle_two
-            ssn[3..4]
-          end
-
-          def ssn_last_four
-            ssn.last(4)
-          end
-
-          def claimant_phone_string
-            claimant.phone_formatted.to_s
-          end
-
-          def claimant_area_code
-            return unless claimant.domestic_phone?
-
-            claimant_phone_data&.dig('areaCode')
-          end
-
-          def claimant_phone_prefix
-            return unless claimant.domestic_phone?
-
-            claimant_phone_data&.dig('phoneNumber')&.first(3)
-          end
-
-          def claimant_phone_line_number
-            return unless claimant.domestic_phone?
-
-            claimant_phone_data&.dig('phoneNumber')&.last(4)
-          end
-
-          def claimant_international_number
-            return if claimant.domestic_phone?
-
-            claimant_phone_string
-          end
-
-          def claimant_phone_ext
-            claimant_phone_data&.dig('phoneNumberExt')
-          end
 
           def benefit_type
             benefit_type_form_codes[supplemental_claim.benefit_type]
@@ -93,17 +52,29 @@ module AppealsApi
           def signature_of_veteran_claimant_or_rep
             return 'See attached page for signature of veteran claimant or rep' if long_signature?
 
-            "#{full_name[0...180]} - Signed by digital authentication to api.va.gov"
+            "#{signing_appellant.full_name[0...180]} - Signed by digital authentication to api.va.gov"
           end
 
           def long_signature?
-            full_name.length > 70
+            signing_appellant.full_name.length > 70
           end
 
           def print_name_veteran_claimaint_or_rep
-            full_name[0...180]
+            signing_appellant.full_name[0...180]
           end
 
+          def date_signed_mm
+            appellant_local_time.strftime '%m'
+          end
+  
+          def date_signed_dd
+            appellant_local_time.strftime '%d'
+          end
+  
+          def date_signed_yyyy
+            appellant_local_time.strftime '%Y'
+          end
+  
           def new_evidence_locations
             evidence_records.map(&:location)
           end
