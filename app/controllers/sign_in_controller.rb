@@ -6,7 +6,6 @@ require 'sign_in/idme/service'
 class SignInController < ApplicationController
   skip_before_action :verify_authenticity_token, :authenticate
   before_action :authenticate_access_token, only: [:introspect]
-  wrap_parameters format: []
 
   REDIRECT_URLS = %w[idme logingov dslogon mhv].freeze
   BEARER_PATTERN = /^Bearer /.freeze
@@ -23,7 +22,9 @@ class SignInController < ApplicationController
     state = SignIn::CodeChallengeStateMapper.new(code_challenge: code_challenge,
                                                  code_challenge_method: code_challenge_method,
                                                  client_state: client_state).perform
-    Rails.logger.info('Sign in Service Authorization Attempt', { state: state, request_url: request.original_url })
+    Rails.logger.info('Sign in Service Authorization Attempt',
+                      { state: state, type: type, client_state: client_state,
+                        code_challenge: code_challenge, code_challenge_method: code_challenge_method })
     render body: auth_service(type).render_auth(state: state), content_type: 'text/html'
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -38,9 +39,8 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError unless code && state
 
     login_code, client_state = login(type, state, code)
-    Rails.logger.info('Sign in Service Authorization Callback', { state: state,
-                                                                  code: code,
-                                                                  request_url: request.original_url })
+    Rails.logger.info('Sign in Service Authorization Callback',
+                      { state: state, type: type, code: code, login_code: login_code, client_state: client_state })
     redirect_to login_redirect_url(login_code, client_state)
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -71,7 +71,9 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError if enable_anti_csrf && anti_csrf_token.nil?
 
     session_container = refresh_session(refresh_token, anti_csrf_token, enable_anti_csrf)
-    Rails.logger.info('Sign in Service Tokens Refresh', { access_token: session_container.access_token.uuid })
+    access_token = session_container.access_token
+    Rails.logger.info('Sign in Service Tokens Refresh',
+                      { session: access_token.session_handle, access_token: access_token.uuid })
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -93,6 +95,7 @@ class SignInController < ApplicationController
   end
 
   def introspect
+    Rails.logger.info('Sign in Service Introspect', { user: @current_user.uuid })
     render json: @current_user, serializer: SignIn::IntrospectSerializer, status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized

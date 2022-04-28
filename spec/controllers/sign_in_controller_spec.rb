@@ -98,9 +98,6 @@ RSpec.describe SignInController, type: :controller do
         context 'and code_challenge is properly URL encoded' do
           let(:code_challenge) { { code_challenge: Base64.urlsafe_encode64('some-safe-code-challenge') } }
           let(:state) { 'some-random-state' }
-          let(:authorize_url) do
-            "http://www.example.com/sign_in/#{type[:type]}/authorize?code_challenge=#{code_challenge[:code_challenge]}&code_challenge_method=S256"
-          end
 
           before do
             allow(SecureRandom).to receive(:hex).and_return(state)
@@ -151,8 +148,12 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            expect(Rails.logger).to receive(:info)
-              .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
+            expect(Rails.logger).to receive(:info).once.with(
+              'Sign in Service Authorization Attempt',
+              { state: state, type: type[:type], client_state: nil,
+                code_challenge: code_challenge[:code_challenge],
+                code_challenge_method: code_challenge_method[:code_challenge_method] }
+            )
             subject
           end
         end
@@ -222,9 +223,6 @@ RSpec.describe SignInController, type: :controller do
         context 'and code_challenge is properly URL encoded' do
           let(:code_challenge) { { code_challenge: Base64.urlsafe_encode64('some-safe-code-challenge') } }
           let(:state) { 'some-random-state' }
-          let(:authorize_url) do
-            "http://www.example.com/sign_in/#{type[:type]}/authorize?code_challenge=#{code_challenge[:code_challenge]}&code_challenge_method=S256"
-          end
 
           before do
             allow(SecureRandom).to receive(:hex).and_return(state)
@@ -241,6 +239,16 @@ RSpec.describe SignInController, type: :controller do
 
             it 'renders expected type in template' do
               expect(subject.body).to match(expected_type_value)
+            end
+
+            it 'logs the authentication attempt' do
+              expect(Rails.logger).to receive(:info).once.with(
+                'Sign in Service Authorization Attempt',
+                { state: state, type: type[:type], client_state: client_state[:state],
+                  code_challenge: code_challenge[:code_challenge],
+                  code_challenge_method: code_challenge_method[:code_challenge_method] }
+              )
+              subject
             end
           end
 
@@ -272,12 +280,6 @@ RSpec.describe SignInController, type: :controller do
             it 'returns bad_request status' do
               expect(subject).to have_http_status(:bad_request)
             end
-          end
-
-          it 'logs the authentication attempt' do
-            expect(Rails.logger).to receive(:info)
-              .with('Sign in Service Authorization Attempt', hash_including(state: state, request_url: authorize_url))
-            subject
           end
         end
       end
@@ -595,9 +597,6 @@ RSpec.describe SignInController, type: :controller do
           let(:client_code) { 'some-client-code' }
           let(:client_state) { SecureRandom.alphanumeric(SignIn::Constants::Auth::CLIENT_STATE_MINIMUM_LENGTH) }
           let(:expected_url) { "#{Settings.sign_in.redirect_uri}?code=#{client_code}&state=#{client_state}" }
-          let(:callback_url) do
-            "http://www.example.com/sign_in/#{type[:type]}/callback?code=#{code[:code]}&state=#{state[:state]}"
-          end
 
           before do
             allow(SecureRandom).to receive(:uuid).and_return(client_code)
@@ -612,9 +611,11 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            expect(Rails.logger).to receive(:info)
-              .with('Sign in Service Authorization Callback', hash_including(state: state[:state], code: code[:code],
-                                                                             request_url: callback_url))
+            expect(Rails.logger).to receive(:info).once.with(
+              'Sign in Service Authorization Callback',
+              { state: state[:state], code: code[:code],
+                login_code: client_code, type: type[:type], client_state: client_state }
+            )
             subject
           end
         end
@@ -857,8 +858,9 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the session revocation' do
-          expect(Rails.logger).to receive(:info)
-            .with('Sign in Service Session Revoke', { session: expected_session_handle })
+          expect(Rails.logger).to receive(:info).once.with(
+            'Sign in Service Session Revoke', { session: expected_session_handle }
+          )
           subject
         end
       end
@@ -874,7 +876,9 @@ RSpec.describe SignInController, type: :controller do
     let(:anti_csrf_token) { 'some-anti-csrf-token' }
     let(:enable_anti_csrf) { true }
 
-    before { allow(Settings.sign_in).to receive(:enable_anti_csrf).and_return(enable_anti_csrf) }
+    before do
+      allow(Settings.sign_in).to receive(:enable_anti_csrf).and_return(enable_anti_csrf)
+    end
 
     context 'when Settings sign_in enable_anti_csrf is enabled' do
       let(:enable_anti_csrf) { true }
@@ -1052,6 +1056,8 @@ RSpec.describe SignInController, type: :controller do
       end
 
       context 'and refresh token is unmodified and valid' do
+        let(:access_token) { JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first }
+
         it 'returns ok status' do
           expect(subject).to have_http_status(:ok)
         end
@@ -1069,10 +1075,11 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the token refresh' do
-          response = subject
-          uuid = JWT.decode(JSON.parse(response.body)['data']['access_token'], nil, false).first['jti']
-          expect(Rails.logger).to receive(:info)
-            .with('Sign in Service Tokens Refresh', { access_token: uuid })
+          expect(Rails.logger).to receive(:info).once.with(
+            'Sign in Service Tokens Refresh',
+            { session: access_token['session_handle'], access_token: access_token['jti'] }
+          )
+          subject
         end
       end
     end
@@ -1164,11 +1171,9 @@ RSpec.describe SignInController, type: :controller do
           expect(subject).to have_http_status(:ok)
         end
 
-        it 'logs the access_token authentication' do
+        it 'logs the instrospection' do
           expect(Rails.logger).to receive(:info)
-            .once.with('Sign in Service User Access Token Authenticated',
-                       { user: access_token_object.user_uuid, access_token: access_token_object.uuid,
-                         uri: expected_uri })
+            .once.with('Sign in Service Introspect', { user: user.uuid })
           subject
         end
       end
