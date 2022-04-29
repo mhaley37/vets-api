@@ -441,7 +441,7 @@ RSpec.describe 'user', type: :request do
     end
 
     describe 'appointments precaching' do
-      context 'with mobile_precache_appointments flag on'
+      context 'with mobile_precache_appointments flag on' do
         before { Flipper.enable(:mobile_precache_appointments) }
 
         it 'kicks off a pre cache appointments job' do

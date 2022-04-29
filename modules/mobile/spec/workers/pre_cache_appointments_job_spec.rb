@@ -106,7 +106,7 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
                         location: { id: nil,
                                     name: 'RR',
                                     address: { street: 'clarksburg', city: 'md', state: 'MD',
-                                                zip_code: '22222' },
+                                               zip_code: '22222' },
                                     lat: nil,
                                     long: nil,
                                     phone: { area_code: '301', number: '916-1234', extension: nil },
@@ -139,7 +139,7 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
       it 'caches the expected appointments' do
         VCR.use_cassette('appointments/get_cc_appointments_empty', match_requests_on: %i[method uri]) do
           VCR.use_cassette('appointments/get_appointments_at_home_no_location',
-                            match_requests_on: %i[method uri]) do
+                           match_requests_on: %i[method uri]) do
             expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
             subject.perform(user.uuid)
             appointment = Mobile::V0::Appointment.get_cached(user).first.to_h
