@@ -25,6 +25,7 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
       Timecop.freeze(Time.zone.parse('2020-11-01T10:30:00Z'))
       Flipper.disable(:mobile_appointment_requests)
       Flipper.disable(:mobile_appointment_use_VAOS_MFS)
+      Flipper.enable(:mobile_precache_appointments)
     end
 
     after { Timecop.return }
@@ -132,6 +133,17 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
             end
           end
         end
+
+        context 'with mobeil_precache_appointments flag off' do
+          before { Flipper.disable(:mobile_precache_appointments) }
+
+          after { Flipper.enable(:mobile_precache_appointments) }
+
+          it 'does nothing' do
+            subject.perform(user.uuid)
+            expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
+          end
+        end
       end
 
       context 'with at home video appointment with no location' do
@@ -158,16 +170,16 @@ RSpec.describe Mobile::V0::PreCacheAppointmentsJob, type: :job do
           end
         end
       end
+    end
 
-      context 'with any errors' do
-        it 'does not cache the appointments' do
-          VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
-            VCR.use_cassette('appointments/get_cc_appointments_500', match_requests_on: %i[method uri]) do
-              VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
-                expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
-                expect { subject.perform(user.uuid) }.to raise_error(Common::Exceptions::BackendServiceException)
-                expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
-              end
+    context 'with any errors' do
+      it 'does not cache the appointments' do
+        VCR.use_cassette('appointments/get_facilities', match_requests_on: %i[method uri]) do
+          VCR.use_cassette('appointments/get_cc_appointments_500', match_requests_on: %i[method uri]) do
+            VCR.use_cassette('appointments/get_appointments_default', match_requests_on: %i[method uri]) do
+              expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
+              expect { subject.perform(user.uuid) }.to raise_error(Common::Exceptions::BackendServiceException)
+              expect(Mobile::V0::Appointment.get_cached(user)).to be_nil
             end
           end
         end

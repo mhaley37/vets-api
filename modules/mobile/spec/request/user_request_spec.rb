@@ -451,6 +451,18 @@ RSpec.describe 'user', type: :request do
       end
     end
 
+    context 'when mobile_precache_appointments flag is off' do
+      it 'does not kick off a pre cache appointments job' do
+        Flipper.disable(:mobile_precache_appointments)
+        expect(Mobile::V0::PreCacheAppointmentsJob).not_to receive(:perform_async)
+        VCR.use_cassette('payment_information/payment_information') do
+          VCR.use_cassette('user/get_facilities', match_requests_on: %i[method uri]) do
+            get '/mobile/v0/user', headers: iam_headers
+          end
+        end
+      end
+    end
+
     context 'empty get_facility test' do
       before do
         VCR.use_cassette('payment_information/payment_information') do
