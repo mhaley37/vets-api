@@ -6,13 +6,13 @@ module MyHealth
       def show
         resource = client.get_preferences
         render json: resource,
-              serializer: PrescriptionPreferenceSerializer
+               serializer: PrescriptionPreferenceSerializer
       end
 
       def update
         resource = client.post_preferences(params.permit(:email_address, :rx_flag))
         render json: resource,
-              serializer: PrescriptionPreferenceSerializer
+               serializer: PrescriptionPreferenceSerializer
       end
     end
   end

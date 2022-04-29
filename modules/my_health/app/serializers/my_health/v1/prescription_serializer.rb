@@ -8,7 +8,9 @@ module MyHealth
       end
 
       link(:self) { MyHealth::UrlHelper.new.v1_prescription_url(object.prescription_id) }
-      link(:tracking) { MyHealth::UrlHelper.new.v1_prescription_trackings_url(object.prescription_id) if object.trackable? }
+      link(:tracking) do
+        MyHealth::UrlHelper.new.v1_prescription_trackings_url(object.prescription_id) if object.trackable?
+      end
 
       attribute :prescription_id
       attribute :prescription_number

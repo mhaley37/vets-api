@@ -14,9 +14,9 @@ module MyHealth
         resource = resource.sort(params[:sort])
         resource = resource.paginate(pagination_params)
         render json: resource.data,
-              serializer: CollectionSerializer,
-              each_serializer: TrackingSerializer,
-              meta: resource.metadata
+               serializer: CollectionSerializer,
+               each_serializer: TrackingSerializer,
+               meta: resource.metadata
       end
     end
   end
