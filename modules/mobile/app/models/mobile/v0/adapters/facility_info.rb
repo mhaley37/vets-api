@@ -8,29 +8,37 @@ module Mobile
           user_location = params[:sort] == 'current' ? current_coords(params) : home_coords(user)
 
           if Flipper.enabled?(:mobile_appointment_use_VAOS_MFS)
-            Mobile::V0::FacilityInfo.new(
-              id: facility.id,
-              name: facility[:name],
-              city: facility[:physical_address][:city],
-              state: facility[:physical_address][:state],
-              cerner: user.cerner_facility_ids.include?(facility.id),
-              miles: haversine_distance(user_location, [facility.lat, facility.long]).to_s,
-              clinics: [] # blank for now, will be used by direct scheduling
-            )
+            mfs_parse(facility, user, user_location)
           else
-            Mobile::V0::FacilityInfo.new(
-              id: facility.id[4, 3],
-              name: facility[:name],
-              city: facility[:address].dig('physical', 'city'),
-              state: facility[:address].dig('physical', 'state'),
-              cerner: user.cerner_facility_ids.include?(facility.id[4, 3]),
-              miles: haversine_distance(user_location, [facility.lat, facility.long]).to_s,
-              clinics: [] # blank for now, will be used by direct scheduling
-            )
+            legacy_parse(facility, user, user_location)
           end
         end
 
         private
+
+        def mfs_parse(facility, user, user_location)
+          Mobile::V0::FacilityInfo.new(
+            id: facility.id,
+            name: facility[:name],
+            city: facility[:physical_address][:city],
+            state: facility[:physical_address][:state],
+            cerner: user.cerner_facility_ids.include?(facility.id),
+            miles: haversine_distance(user_location, [facility.lat, facility.long]).to_s,
+            clinics: [] # blank for now, will be used by direct scheduling
+          )
+        end
+
+        def legacy_parse(facility, user, user_location)
+          Mobile::V0::FacilityInfo.new(
+            id: facility.id[4, 3],
+            name: facility[:name],
+            city: facility[:address].dig('physical', 'city'),
+            state: facility[:address].dig('physical', 'state'),
+            cerner: user.cerner_facility_ids.include?(facility.id[4, 3]),
+            miles: haversine_distance(user_location, [facility.lat, facility.long]).to_s,
+            clinics: [] # blank for now, will be used by direct scheduling
+          )
+        end
 
         def current_coords(params)
           params.require(:lat)

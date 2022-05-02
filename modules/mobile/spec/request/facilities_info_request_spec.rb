@@ -16,7 +16,6 @@ RSpec.describe 'facilities info', type: :request do
     allow_any_instance_of(VAOS::UserService).to receive(:session).and_return('stubbed_token')
   end
 
-
   va_path = Rails.root.join('modules', 'mobile', 'spec', 'support', 'fixtures',
                             'va_appointments_for_facility_info.json')
   va_json = File.read(va_path)
