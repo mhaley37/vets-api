@@ -123,27 +123,27 @@ module AppealsApi
     end
 
     def mailing_address_city
-      veteran.dig('address', 'city') || ''
+      veteran.&dig('address', 'city') || ''
     end
 
     def mailing_address_state
-      veteran.dig('address', 'stateCode') || ''
+      veteran.&dig('address', 'stateCode') || ''
     end
 
     def mailing_address_country
-      veteran.dig('address', 'countryCodeISO2') || ''
+      veteran.&dig('address', 'countryCodeISO2') || ''
     end
 
     def zip_code
       if zip_code_5 == '00000'
-        veteran.dig('address', 'internationalPostalCode') || '00000'
+        veteran.&dig('address', 'internationalPostalCode') || '00000'
       else
         zip_code_5
       end
     end
 
     def zip_code_5
-      veteran.dig('address', 'zipCode5') || '00000'
+      veteran.&dig('address', 'zipCode5') || '00000'
     end
 
     def phone
@@ -168,6 +168,10 @@ module AppealsApi
 
     def benefit_type
       data_attributes&.dig('benefitType')&.strip
+    end
+
+    def claimant_type
+      data_attributes&.dig('claimantType')&.strip
     end
 
     def contestable_issues
