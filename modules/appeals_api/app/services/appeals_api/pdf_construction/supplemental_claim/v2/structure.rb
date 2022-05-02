@@ -20,36 +20,26 @@ module AppealsApi
             {
             # Vet's ID
             # Veteran name is filled out through autosize text box, not pdf fields
-            form_fields.veteran_middle_initial => form_data.veteran_middle_initial,
-            form_fields.ssn_first_three => form_data.veteran.ssn_first_three,
-            form_fields.ssn_second_two => form_data.veteran.ssn_second_two,
-            form_fields.ssn_last_four => form_data.veteran.ssn_last_four,
-            form_fields.file_number => form_data.veteran.file_number,
-            form_fields.birth_month => form_data.veteran.birth_month,
-            form_fields.birth_day => form_data.veteran.birth_day,
-            form_fields.birth_year => form_data.veteran.birth_year,
-            form_fields.insurance_policy_number => form_data.veteran.insurance_policy_number,
-            form_fields.mailing_address_state => form_data.veteran.state_code,
-            form_fields.mailing_address_country => form_data.veteran.country_code,
-            form_fields.veteran_homeless => form_data.veteran.homeless?,
-            form_fields.veteran_phone_area_code => form_data.veteran.area_code,
-            form_fields.veteran_phone_prefix => form_data.veteran.phone_prefix,
-            form_fields.veteran_phone_line_number => form_data.veteran.phone_line_number,
+              form_fields.veteran_middle_initial => form_data.veteran_middle_initial,
+              form_fields.ssn_first_three => form_data.preferred_ssn_first_three,
+              form_fields.ssn_second_two => form_data.preferred_ssn_second_two,
+              form_fields.ssn_last_four => form_data.preferred_ssn_last_four,
+              form_fields.file_number => form_data.veteran.file_number,
+              form_fields.veteran_service_number => form_data.veteran.service_number,
+              form_fields.birth_month => form_data.veteran.birth_month,
+              form_fields.birth_day => form_data.veteran.birth_day,
+              form_fields.birth_year => form_data.veteran.birth_year,
+              form_fields.insurance_policy_number => form_data.veteran.insurance_policy_number,
+              form_fields.mailing_address_country => form_data.mailing_address,
+              form_fields.veteran_homeless => form_data.veteran.homeless?,
+              form_fields.veteran_phone_area_code => form_data.preferred_phone,
 
-            # Claimant
-            # Claimant name is filled out through autosize text box, not pdf fields
-            form_fields.claimant_middle_initial => form_data.claimant_middle_initial,
-            form_fields.claimant_ssn_first_three => form_data.claimant.ssn_first_three,
-            form_fields.claimant_ssn_second_two => form_data.claimant.ssn_second_two,
-            form_fields.claimant_ssn_last_four => form_data.claimant.ssn_last_four,
-            form_fields.claimant_dob => form_data.claimant.birth_date,
-            # form_fields.claimant_mailing_address_state => form_data.claimant.state_code,
-            # form_fields.claimant_mailing_address_country => form_data.claimant.country_code,
-            # form_fields.claimant_phone_area_code => form_data.claimant_area_code,
-            # form_fields.claimant_phone_prefix => form_data.claimant_phone_prefix,
-            # form_fields.claimant_phone_line_number => form_data.claimant_phone_line_number,
+              # Claimant
+              # Claimant name is filled out through autosize text box, not pdf fields
+              form_fields.claimant_middle_initial => form_data.claimant_middle_initial,
+              form_fields.claimant_dob => form_data.claimant.birth_date,
 
-              form_fields.claimant_type => 1, # default to check 'veteran' for now
+              form_fields.claimant_type => form_data.claimant_type, # default to check 'veteran' for now
 
               form_fields.benefit_type => form_data.benefit_type,
 
@@ -129,21 +119,17 @@ module AppealsApi
 
               fill_text pdf, :veteran_first_name
               fill_text pdf, :veteran_last_name
-              fill_text pdf, :veteran_number_and_street
-              fill_text pdf, :veteran_city
-              fill_text pdf, :veteran_zip_code
-              fill_text pdf, :veteran_international_number
-              fill_text pdf, :veteran_email,
-                        long_text_override: 'See attached page for veteran email'
+              fill_text pdf, :mailing_address_number_and_street
+              fill_text pdf, :mailing_address_city
+              fill_text pdf, :mailing_address_state
+              fill_text pdf, :mailing_address_zip_code
+              fill_text pdf, :mailing_address_country
+              fill_text pdf, :preferred_phone
+              fill_text pdf, :preferred_email,
+              long_text_override: 'See attached page for veteran email'
   
               fill_text pdf, :claimant_first_name
               fill_text pdf, :claimant_last_name
-              fill_text pdf, :claimant_number_and_street
-              fill_text pdf, :claimant_city
-              fill_text pdf, :claimant_zip_code
-              fill_text pdf, :claimant_international_number
-              fill_text pdf, :claimant_email,
-                        long_text_override: 'See attached page for claimant email'
 
               fill_contestable_issues_text pdf
               pdf.start_new_page
