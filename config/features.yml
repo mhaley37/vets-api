@@ -591,10 +591,6 @@ features:
   spool_testing_error_3:
     actor_type: user
     description: Enables email notifications for CreateDailySpoolFiles errors
-  ssoe:
-    actor_type: cookie_id
-    description: Enables ssoe, as opposed to saml authentication wrapped by id.me
-    enable_in_development: true
   stem_automated_decision:
     actor_type: user
     description: Add automated decision to 10203 application workflow
