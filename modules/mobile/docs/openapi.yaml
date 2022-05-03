@@ -1139,7 +1139,7 @@ paths:
               - current
               - home
               - alphabetical
-              - appointment
+              - appointments
       requestBody:
         description: Lat Long for user's current location. Only required if sort method is current, but can be supplied anyway
         content:
