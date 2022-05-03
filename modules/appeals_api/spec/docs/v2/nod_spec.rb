@@ -6,11 +6,9 @@ require Rails.root.join('spec', 'rswag_override.rb').to_s
 require 'rails_helper'
 require AppealsApi::Engine.root.join('spec', 'spec_helper.rb')
 
-# rubocop:disable RSpec/VariableName, RSpec/ScatteredSetup, RSpec/RepeatedExample, Layout/LineLength, RSpec/RepeatedDescription
-
-describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagger/appeals_api/v2/swagger.json', type: :request do
+# rubocop:disable RSpec/VariableName, RSpec/ScatteredSetup, RSpec/RepeatedExample, Layout/LineLength
+describe 'Notice of Disagreements', swagger_doc: "modules/appeals_api/app/swagger/appeals_api/v2/swagger#{DocHelpers.doc_suffix}.json", type: :request do
   include DocHelpers
-
   let(:apikey) { 'apikey' }
 
   path '/notice_of_disagreements' do
@@ -34,7 +32,9 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
           value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_minimum.json')))
         },
         'all fields used' => {
-          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_extra.json')))
+          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_extra.json'))).tap do |data|
+            data.dig('data', 'attributes')&.delete('claimant') unless DocHelpers.wip_doc_enabled?(:nod_v2_claimant)
+          end
         }
       }
 
@@ -55,20 +55,21 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
       parameter AppealsApi::SwaggerSharedComponents.header_params[:veteran_birth_date_header]
       let(:'X-VA-Birth-Date') { '1900-01-01' }
 
-      # TODO: Return full headers after we've validated all Non-Veteran Claimant functionality
-      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_first_name_header]
-      # let(:'X-VA-Claimant-First-Name') { 'first' }
-      #
-      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_middle_initial_header]
-      #
-      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_last_name_header]
-      # let(:'X-VA-Claimant-Last-Name') { 'last' }
-      #
-      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_ssn_header]
-      # let(:'X-VA-Claimant-SSN') { '999999999' }
-      #
-      # parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_birth_date_header]
-      # let(:'X-VA-Claimant-Birth-Date') { '1921-08-08' }
+      if DocHelpers.wip_doc_enabled?(:nod_v2_claimant)
+        parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_first_name_header]
+        let(:'X-VA-Claimant-First-Name') { 'first' }
+
+        parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_middle_initial_header]
+
+        parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_last_name_header]
+        let(:'X-VA-Claimant-Last-Name') { 'last' }
+
+        parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_ssn_header]
+        let(:'X-VA-Claimant-SSN') { '999999999' }
+
+        parameter AppealsApi::SwaggerSharedComponents.header_params[:claimant_birth_date_header]
+        let(:'X-VA-Claimant-Birth-Date') { '1921-08-08' }
+      end
 
       parameter AppealsApi::SwaggerSharedComponents.header_params[:consumer_username_header]
       parameter AppealsApi::SwaggerSharedComponents.header_params[:consumer_id_header]
@@ -109,26 +110,9 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         schema '$ref' => '#/components/schemas/nodCreateResponse'
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'all fields used' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          response_title = example.metadata[:description]
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              examples: {
-                "#{response_title}": {
-                  value: normalize_appeal_response(response)
-                }
-              }
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'all fields used',
+                                         response_wrapper: :normalize_appeal_response,
+                                         extract_desc: true
       end
 
       response '422', 'Violates JSON schema' do
@@ -140,21 +124,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
           request_body
         end
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 422 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 422 response'
       end
     end
   end
@@ -177,21 +147,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         let(:uuid) { FactoryBot.create(:notice_of_disagreement_v2).id }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 200 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: normalize_appeal_response(response)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 200 response', response_wrapper: :normalize_appeal_response
       end
 
       response '404', 'Notice of Disagreement not found' do
@@ -199,21 +155,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         let(:uuid) { 'invalid' }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 404 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 404 response'
       end
     end
   end
@@ -229,21 +171,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
       produces 'application/json'
 
       response '200', 'the JSON Schema for POST /notice_of_disagreements' do
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 200 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 200 response'
       end
     end
   end
@@ -266,7 +194,9 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
           value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_minimum.json')))
         },
         'all fields used' => {
-          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_extra.json')))
+          value: JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'fixtures', 'v2', 'valid_10182_extra.json'))).tap do |data|
+            data.dig('data', 'attributes')&.delete('claimant') unless DocHelpers.wip_doc_enabled?(:nod_v2_claimant)
+          end
         }
       }
 
@@ -294,26 +224,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         schema JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'support', 'schemas', 'nod_validate.json')))
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'minimum fields used' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          response_title = example.metadata[:description]
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              examples: {
-                "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
-                }
-              }
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'minimum fields used', extract_desc: true
       end
 
       response '200', 'Info about a single Notice of Disagreement' do
@@ -323,26 +234,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         schema JSON.parse(File.read(AppealsApi::Engine.root.join('spec', 'support', 'schemas', 'nod_validate.json')))
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'all fields used' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          response_title = example.metadata[:description]
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              examples: {
-                "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
-                }
-              }
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'all fields used', extract_desc: true
       end
 
       response '422', 'Error' do
@@ -354,26 +246,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
           request_body
         end
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'Violates JSON schema' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          response_title = example.metadata[:description]
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              examples: {
-                "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
-                }
-              }
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'Violates JSON schema', extract_desc: true
       end
 
       response '422', 'Error' do
@@ -383,26 +256,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
           nil
         end
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'Not JSON object' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          response_title = example.metadata[:description]
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              examples: {
-                "#{response_title}": {
-                  value: JSON.parse(response.body, symbolize_names: true)
-                }
-              }
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'Not JSON object', extract_desc: true
       end
     end
   end
@@ -431,22 +285,12 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         schema '$ref' => '#/components/schemas/nodEvidenceSubmissionResponse'
 
-        before do |example|
+        before do
           allow_any_instance_of(VBADocuments::UploadSubmission).to receive(:get_location).and_return(+'http://some.fakesite.com/path/uuid')
-          submit_request(example.metadata)
         end
 
-        it 'returns a 202 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: normalize_evidence_submission_response(response)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 202 response',
+                                         response_wrapper: :normalize_evidence_submission_response
       end
 
       response '400', 'Bad Request' do
@@ -471,21 +315,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
                  }
                }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 400 response' do |example|
-          # NOOP
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 400 response', skip_match: true
       end
 
       response '404', 'Associated Notice of Disagreement not found' do
@@ -510,21 +340,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
                  }
                }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 404 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 404 response'
       end
 
       response '422', 'Validation errors' do
@@ -533,21 +349,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         schema '$ref' => '#/components/schemas/errorModel'
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 422 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 422 response'
       end
 
       response '500', 'Unknown Error' do
@@ -595,7 +397,7 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
     end
   end
 
-  path '/path' do
+  path '/nod_upload_path' do
     put 'Accepts Notice of Disagreement Evidence Submission document upload.' do
       tags 'Notice of Disagreements'
       operationId 'putNoticeOfDisagreementEvidenceSubmission'
@@ -657,21 +459,8 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         let(:uuid) { FactoryBot.create(:evidence_submission).guid }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 200 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: normalize_evidence_submission_response(response)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 200 response',
+                                         response_wrapper: :normalize_evidence_submission_response
       end
 
       response '404', 'Notice of Disagreement Evidence Submission not found' do
@@ -679,23 +468,9 @@ describe 'Notice of Disagreements', swagger_doc: 'modules/appeals_api/app/swagge
 
         let(:uuid) { 'invalid' }
 
-        before do |example|
-          submit_request(example.metadata)
-        end
-
-        it 'returns a 404 response' do |example|
-          assert_response_matches_metadata(example.metadata)
-        end
-
-        after do |example|
-          example.metadata[:response][:content] = {
-            'application/json' => {
-              example: JSON.parse(response.body, symbolize_names: true)
-            }
-          }
-        end
+        it_behaves_like 'rswag example', desc: 'returns a 404 response'
       end
     end
   end
 end
-# rubocop:enable RSpec/VariableName, RSpec/ScatteredSetup, RSpec/RepeatedExample, Layout/LineLength, RSpec/RepeatedDescription
+# rubocop:enable RSpec/VariableName, RSpec/ScatteredSetup, RSpec/RepeatedExample, Layout/LineLength

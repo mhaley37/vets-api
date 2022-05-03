@@ -14,12 +14,8 @@ logingov:
   client_cert_path: spec/fixtures/sign_in/oauth.crt
   client_key_path: spec/fixtures/sign_in/oauth.key
   oauth_url: https://idp.int.identitysandbox.gov
-  inherited_proofing:
-    client_id: urn:gov:gsa:openidconnect.profiles:sp:sso:va:dev_signin
-    redirect_uri: http://localhost:3000/sign_in/logingov/callback
-    client_cert_path: spec/fixtures/sign_in/oauth.crt
-    client_key_path: spec/fixtures/sign_in/oauth.key
-    oauth_url: https://idp.int.identitysandbox.gov
+  oauth_public_key: spec/fixtures/logingov/logingov_oauth_pub.pem
+  inherited_proofing_redirect_uri: http://localhost:3000/inherited_proofing/callback
 
 idme:
   client_id: dde0b5b8bfc023a093830e64ef83f148
@@ -190,6 +186,11 @@ vet360:
     enabled: true
     timeout: 30
     mock: false
+  demographics:
+    cache_enabled: false
+    enabled: true
+    timeout: 30
+    mock: false
   address_validation:
     hostname: "sandbox-api.va.gov"
     api_key: "<AV_KEY>"
@@ -231,6 +232,8 @@ dhp:
     client_secret: ''
     redirect_uri: 'http://localhost:3000/dhp_connected_devices/fitbit-callback'
     scope: 'heartrate activity nutrition sleep'
+    code_challenge: ''
+    code_verifier: ''
 
 # Settings for modules/appeals_api
 modules_appeals_api:
@@ -239,6 +242,12 @@ modules_appeals_api:
     appeals_channel_id: ''
   documentation:
     path_enabled_flag: false
+    wip_docs:
+      # List of flags to indicate parts of documentation that are still WIP and not ready for production.
+      # See the rswag:appeals_api:dev rake task, spec_helper, and DocHelpers#wip_doc_enabled? for usage info to opt-in.
+      # NOTE: Do not remove this key even if it's empty.
+      - sc_v2_claimant
+      - nod_v2_claimant
   higher_level_review_pii_expunge_enabled: true
   higher_level_review_updater_enabled: true
   legacy_appeals_enabled: false
@@ -460,7 +469,6 @@ mvi:
   client_key_path: /fake/client/key/path
   pii_logging: false
   vba_orchestration: false
-  edipi_search: false
 
 # Settings for eMIS
 # The certs used here can be obtained from the DevOps team. A different set is required for
@@ -825,8 +833,7 @@ search_click_tracking:
 
 flipper:
   admin_user_emails:
-    - adewitt@thoughtworks.com
-    - aditya.sharma@thoughtworks.com
+    - aditya.sharma@thoughtworks.com # Virtual Agent
     - adrian.rollett@agile6.com # Adrian Rollett (Agile6), Engineer/Product Manager Health Care Experience/Check-In
     - agarcia@clarityinnovates.com
     - alastair@adhocteam.us
@@ -850,13 +857,12 @@ flipper:
     - dror@matal.com
     - eric.boehs@oddball.io
     - erik@adhocteam.us
-    - filip.fafara@gmail.com
+    - filip.fafara@gmail.com # Thoughtworks, ex VANotify, supports DHP, CDSP, Virtual Agent
     - fahmed@governmentcio.com
     - ggupta@kindsys.us # Gaurav Gupta (Kindsys), BE Engineer Health Care Experience/Check-In
     - gescobar@governmentcio.com
     - grodriguez@governmentcio.com
-    - hshin@thoughtworks.com
-    - jacob.gacek@thoughtworks.com
+    - jacob.gacek@thoughtworks.com # Virtual Agent
     - james.childers@gcio.com
     - james.adams2@va.gov # Jim Adams designer on GCIO
     - jayson.perkins@adhocteam.us
@@ -864,13 +870,13 @@ flipper:
     - jennie.mcgibney@va.gov
     - jesse.cohn@adhocteam.us
     - jlinn@governmentcio.com
-    - joe.hall@thoughtworks.com
+    - joe.hall@thoughtworks.com # Virtual Agent
     - joeyn414@gmail.com # Joe Niquette Oddball VSP Identity Team Sr Security Engineer
     - john.bramley@adhocteam.us
     - Josh.Scanish@oddball.io # vsp identity engineer
     - julie.adair@agile6.com # Julie Adair (Agile6), Product Manager Health Care Experience/Check-In
     - jwolf@governmentcio.com # Jason Wolf Product Manager for GCIO
-    - justin.trieu@thoughtworks.com
+    - justin.trieu@thoughtworks.com # Virtual Agent
     - kabrown@thoughtworks.com
     - kadams@governmentcio.com
     - kathleen.crawford@gcio.com
@@ -879,6 +885,7 @@ flipper:
     - kevin.musiorski@gcio.com # Kevin Musiorski (GCIO), Engineer
     - kmircovich@governmentcio.com
     - kris.pethtel@adhocteam.us
+    - kris.pethtel@gmail.com # email tied to production id.me account
     - kyle.woolley@oddball.io # VSP Identity Engineer
     - ksuriyamoorthy@kindsys.us # Kanchana Suriyamoorthy (Kindsys), BE Engineer Health Care Experience/Check-In
     - lauren.alexanderson@va.gov
@@ -887,8 +894,6 @@ flipper:
     - lindsey.hattamer@oddball.io
     - lisa.zapson@adhocteam.us
     - lance.sanchez@gcio.com
-    - ltran@thoughtworks.com
-    - marisa.hoenig@thoughtworks.com
     - mattgardner@navapbc.com
     - mdewey@governmentcio.com
     - micah@adhocteam.us
@@ -897,25 +902,21 @@ flipper:
     - michael.fleet@oddball.io
     - michael.pelz-sherman@gcio.com
     - michelle.middaugh@adhocteam.us
-    - mnunemak@thoughtworks.com
     - n.ratana@gmail.com
     - narin@adhocteam.us
     - patrick.bateman@va.gov
     - patrick@adhocteam.us
     - patrickryll@yahoo.com
-    - paul.phillips@thoughtworks.com
     - paul.touchton@b3groupinc.com
-    - pherbert@thoughtworks.com
     - regarr@gmail.com # Robin Garrison - AdHoc
     - riley.anderson@oddball.io
     - ryan.leahy@adhocteam.us # Ryan Leahy - Adhoc
     - ryan.thurlwell@va.gov
-    - saman.moshafi@thoughtworks.com
+    - sallymaki@navapbc.com
     - samara.strauss@va.gov
     - sarah.knopp@agile6.com # Sarah Knopp (Agile 6), Scrum Master
     - scott.james@gcio.com
     - scy0846@gmail.com # Taylor Mitchell - GCIO
-    - shefai.nayak@thoughtworks.com
     - ssuddath@governmentcio.com
     - stephen.barrs@gmail.com
     - tim.wright@adhocteam.us
@@ -926,7 +927,7 @@ flipper:
     - yangyang@navapbc.com
     - yoom@navapbc.com
     - zmorel@governmentcio.com
-    - kha.huynh@thoughtworks.com
+    - kha.huynh@thoughtworks.com # Virtual Agent
     - zach.morel@gcio.com
     - abelardo.blanco@va.gov
     - eugenia.gina.ronat@accenturefederal.com
@@ -946,6 +947,14 @@ flipper:
     - brandon.clapp@accenturefederal.com
     - matt.long@adhocteam.us # Matt Long - Staff Software Engineer - Ad Hoc
     - trent.mcdole@gcio.com
+    - simi.adebowale@adhocteam.us
+    - tom.harrison@adhocteam.us
+    - angela.agosto@adhocteam.us # Angela Agosto - Ad Hoc
+    - ryan.koch@agile6.com
+    - wesley.rowe@agile6.com
+    - jill.adams@agile6.com
+    - allison@cityfriends.tech
+    - cnunez@kindsys.us
 
 bgs:
   application: ~
@@ -1034,6 +1043,7 @@ lighthouse:
         - "patient/Observation.read"
         - "patient/Practitioner.read"
         - "patient/MedicationRequest.read"
+        - "patient/Condition.read"
       aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8nm1q0f7VQ0a482p7/v1/token"
       client_id: "0oaaxkp0aeXEJkMFw2p7"
       grant_type: "client_credentials"
@@ -1099,6 +1109,8 @@ vanotify:
         contact_info_change: fake_template_id
         form526_confirmation_email: fake_template_id
         form526_submission_failed_email: fake_template_id
+        form686c_confirmation_email: fake_template_id
+        form686c_reminder_email: fake_template_id
         covid_vaccine_registration: fake_template_id
         covid_vaccine_expanded_registration: fake_template_id
         direct_deposit_edu: edu_template_id
@@ -1329,3 +1341,11 @@ lgy:
   app_id: ~
   api_key: ~
   mock_coe: false
+
+form1095_b:
+  s3:
+    aws_access_key_id: ~
+    aws_secret_access_key: ~
+    bucket: 'bucket'
+    enabled: true
+    region: 'region'

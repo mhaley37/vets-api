@@ -102,6 +102,11 @@ describe VAProfile::Models::Address do
         address.province = 'Quebec'
         expect(address.valid?).to eq(false)
       end
+
+      it 'international_postal_code is not required' do
+        address.international_postal_code = nil
+        expect(address.valid?).to eq(true)
+      end
     end
 
     context 'when address_type is international' do
@@ -137,10 +142,10 @@ describe VAProfile::Models::Address do
         expect(address.valid?).to eq(false)
       end
 
-      it 'international_postal_code is required' do
+      it 'international_postal_code is not required' do
         expect(address.valid?).to eq(true)
         address.international_postal_code = ''
-        expect(address.valid?).to eq(false)
+        expect(address.valid?).to eq(true)
       end
 
       it 'ensures international_postal_code is < 35 characters' do

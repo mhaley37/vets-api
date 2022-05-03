@@ -225,18 +225,59 @@ RSpec.describe 'Disability Claims ', type: :request do
         end
       end
 
-      describe "'treatment.treatedDisabilityNames' validations" do
+      describe "'treatments' validations" do
         let(:treatments) do
           [
             {
               center: {
-                name: 'Some Treatment Center',
+                name: 'Some Treatment Center, with commas and  double spaces',
                 country: 'United States of America'
               },
               treatedDisabilityNames: treated_disability_names,
               startDate: '1985-01-01'
             }
           ]
+        end
+
+        context "when 'treatments[].center.country' is an empty string'" do
+          let(:treated_disability_names) { ['PTSD (post traumatic stress disorder)'] }
+
+          it 'returns a bad request' do
+            with_okta_user(scopes) do |auth_header|
+              VCR.use_cassette('evss/claims/claims') do
+                VCR.use_cassette('evss/reference_data/get_intake_sites') do
+                  json_data = JSON.parse data
+                  params = json_data
+                  params['data']['attributes']['treatments'] = treatments
+                  params['data']['attributes']['treatments'][0][:center][:country] = ''
+
+                  post path, params: params.to_json, headers: headers.merge(auth_header)
+                  expect(response.status).to eq(422)
+                end
+              end
+            end
+          end
+        end
+
+        context "when 'treatments[].center.country' is too long'" do
+          let(:treated_disability_names) { ['PTSD (post traumatic stress disorder)'] }
+
+          it 'returns a bad request' do
+            with_okta_user(scopes) do |auth_header|
+              VCR.use_cassette('evss/claims/claims') do
+                VCR.use_cassette('evss/reference_data/get_intake_sites') do
+                  json_data = JSON.parse data
+                  params = json_data
+                  params['data']['attributes']['treatments'] = treatments
+                  params['data']['attributes']['treatments'][0][:center][:country] =
+                    'Here\'s a country that has a very very very long name'
+
+                  post path, params: params.to_json, headers: headers.merge(auth_header)
+                  expect(response.status).to eq(422)
+                end
+              end
+            end
+          end
         end
 
         context "when 'treatment.treatedDisabilityNames' includes value that does not match 'disability'" do
@@ -439,29 +480,16 @@ RSpec.describe 'Disability Claims ', type: :request do
       context 'when changeOfAddress information is submitted' do
         let(:json_data) { JSON.parse data }
 
-        context 'when addressChangeType is TEMPORARY' do
-          let(:change_of_address) do
-            {
-              beginningDate: (Time.zone.now + 1.month).to_date.to_s,
-              addressChangeType: 'TEMPORARY',
-              addressLine1: '1234 Couch Street',
-              city: 'New York City',
-              state: 'NY',
-              type: 'DOMESTIC',
-              zipFirstFive: '12345',
-              country: 'USA'
-            }
-          end
-
-          context 'when beginningDate is in the past' do
-            let(:json_data) { JSON.parse data }
-
-            context 'when addressChangeType is TEMPORARY' do
+        values = %w[TEMPORARY Temporary temporary]
+        values.each do |value|
+          context "when addressChangeType is #{value}" do
+            context 'when beginningDate is in the past' do
+              let(:json_data) { JSON.parse data }
               let(:change_of_address) do
                 {
                   beginningDate: (Time.zone.now - 1.month).to_date.to_s,
                   endingDate: (Time.zone.now + 1.month).to_date.to_s,
-                  addressChangeType: 'TEMPORARY',
+                  addressChangeType: value,
                   addressLine1: '1234 Couch Street',
                   city: 'New York City',
                   state: 'NY',
@@ -986,6 +1014,26 @@ RSpec.describe 'Disability Claims ', type: :request do
       end
 
       context 'when consumer is Veteran' do
+        let(:mvi_codes) do
+          {
+            birls_id: '111985523',
+            participant_id: '32397028'
+          }
+        end
+        let(:mvi_profile) { build(:mvi_profile) }
+        let(:mvi_profile_response) do
+          MPI::Responses::FindProfileResponse.new(
+            status: MPI::Responses::FindProfileResponse::RESPONSE_STATUS[:ok],
+            profile: mvi_profile
+          )
+        end
+        let(:add_response) do
+          MPI::Responses::AddPersonResponse.new(
+            status: MPI::Responses::AddPersonResponse::RESPONSE_STATUS[:ok],
+            mvi_codes: mvi_codes
+          )
+        end
+
         it 'adds person to MPI' do
           with_okta_user(scopes) do |auth_header|
             VCR.use_cassette('evss/claims/claims') do
@@ -993,7 +1041,11 @@ RSpec.describe 'Disability Claims ', type: :request do
                 VCR.use_cassette('mpi/add_person/add_person_success') do
                   VCR.use_cassette('mpi/find_candidate/orch_search_with_attributes') do
                     expect_any_instance_of(MPIData).to receive(:add_person).once.and_call_original
+                    expect_any_instance_of(MPI::Service).to receive(:add_person).and_return(add_response)
+                    allow_any_instance_of(MPI::Service).to receive(:find_profile).and_return(mvi_profile_response)
+
                     post path, params: data, headers: auth_header
+                    expect(response.status).to eq(200)
                   end
                 end
               end
@@ -2425,6 +2477,17 @@ RSpec.describe 'Disability Claims ', type: :request do
     let(:base64_params) do
       { attachment1: File.read("#{::Rails.root}/modules/claims_api/spec/fixtures/base64pdf"),
         attachment2: File.read("#{::Rails.root}/modules/claims_api/spec/fixtures/base64pdf") }
+    end
+
+    context 'when no attachment is provided to the PUT endpoint' do
+      it 'rejects the request for missing param' do
+        with_okta_user(scopes) do |auth_header|
+          put("/services/claims/v1/forms/526/#{auto_claim.id}", headers: headers.merge(auth_header))
+          expect(response.status).to eq(400)
+          expect(response.parsed_body['errors'][0]['title']).to eq('Missing parameter')
+          expect(response.parsed_body['errors'][0]['detail']).to eq('Must include attachment')
+        end
+      end
     end
 
     it 'upload 526 binary form through PUT' do

@@ -110,8 +110,7 @@ module AppealsApi
           return unless additional_pages?
 
           @additional_pages_pdf ||= Prawn::Document.new(skip_page_creation: true)
-
-          HigherLevelReview::Pages::V2::AdditionalIssues.new(
+          Pages::AdditionalIssues.new(
             @additional_pages_pdf,
             form_data
           ).build!
@@ -125,31 +124,6 @@ module AppealsApi
 
         def form_title
           '200996_v2'
-        end
-
-        def stamp(stamped_pdf_path)
-          stamper = CentralMail::DatestampPdf.new(stamped_pdf_path)
-
-          bottom_stamped_path = stamper.run(
-            text: "API.VA.GOV #{higher_level_review.created_at.utc.strftime('%Y-%m-%d %H:%M%Z')}",
-            x: 5,
-            y: 775,
-            text_only: true
-          )
-
-          name_stamp_path = "#{Common::FileHelpers.random_file_path}.pdf"
-          Prawn::Document.generate(name_stamp_path, margin: [0, 0]) do |pdf|
-            pdf.text_box form_data.stamp_text,
-                         at: [205, 785],
-                         align: :center,
-                         valign: :center,
-                         overflow: :shrink_to_fit,
-                         min_font_size: 8,
-                         width: 215,
-                         height: 10
-          end
-
-          CentralMail::DatestampPdf.new(nil).stamp(bottom_stamped_path, name_stamp_path)
         end
 
         private

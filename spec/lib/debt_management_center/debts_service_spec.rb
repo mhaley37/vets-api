@@ -77,10 +77,9 @@ RSpec.describe DebtManagementCenter::DebtsService do
             debts[0]['id'] = debt_id
             debt_store = DebtManagementCenter::DebtStore.find_or_build(user.uuid)
             debt_store.update(debts: debts, uuid: user.uuid)
-            expect(service.get_debt_by_id(debt_id).to_json).to eq(JSON.parse(File.read(
-                                                                               Rails.root.join('spec', 'fixtures',
-                                                                                               'dmc', 'debt.json')
-                                                                             )).to_json)
+            expect(service.get_debt_by_id(debt_id).to_json).to eq(
+              get_fixture('dmc/debt').to_json
+            )
           end
         end
       end

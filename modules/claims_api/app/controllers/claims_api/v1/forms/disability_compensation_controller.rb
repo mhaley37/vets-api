@@ -17,6 +17,7 @@ module ClaimsApi
         FORM_NUMBER = '526'
         STATSD_VALIDATION_FAIL_KEY = 'api.claims_api.526.validation_fail'
         STATSD_VALIDATION_FAIL_TYPE_KEY = 'api.claims_api.526.validation_fail_type'
+        EVSS_DOCUMENT_TYPE = 'L023'
 
         before_action except: %i[schema] do
           permit_scopes %w[claim.write]
@@ -44,7 +45,7 @@ module ClaimsApi
             source: source_name
           )
 
-          ClaimsApi::Logger.log('526', claim_id: params[:id], detail: 'Submitted to Lighthouse',
+          ClaimsApi::Logger.log('526', claim_id: auto_claim.id, detail: 'Submitted to Lighthouse',
                                        pdf_gen_dis: form_attributes['autoCestPDFGenerationDisabled'])
 
           # .create returns the resulting object whether the object was saved successfully to the database or not.
@@ -71,16 +72,17 @@ module ClaimsApi
         #
         # @return [JSON] Claim record
         def upload_form_526
+          validate_document_provided
           validate_documents_content_type
           validate_documents_page_size
 
           pending_claim = ClaimsApi::AutoEstablishedClaim.pending?(params[:id])
 
           if pending_claim && (pending_claim.form_data['autoCestPDFGenerationDisabled'] == true)
-            pending_claim.set_file_data!(documents.first, params[:doc_type])
+            pending_claim.set_file_data!(documents.first, EVSS_DOCUMENT_TYPE)
             pending_claim.save!
 
-            ClaimsApi::Logger.log('526', claim_id: params[:id], detail: 'Uploaded PDF to S3')
+            ClaimsApi::Logger.log('526', claim_id: pending_claim.id, detail: 'Uploaded PDF to S3')
             ClaimsApi::ClaimEstablisher.perform_async(pending_claim.id)
             ClaimsApi::ClaimUploader.perform_async(pending_claim.id)
 
@@ -106,9 +108,15 @@ module ClaimsApi
           claim = ClaimsApi::AutoEstablishedClaim.get_by_id_or_evss_id(params[:id])
           raise ::Common::Exceptions::ResourceNotFound.new(detail: 'Resource not found') unless claim
 
+          ClaimsApi::Logger.log(
+            '526',
+            claim_id: claim.id,
+            detail: "/attachments called with #{documents.length} #{'attachment'.pluralize(documents.length)}"
+          )
+
           documents.each do |document|
             claim_document = claim.supporting_documents.build
-            claim_document.set_file_data!(document, params[:doc_type], params[:description])
+            claim_document.set_file_data!(document, EVSS_DOCUMENT_TYPE, params[:description])
             claim_document.save!
             ClaimsApi::ClaimUploader.perform_async(claim_document.id)
           end
@@ -186,7 +194,7 @@ module ClaimsApi
         def validate_form_526_change_of_address_beginning_date!
           change_of_address = form_attributes.dig('veteran', 'changeOfAddress')
           return if change_of_address.blank?
-          return unless change_of_address['addressChangeType'] == 'TEMPORARY'
+          return unless 'TEMPORARY'.casecmp?(change_of_address['addressChangeType'])
           return if Date.parse(change_of_address['beginningDate']) > Time.zone.now
 
           raise ::Common::Exceptions::InvalidFieldValue.new('beginningDate', change_of_address['beginningDate'])

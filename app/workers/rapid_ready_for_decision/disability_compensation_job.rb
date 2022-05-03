@@ -21,16 +21,17 @@ module RapidReadyForDecision
 
       begin
         with_tracking(self.class.name, form526_submission.saved_claim_id, form526_submission_id) do
-          return if RapidReadyForDecision::Form526BaseJob.pending_eps?(form526_submission)
+          return if form526_submission.pending_eps?
 
           client = Lighthouse::VeteransHealth::Client.new(get_icn(form526_submission))
 
           return if bp_readings(client).blank?
 
+          claim_context = RapidReadyForDecision::ClaimContext.new(form526_submission)
           add_bp_readings_stats(form526_submission, bp_readings(client))
 
           pdf = pdf(patient_info(form526_submission), bp_readings(client), medications(client))
-          upload_pdf_and_attach_special_issue(form526_submission, pdf)
+          upload_pdf_and_attach_special_issue(claim_context, pdf)
         end
       rescue => e
         # only retry if the error was raised within the "with_tracking" block
@@ -60,7 +61,7 @@ module RapidReadyForDecision
 
     def add_bp_readings_stats(form526_submission, bp_readings)
       med_stats_hash = { bp_readings_count: bp_readings.size }
-      RapidReadyForDecision::Form526BaseJob.add_metadata(form526_submission, med_stats: med_stats_hash)
+      form526_submission.save_metadata(med_stats: med_stats_hash)
     end
 
     def send_fast_track_engineer_email_for_testing(form526_submission_id, error_message, backtrace)
@@ -95,15 +96,19 @@ module RapidReadyForDecision
       Account.find_by(edipi: edipi) if edipi
     end
 
-    def upload_pdf_and_attach_special_issue(form526_submission, pdf)
-      RapidReadyForDecision::FastTrackPdfUploadManager.new(form526_submission).handle_attachment(pdf.render)
+    def upload_pdf_and_attach_special_issue(claim_context, pdf)
+      RapidReadyForDecision::FastTrackPdfUploadManager.new(claim_context).handle_attachment(pdf.render)
       if Flipper.enabled?(:rrd_add_special_issue)
-        RapidReadyForDecision::RrdSpecialIssueManager.new(form526_submission).add_special_issue
+        RapidReadyForDecision::RrdSpecialIssueManager.new(claim_context).add_special_issue
       end
     end
 
     def pdf(patient_info, bpreadings, medications)
-      RapidReadyForDecision::FastTrackPdfGenerator.new(patient_info, bpreadings, medications).generate
+      assessed_data = {
+        bp_readings: bpreadings,
+        medications: medications
+      }
+      RapidReadyForDecision::FastTrackPdfGenerator.new(patient_info, assessed_data, :hypertension).generate
     end
   end
 end
