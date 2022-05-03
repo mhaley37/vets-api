@@ -18,8 +18,8 @@ module AppealsApi
             # Section I: Identifying Information
             # Name, address and email filled out through autosize text box, not pdf fields
             {
-            # Vet's ID
-            # Veteran name is filled out through autosize text box, not pdf fields
+              # Vet's ID
+              # Veteran name is filled out through autosize text box, not pdf fields
               form_fields.veteran_middle_initial => form_data.veteran_middle_initial,
               form_fields.ssn_first_three => form_data.preferred_ssn_first_three,
               form_fields.ssn_second_two => form_data.preferred_ssn_second_two,
@@ -39,7 +39,7 @@ module AppealsApi
               form_fields.claimant_middle_initial => form_data.claimant_middle_initial,
               form_fields.claimant_dob => form_data.claimant.birth_date,
 
-              form_fields.claimant_type => form_data.claimant_type, # default to check 'veteran' for now
+              form_fields.claimant_type => form_data.claimant_type,
 
               form_fields.benefit_type => form_data.benefit_type,
 
@@ -110,6 +110,7 @@ module AppealsApi
             @form_data ||= FormData.new(supplemental_claim)
           end
 
+          # rubocop:disable Metrics/MethodLength
           def fill_autosize_fields
             tmp_path = "/#{::Common::FileHelpers.random_file_path}.pdf"
             Prawn::Document.generate(tmp_path) do |pdf|
@@ -126,8 +127,8 @@ module AppealsApi
               fill_text pdf, :mailing_address_country
               fill_text pdf, :preferred_phone
               fill_text pdf, :preferred_email,
-              long_text_override: 'See attached page for veteran email'
-  
+                        long_text_override: 'See attached page for veteran email'
+
               fill_text pdf, :claimant_first_name
               fill_text pdf, :claimant_last_name
 
@@ -144,6 +145,7 @@ module AppealsApi
             end
             tmp_path
           end
+          # rubocop:enable Metrics/MethodLength
 
           def additional_pages?
             additional_issues? || additional_evidence_locations? || form_data.long_signature?

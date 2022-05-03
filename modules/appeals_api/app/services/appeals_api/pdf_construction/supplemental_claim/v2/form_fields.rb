@@ -28,15 +28,15 @@ module AppealsApi
           def claimant_ssn_first_three
             'form1[0].#subform[2].ClaimantsSocialSecurityNumber_FirstThreeNumbers[1]'
           end
-  
+
           def claimant_ssn_second_two
             'form1[0].#subform[2].ClaimantsSocialSecurityNumber_SecondTwoNumbers[1]'
           end
-  
+
           def claimant_ssn_last_four
             'form1[0].#subform[2].ClaimantsSocialSecurityNumber_LastFourNumbers[1]'
           end
-  
+
           def file_number
             'form1[0].#subform[2].VAFileNumber[0]'
           end
@@ -80,7 +80,7 @@ module AppealsApi
           def veteran_homeless
             'form1[0].#subform[2].ClaimantType[0]'
           end
-  
+
           # TODO: unsused at the moment
           def zip_code_4
             'form1[0].#subform[2].CurrentMailingAddress_ZIPOrPostalCode_LastFourNumbers[0]'
@@ -93,19 +93,19 @@ module AppealsApi
           def veteran_phone_area_code
             'form1[0].#subform[2].Daytime_Phone_Number_Area_Code[0]'
           end
-  
+
           def veteran_phone_prefix
             'form1[0].#subform[2].Daytime_Phone_Middle_Three_Numbers[0]'
           end
-  
+
           def veteran_phone_line_number
             'form1[0].#subform[2].Daytime_Phone_Last_Four_Numbers[0]'
           end
-  
+
           def veteran_phone_international_number
             'form1[0].#subform[2].International_Telephone_Number_If_Applicable[0]'
           end
-  
+
           def claimant_type
             'form1[0].#subform[2].RadioButtonList[1]'
           end
@@ -179,7 +179,7 @@ module AppealsApi
               mailing_address_country: { at: [150, 378], width: 25 },
               preferred_email: { at: [275, 348], width: 260 },
               preferred_phone: { at: [3, 348], width: 260 },
-  
+
               claimant_first_name: { at: [3, 485], width: 192 },
               claimant_last_name: { at: [238, 485], width: 295 },
 

@@ -155,6 +155,7 @@ describe AppealsApi::SupplementalClaim, type: :model do
 
     describe '#number_and_street' do
       subject { supplemental_claim_v2.veteran.number_and_street }
+
       it { expect(subject).to eq('123 Main St Suite #1200 Box 4') }
     end
 

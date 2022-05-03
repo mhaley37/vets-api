@@ -13,7 +13,7 @@ module AppealsApi
             @supplemental_claim = supplemental_claim
           end
 
-          delegate :insurance_policy_number, :date_signed, :signing_appellant, :appellant_local_time, 
+          delegate :insurance_policy_number, :date_signed, :signing_appellant, :appellant_local_time,
                    :contestable_issues, :soc_opt_in, :new_evidence_locations, :new_evidence_dates,
                    :veteran_homeless?, :preferred_email, :preferred_phone,
                    :preferred_ssn_first_three, :preferred_ssn_last_four, :preferred_ssn_second_two,
@@ -69,15 +69,15 @@ module AppealsApi
           def date_signed_mm
             appellant_local_time.strftime '%m'
           end
-  
+
           def date_signed_dd
             appellant_local_time.strftime '%d'
           end
-  
+
           def date_signed_yyyy
             appellant_local_time.strftime '%Y'
           end
-  
+
           def new_evidence_locations
             evidence_records.map(&:location)
           end
@@ -89,11 +89,11 @@ module AppealsApi
           def preferred_ssn_first_three
             signing_appellant.ssn[0..2]
           end
-  
+
           def preferred_ssn_second_two
             signing_appellant.ssn[3..4]
           end
-  
+
           def preferred_ssn_last_four
             signing_appellant.ssn[5..8]
           end
@@ -111,7 +111,7 @@ module AppealsApi
               signing_appellant.country_code
             ].compact.join(', ')
           end
-  
+
           def mailing_address_number_and_street
             signing_appellant.number_and_street
           end
@@ -134,14 +134,14 @@ module AppealsApi
 
           def preferred_email
             return 'See attached page for preferred email' if long_preferred_email?
-  
+
             signing_appellant.email
           end
-  
+
           def long_preferred_email?
             signing_appellant.email.length > 120
           end
-  
+
           private
 
           attr_accessor :supplemental_claim
