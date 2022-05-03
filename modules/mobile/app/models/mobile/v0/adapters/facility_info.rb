@@ -34,7 +34,7 @@ module Mobile
             name: facility[:name],
             city: facility[:address].dig('physical', 'city'),
             state: facility[:address].dig('physical', 'state'),
-            cerner: user.cerner_facility_ids.include?(facility.id[4, 3]),
+            cerner: user.cerner_facility_ids.include?(facility.id.delete('vha_')),
             miles: haversine_distance(user_location, [facility.lat, facility.long]).to_s,
             clinics: [] # blank for now, will be used by direct scheduling
           )

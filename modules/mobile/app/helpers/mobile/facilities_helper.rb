@@ -36,7 +36,7 @@ module Mobile
     end
 
     def user_address_coordinates(user)
-      address = user.vet360_contact_info.residential_address
+      address = user.vet360_contact_info&.residential_address
       unless address&.latitude && address&.longitude
         raise Common::Exceptions::UnprocessableEntity.new(
           detail: 'User has no home latitude and longitude', source: self.class.to_s

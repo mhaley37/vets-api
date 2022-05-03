@@ -5,7 +5,7 @@ module Mobile
     class FacilitiesInfoSerializer
       include FastJsonapi::ObjectSerializer
 
-      set_type :facility_info
+      set_type :facilities_info
       attributes :facilities
 
       def initialize(id, facilities)

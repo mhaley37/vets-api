@@ -85,7 +85,7 @@ RSpec.describe 'facilities info', type: :request do
         end
       end
 
-      context 'when current location params are missing and sort my current is selected' do
+      context 'when current location params are missing and sort by current is selected' do
         it 'returns an error' do
           VCR.use_cassette('appointments/get_multiple_mfs_facilities_200', match_requests_on: %i[method uri]) do
             get '/mobile/v0/facilities-info/current', headers: iam_headers, params: nil

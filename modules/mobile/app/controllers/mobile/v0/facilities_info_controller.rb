@@ -27,8 +27,12 @@ module Mobile
           facilities.sort_by(&:miles)
         when 'alphabetical'
           facilities.sort_by(&:name)
-        else
+        when 'appointments'
           sort_by_recent_appointment(facilities)
+        else
+          raise Common::Exceptions::ValidationErrorsBadRequest.new(
+            detail: 'Invalid sort method', source: self.class.to_s
+          )
         end
       end
 
