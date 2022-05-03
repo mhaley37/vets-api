@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
 class VeteranDeviceRecord < ApplicationRecord
-  validates :user_uuid, :device_id, :active, presence: true
+  validates :icn, :device_id, :active, presence: true
   belongs_to :device
   before_validation :validate_unique_ids, on: :create
 
-  def self.active_devices(current_user)
-    VeteranDeviceRecord.where(user_uuid: current_user.uuid, active: true)
+  def self.active_devices(user)
+    VeteranDeviceRecord.where(icn: user.icn, active: true)
   end
 
   def validate_unique_ids
-    if VeteranDeviceRecord.find_by(device_id: device_id, user_uuid: user_uuid).nil?
+    if VeteranDeviceRecord.find_by(device_id: device_id, icn: icn).nil?
       nil
     else
-      errors.add(:user_uuid, 'user_uuid already associated with provided device_id')
-      errors.add(:device_id, 'device_id already associated with provided user_uuid')
+      errors.add(:icn, 'User already associated with provided device_id')
     end
   end
 end

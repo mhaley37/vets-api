@@ -348,9 +348,11 @@ ActiveRecord::Schema.define(version: 2022_04_27_215503) do
   end
 
   create_table "devices", force: :cascade do |t|
+    t.string "key"
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["key"], name: "index_devices_on_key", unique: true
   end
 
   create_table "directory_applications", force: :cascade do |t|
@@ -959,11 +961,12 @@ ActiveRecord::Schema.define(version: 2022_04_27_215503) do
 
   create_table "veteran_device_records", force: :cascade do |t|
     t.bigint "device_id", null: false
-    t.boolean "active"
-    t.string "user_uuid", null: false
+    t.boolean "active", default: true, null: false
+    t.string "icn", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["device_id"], name: "index_veteran_device_records_on_device_id"
+    t.index ["icn", "device_id"], name: "index_veteran_device_records_on_icn_and_device_id", unique: true
   end
 
   create_table "veteran_organizations", id: false, force: :cascade do |t|
