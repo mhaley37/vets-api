@@ -26,12 +26,12 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       disabilities = form_json.dig('form526', 'form526', 'disabilities')
       disabilities.first['specialIssues'] = ['RRD']
 
-      submission.add_metadata({
-                                pdf_created: true,
-                                # Set the bp_readings_count like `add_medical_stats` is expected to do
-                                med_stats: { bp_readings_count: bp_readings_count },
-                                pdf_guid: 'a950ef07-9eaa-4784-b5af-bda8c50a83f9'
-                              })
+      submission.save_metadata({
+                                 pdf_created: true,
+                                 # Set the bp_readings_count like `add_medical_stats` is expected to do
+                                 med_stats: { bp_readings_count: bp_readings_count },
+                                 pdf_guid: 'a950ef07-9eaa-4784-b5af-bda8c50a83f9'
+                               })
       submission
     end
 
@@ -52,14 +52,14 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       expect(email.body).to include 'A single-issue hypertension (7101) claim for increase was submitted on va.gov.'
       expect(email.body).to include 'A health summary PDF was generated and added to the claim\'s documentation.'
       expect(email.body).to include "Number of BP readings: #{bp_readings_count}"
-      expect(email.body).to include 'S3 id: a950ef07-9eaa-4784-b5af-bda8c50a83f9'
+      expect(email.body).to include 'PDF id in S3: a950ef07-9eaa-4784-b5af-bda8c50a83f9'
     end
   end
 
   context 'when the claim was offramped due to an existing EP 020' do
     let!(:submission) do
       create(:form526_submission).tap do |submission|
-        submission.add_metadata(offramp_reason: 'pending_ep')
+        submission.save_metadata(offramp_reason: 'pending_ep')
       end
     end
 
@@ -75,7 +75,11 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
   end
 
   context 'the data IS NOT sufficient to fast track the claim' do
-    let!(:submission) { create(:form526_submission) }
+    let!(:submission) do
+      create(:form526_submission).tap do |submission|
+        submission.save_metadata(offramp_reason: 'insufficient_data')
+      end
+    end
 
     it 'has the expected subject' do
       expect(email.subject).to match(/RRD claim - .* - Insufficient data/)
@@ -85,6 +89,38 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       expect(email.body).to match(/A single-issue .* claim for increase was submitted on va.gov./)
       expect(email.body)
         .to include 'There was not sufficient data to generate a health summary PDF associated with this claim.'
+    end
+  end
+
+  context 'an error occurred' do
+    let!(:submission) do
+      create(:form526_submission).tap do |submission|
+        submission.save_metadata(error: 'Something bad happened')
+      end
+    end
+
+    it 'has the expected subject' do
+      expect(email.subject).to match(/RRD claim - .* - Error/)
+    end
+
+    it 'has the expected content' do
+      expect(email.body).to include 'There was an error with this claim: Something bad happened'
+    end
+  end
+
+  context 'unknown rrd_status' do
+    let!(:submission) do
+      create(:form526_submission).tap do |submission|
+        submission.save_metadata(something_useful: 'Unknown status')
+      end
+    end
+
+    it 'has the expected subject' do
+      expect(email.subject).to match(/RRD claim - .* - Unknown/)
+    end
+
+    it 'has the expected content' do
+      expect(email.body).to include 'Metadata: {"something_useful"=>"Unknown status"}'
     end
   end
 end

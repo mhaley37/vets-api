@@ -18,6 +18,7 @@ path 'modules' do
   gem 'identity'
   gem 'meb_api'
   gem 'mobile'
+  gem 'my_health'
   gem 'openid_auth'
   gem 'test_user_dashboard'
   gem 'va_forms'
@@ -29,7 +30,7 @@ path 'modules' do
   gem 'veteran_verification'
 end
 
-gem 'rails', '~> 6.1'
+gem 'rails', '~> 6.1.5'
 
 gem 'aasm'
 gem 'active_model_serializers', git: 'https://github.com/department-of-veterans-affairs/active_model_serializers', branch: 'master'

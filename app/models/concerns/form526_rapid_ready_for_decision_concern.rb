@@ -19,7 +19,7 @@ module Form526RapidReadyForDecisionConcern
   end
 
   # @param metadata_hash [Hash] to be merged into form_json['rrd_metadata']
-  def add_metadata(metadata_hash)
+  def save_metadata(metadata_hash)
     form['rrd_metadata'] ||= {}
     form['rrd_metadata'].deep_merge!(metadata_hash)
 
@@ -29,18 +29,20 @@ module Form526RapidReadyForDecisionConcern
   end
 
   def rrd_status
-    return :processed if rrd_claim_processed?
+    return 'processed' if rrd_claim_processed?
 
-    return :pending_ep if form.dig('rrd_metadata', 'offramp_reason') == 'pending_ep'
+    return form.dig('rrd_metadata', 'offramp_reason') if form.dig('rrd_metadata', 'offramp_reason').present?
 
-    :insufficient_data
+    return 'error' if form.dig('rrd_metadata', 'error').present?
+
+    'unknown'
   end
 
   # Fetch all claims from EVSS
   # @return [Boolean] whether there are any open EP 020's
   def pending_eps?
     pending = open_claims.any? { |claim| claim['base_end_product_code'] == '020' }
-    add_metadata(offramp_reason: 'pending_ep') if pending
+    save_metadata(offramp_reason: 'pending_ep') if pending
     pending
   end
 

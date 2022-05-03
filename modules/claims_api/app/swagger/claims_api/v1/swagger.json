@@ -496,7 +496,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "3317b611-21cf-46e0-9d20-faac17afd3bf",
+                    "id": "4acd79e7-a542-4551-b59e-1f1e6dbac5b5",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": 600118851,
@@ -545,11 +545,11 @@
                       "status": "Initial review",
                       "supporting_documents": [
                         {
-                          "id": "91f750d9-28cd-4cfa-8f93-8d489cb1b461",
+                          "id": "d0cbab84-8cf5-46ce-b687-cf47c7ef4c31",
                           "type": "claim_supporting_document",
                           "md5": "d927c7e283b3158a54822a493d06181d",
                           "filename": "extras.pdf",
-                          "uploaded_at": "2022-04-21T15:06:23.182Z"
+                          "uploaded_at": "2022-05-02T17:23:56.624Z"
                         }
                       ]
                     }
@@ -1046,7 +1046,7 @@
                                   "type": "string"
                                 },
                                 "type": {
-                                  "description": "Type of residence Veteran resides in.",
+                                  "description": "Type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"addressLine1\", \"city\", \"country\", and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"addressLine1\", \"city\", \"state\", \"country\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"addressLine1\", \"country\", \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                   "type": "string",
                                   "default": "DOMESTIC",
                                   "enum": [
@@ -1192,7 +1192,7 @@
                                   "type": "string"
                                 },
                                 "type": {
-                                  "description": "New type of residence Veteran resides in.",
+                                  "description": "New type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"city\" and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"city\", \"state\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                   "type": "string",
                                   "default": "DOMESTIC",
                                   "enum": [
@@ -1484,12 +1484,9 @@
                               "type": "object",
                               "additionalProperties": false,
                               "required": [
-                                "title10Activation",
                                 "obligationTermOfServiceFromDate",
                                 "obligationTermOfServiceToDate",
-                                "unitName",
-                                "unitPhone",
-                                "receivingInactiveDutyTrainingPay"
+                                "unitName"
                               ],
                               "properties": {
                                 "title10Activation": {
@@ -1519,7 +1516,8 @@
                                   "pattern": "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
                                 },
                                 "unitName": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "pattern": "([a-zA-Z0-9\\-'.,# ][a-zA-Z0-9\\-'.,# ]?)*$"
                                 },
                                 "unitPhone": {
                                   "type": "object",
@@ -1772,7 +1770,7 @@
                                 "example": 9999
                               },
                               "disabilityActionType": {
-                                "description": "The status of the current disability.",
+                                "description": "The status of the current disability.  \n If value is \"INCREASE\", then \"ratedDisabilityId\" and \"diagnosticCode\" are required.",
                                 "type": "string",
                                 "enum": [
                                   "NONE",
@@ -2107,6 +2105,7 @@
                                   "name": {
                                     "description": "Name of facility Veteran was treated in.",
                                     "type": "string",
+                                    "pattern": "([a-zA-Z0-9\"\\/&\\(\\)\\-'.,# ]([a-zA-Z0-9(\\)\\-'.,# ])?)+$",
                                     "example": "Private Facility 2"
                                   },
                                   "country": {
@@ -2151,7 +2150,7 @@
                                   "example": true
                                 },
                                 "willReceiveInFuture": {
-                                  "description": "Will Veteran get Retiree pay in future?",
+                                  "description": "Will Veteran get Retiree pay in future?  \n If true, then \"futurePayExplanation\" attribute is required.",
                                   "type": "boolean",
                                   "default": false,
                                   "example": false
@@ -2439,7 +2438,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "6bbce682-35b6-4461-9039-b372b7536014",
+                    "id": "93db236d-9c7d-47c3-b8b2-2ded17552216",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -2457,13 +2456,13 @@
                       "current_phase_back": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-21T15:06:23.645Z",
+                      "updated_at": "2022-05-02T17:23:57.078Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
 
                       ],
-                      "token": "6bbce682-35b6-4461-9039-b372b7536014",
+                      "token": "93db236d-9c7d-47c3-b8b2-2ded17552216",
                       "status": "pending",
                       "flashes": [
                         "Hardship",
@@ -2909,7 +2908,7 @@
                                     "type": "string"
                                   },
                                   "type": {
-                                    "description": "Type of residence Veteran resides in.",
+                                    "description": "Type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"addressLine1\", \"city\", \"country\", and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"addressLine1\", \"city\", \"state\", \"country\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"addressLine1\", \"country\", \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                     "type": "string",
                                     "default": "DOMESTIC",
                                     "enum": [
@@ -3055,7 +3054,7 @@
                                     "type": "string"
                                   },
                                   "type": {
-                                    "description": "New type of residence Veteran resides in.",
+                                    "description": "New type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"city\" and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"city\", \"state\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                     "type": "string",
                                     "default": "DOMESTIC",
                                     "enum": [
@@ -3347,12 +3346,9 @@
                                 "type": "object",
                                 "additionalProperties": false,
                                 "required": [
-                                  "title10Activation",
                                   "obligationTermOfServiceFromDate",
                                   "obligationTermOfServiceToDate",
-                                  "unitName",
-                                  "unitPhone",
-                                  "receivingInactiveDutyTrainingPay"
+                                  "unitName"
                                 ],
                                 "properties": {
                                   "title10Activation": {
@@ -3382,7 +3378,8 @@
                                     "pattern": "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
                                   },
                                   "unitName": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "pattern": "([a-zA-Z0-9\\-'.,# ][a-zA-Z0-9\\-'.,# ]?)*$"
                                   },
                                   "unitPhone": {
                                     "type": "object",
@@ -3635,7 +3632,7 @@
                                   "example": 9999
                                 },
                                 "disabilityActionType": {
-                                  "description": "The status of the current disability.",
+                                  "description": "The status of the current disability.  \n If value is \"INCREASE\", then \"ratedDisabilityId\" and \"diagnosticCode\" are required.",
                                   "type": "string",
                                   "enum": [
                                     "NONE",
@@ -3970,6 +3967,7 @@
                                     "name": {
                                       "description": "Name of facility Veteran was treated in.",
                                       "type": "string",
+                                      "pattern": "([a-zA-Z0-9\"\\/&\\(\\)\\-'.,# ]([a-zA-Z0-9(\\)\\-'.,# ])?)+$",
                                       "example": "Private Facility 2"
                                     },
                                     "country": {
@@ -4014,7 +4012,7 @@
                                     "example": true
                                   },
                                   "willReceiveInFuture": {
-                                    "description": "Will Veteran get Retiree pay in future?",
+                                    "description": "Will Veteran get Retiree pay in future?  \n If true, then \"futurePayExplanation\" attribute is required.",
                                     "type": "boolean",
                                     "default": false,
                                     "example": false
@@ -4315,7 +4313,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "7aae0b3b-2f15-4214-bac8-b24c087b7e32",
+                    "id": "c2f24852-fea2-4949-ba5b-3c65cf0da9ed",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -4333,13 +4331,13 @@
                       "current_phase_back": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-21T15:06:24.031Z",
+                      "updated_at": "2022-05-02T17:23:57.464Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
 
                       ],
-                      "token": "7aae0b3b-2f15-4214-bac8-b24c087b7e32",
+                      "token": "c2f24852-fea2-4949-ba5b-3c65cf0da9ed",
                       "status": "pending",
                       "flashes": [
                         "Hardship",
@@ -5198,7 +5196,7 @@
                                     "type": "string"
                                   },
                                   "type": {
-                                    "description": "Type of residence Veteran resides in.",
+                                    "description": "Type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"addressLine1\", \"city\", \"country\", and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"addressLine1\", \"city\", \"state\", \"country\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"addressLine1\", \"country\", \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                     "type": "string",
                                     "default": "DOMESTIC",
                                     "enum": [
@@ -5344,7 +5342,7 @@
                                     "type": "string"
                                   },
                                   "type": {
-                                    "description": "New type of residence Veteran resides in.",
+                                    "description": "New type of residence Veteran resides in.  \n If value is \"INTERNATIONAL\", then \"city\" and \"internationalPostalCode\" are required.  \n If value is \"DOMESTIC\", then \"city\", \"state\", and \"zipFirstFive\" are required.  \n If value is \"MILITARY\", then \"militaryStateCode\", \"militaryPostOfficeTypeCode\", and \"zipFirstFive\" are required.",
                                     "type": "string",
                                     "default": "DOMESTIC",
                                     "enum": [
@@ -5636,12 +5634,9 @@
                                 "type": "object",
                                 "additionalProperties": false,
                                 "required": [
-                                  "title10Activation",
                                   "obligationTermOfServiceFromDate",
                                   "obligationTermOfServiceToDate",
-                                  "unitName",
-                                  "unitPhone",
-                                  "receivingInactiveDutyTrainingPay"
+                                  "unitName"
                                 ],
                                 "properties": {
                                   "title10Activation": {
@@ -5671,7 +5666,8 @@
                                     "pattern": "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$"
                                   },
                                   "unitName": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "pattern": "([a-zA-Z0-9\\-'.,# ][a-zA-Z0-9\\-'.,# ]?)*$"
                                   },
                                   "unitPhone": {
                                     "type": "object",
@@ -5924,7 +5920,7 @@
                                   "example": 9999
                                 },
                                 "disabilityActionType": {
-                                  "description": "The status of the current disability.",
+                                  "description": "The status of the current disability.  \n If value is \"INCREASE\", then \"ratedDisabilityId\" and \"diagnosticCode\" are required.",
                                   "type": "string",
                                   "enum": [
                                     "NONE",
@@ -6259,6 +6255,7 @@
                                     "name": {
                                       "description": "Name of facility Veteran was treated in.",
                                       "type": "string",
+                                      "pattern": "([a-zA-Z0-9\"\\/&\\(\\)\\-'.,# ]([a-zA-Z0-9(\\)\\-'.,# ])?)+$",
                                       "example": "Private Facility 2"
                                     },
                                     "country": {
@@ -6303,7 +6300,7 @@
                                     "example": true
                                   },
                                   "willReceiveInFuture": {
-                                    "description": "Will Veteran get Retiree pay in future?",
+                                    "description": "Will Veteran get Retiree pay in future?  \n If true, then \"futurePayExplanation\" attribute is required.",
                                     "type": "boolean",
                                     "default": false,
                                     "example": false
@@ -6604,7 +6601,7 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "79e70e89-75ba-46e2-bcfe-9b5a867e114f",
+                    "id": "06bcc5df-7769-4b9a-9c3b-c708ec10f7d1",
                     "type": "claims_api_claim",
                     "attributes": {
                       "evss_id": null,
@@ -6618,7 +6615,7 @@
                       "decision_letter_sent": null,
                       "requested_decision": null,
                       "claim_type": null,
-                      "updated_at": "2022-04-21T15:06:24.813Z",
+                      "updated_at": "2022-05-02T17:23:58.267Z",
                       "contention_list": null,
                       "va_representative": null,
                       "events_timeline": [
@@ -6627,7 +6624,7 @@
                       "status": "pending",
                       "supporting_documents": [
                         {
-                          "id": "55c2cfb6-d33e-4038-8bd6-13026c4488e3",
+                          "id": "3e53f04e-98a0-41a4-81c2-5f982feb5a91",
                           "type": "claim_supporting_document",
                           "md5": null,
                           "filename": null,
@@ -8585,11 +8582,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "68d4dd64-7d43-4bdd-90e1-f892869a21f7",
+                    "id": "984126c5-d500-4377-9e67-2718c40f81a0",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "pending",
-                      "date_request_accepted": "2022-04-21",
+                      "date_request_accepted": "2022-05-02",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
@@ -9298,11 +9295,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "53c90e0f-ebaf-4907-bbb5-487edc58cf6e",
+                    "id": "873cf32e-2c65-4832-b1af-48410bff0b07",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "submitted",
-                      "date_request_accepted": "2022-04-21",
+                      "date_request_accepted": "2022-05-02",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
@@ -9753,11 +9750,11 @@
               "application/json": {
                 "example": {
                   "data": {
-                    "id": "2f55a40a-f7f5-40fa-b476-fc84aed350e8",
+                    "id": "4981e2e7-f56b-4624-89c2-5faef97eeae0",
                     "type": "claims_api_power_of_attorneys",
                     "attributes": {
                       "status": "submitted",
-                      "date_request_accepted": "2022-04-21",
+                      "date_request_accepted": "2022-05-02",
                       "representative": {
                         "service_organization": {
                           "poa_code": "074"
