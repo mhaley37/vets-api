@@ -3,17 +3,18 @@
 module Mobile
   module V0
     class VeterensAffairsEligibilityController < ApplicationController
-      # 411 = Podiatry
-      SERVICE_TYPE_IDS = %w[amputation primaryCare foodAndNutrition 411 optometry audiology].freeze
-
       def show
         response = mobile_facility_service.get_scheduling_configurations(csv_facility_ids)
-        render json: Mobile::V0::VeterensAffairsEligibilitySerializer.new(
-          response[:data], SERVICE_TYPE_IDS
-        )
+        services = service_adapter.parse(response[:data])
+
+        render json: Mobile::V0::VeterensAffairsEligibilitySerializer.new(@current_user.id, services)
       end
 
       private
+
+      def service_adapter
+        Mobile::V0::Adapters::Service.new
+      end
 
       def mobile_facility_service
         VAOS::V2::MobileFacilityService.new(@current_user)

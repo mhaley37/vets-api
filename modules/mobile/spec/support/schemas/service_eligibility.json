@@ -1,43 +1,37 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema",
-  "type": "object",
-  "required": [
-    "data"
-  ],
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+  },
   "properties": {
     "data": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "type",
-          "attributes"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "attributes": {
-            "type": "object",
-            "required": [
-              "request",
-              "direct"
-            ],
-            "properties": {
-              "request": {
-                "type": "array"
+      "properties": {
+        "attributes": {
+          "properties": {
+            "facilities": {
+              "description": "Array of services",
+              "items": {
+                "$ref": "service.json"
               },
-              "direct": {
-                "type": "array"
-              }
+              "type": "array"
             }
-          }
+          },
+          "type": "object",
+          "required": [
+            "services"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
         }
-      }
+      },
+      "type": [
+        "object",
+        "null"
+      ]
     }
-  }
+  },
+  "type": "object"
 }

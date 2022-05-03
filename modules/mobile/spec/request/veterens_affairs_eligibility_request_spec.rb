@@ -41,11 +41,29 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
           expect(response.body).to match_json_schema('service_eligibility')
         end
 
-        it 'response only contains facilities from parameters' do
-          facilties = response.parsed_body['data'].map { |h| h.dig('attributes', 'request') }.select(&:any?).uniq
-          expect(facilties.size).to eq(1)
+        it 'response properly assigns facilities to services' do
+          services = response.parsed_body.dig('data', 'attributes', 'services')
 
-          expect(facilties.first).to eq(['489'])
+          expect(services).to eq(
+            [{ 'name' => 'amputation',
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'primaryCare',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'foodAndNutrition',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => '411',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'optometry',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'audiology',
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => ['489'] }]
+          )
         end
       end
 
@@ -66,11 +84,73 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
           expect(response.body).to match_json_schema('service_eligibility')
         end
 
-        it 'response only contains facilities from parameters' do
-          facilties = response.parsed_body['data'].map { |h| h.dig('attributes', 'request') }.select(&:any?).uniq
-          expect(facilties.size).to eq(1)
+        it 'response properly assigns facilities to services' do
+          services = response.parsed_body.dig('data', 'attributes', 'services')
 
-          expect(facilties.first).to eq(['489'])
+          expect(services).to eq(
+            [{ 'name' => 'amputation',
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'primaryCare',
+               'requestEligibleFacilities' => %w[489 984],
+               'directEligibleFacilities' => ['984'] },
+             { 'name' => 'foodAndNutrition',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => ['984'] },
+             { 'name' => '411',
+               'requestEligibleFacilities' => %w[489 984],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'optometry',
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => ['489'] },
+             { 'name' => 'audiology',
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => %w[489 984] }]
+          )
+        end
+      end
+
+      context 'bad facility' do
+        let(:params) { { facilityIds: 12_345_678 } }
+
+        before do
+          VCR.use_cassette('va_eligibility/get_scheduling_configurations_200_bad_facility',
+                           match_requests_on: %i[method uri]) do
+            get '/mobile/v0/appointments/va/eligibility', params: params, headers: iam_headers
+          end
+        end
+
+        it 'returns successful response' do
+          expect(response).to have_http_status(:success)
+        end
+
+        it 'matches schema' do
+          expect(response.body).to match_json_schema('service_eligibility')
+        end
+
+        it 'upstream service does not check for valid facility and returns no eligibility' do
+          services = response.parsed_body.dig('data', 'attributes', 'services')
+
+          expect(services).to eq(
+            [{ 'name' => 'amputation',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'primaryCare',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'foodAndNutrition',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => '411',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'optometry',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] },
+             { 'name' => 'audiology',
+               'requestEligibleFacilities' => [],
+               'directEligibleFacilities' => [] }]
+          )
         end
       end
     end
