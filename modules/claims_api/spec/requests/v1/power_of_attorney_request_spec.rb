@@ -104,7 +104,7 @@ RSpec.describe 'Power of Attorney ', type: :request do
             end
 
             context 'when consumer is Veteran and missing EDIPI' do
-              it 'catches a raised 422' do
+              skip 'catches a raised 422' do
                 with_okta_user(scopes) do |auth_header|
                   VCR.use_cassette('bgs/intent_to_file_web_service/insert_intent_to_file') do
                         expect_any_instance_of(MPIData).to receive(:add_person).once.and_call_original

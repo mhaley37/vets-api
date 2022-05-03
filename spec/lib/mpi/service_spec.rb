@@ -211,20 +211,6 @@ describe MPI::Service do
           end
         end
       end
-
-      context 'with an invalid user' do
-        let(:user) { build(:user, :loa1) }
-
-        it 'raises an unprocessable entity error' do
-          allow(user).to receive(:edipi).and_return(nil)
-
-          expect { described_class.new.find_profile(user, orch_search: true) }.to raise_error do |error|
-            expect(error).to be_a(Common::Exceptions::UnprocessableEntity)
-            expect(error.errors.first.source).to eq('MPI Service')
-            expect(error.errors.first.detail).to eq('User is missing EDIPI')
-          end
-        end
-      end
     end
   end
 

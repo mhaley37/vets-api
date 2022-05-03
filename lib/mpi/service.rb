@@ -170,14 +170,8 @@ module MPI
     def create_profile_message(user_identity,
                                search_type: MPI::Constants::CORRELATION_WITH_RELATIONSHIP_DATA,
                                orch_search: false)
-      if orch_search == true
-        if user_identity.edipi.blank?
-          raise Common::Exceptions::UnprocessableEntity.new(detail: 'User is missing EDIPI',
-                                                            source: 'MPI Service')
-        end
 
-        return message_user_attributes(user_identity, search_type, orch_search: orch_search)
-      end
+      return message_user_attributes(user_identity, search_type, orch_search: orch_search) if orch_search == true
       return message_icn(user_identity, search_type) if user_identity.mhv_icn.present?
       return message_edipi(user_identity, search_type) if user_identity.edipi.present?
 
