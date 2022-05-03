@@ -38,7 +38,7 @@ module Mobile
 
       def sort_by_recent_appointment(facilities)
         facilities.sort_by(&:name) # entries not in recent appointments will be sorted alphabetically
-        appointments = Mobile::V0::Appointment.get_cached(@current_user)
+        appointments = Mobile::V0::Appointment.get_cached(@current_user).sort_by(&:start_date_utc)
         if appointments.blank?
           raise Common::Exceptions::RecordNotFound.new(
             detail: 'Could not fetch user appointments', source: self.class.to_s
