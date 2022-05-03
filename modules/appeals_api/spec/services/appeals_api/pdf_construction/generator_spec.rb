@@ -274,13 +274,11 @@ describe AppealsApi::PdfConstruction::Generator do
           sc.auth_headers['X-VA-Insurance-Policy-Number'] = 'W' * 18
           sc.auth_headers['X-Consumer-Username'] = 'W' * 255
           sc.auth_headers['X-Consumer-ID'] = 'W' * 255
-          sc.auth_headers['X-VA-Claimant-First-Name'] = 'W' * 255
-          sc.auth_headers['X-VA-Claimant-Middle-Initial'] = 'W' * 1
-          sc.auth_headers['X-VA-Claimant-Last-Name'] = 'W' * 255
           sc.save!
 
           generated_pdf = described_class.new(sc, version: 'v2').generate
           expected_pdf = fixture_filepath('expected_200995_maxlength.pdf', version: 'v2')
+
           expect(generated_pdf).to match_pdf(expected_pdf)
           File.delete(generated_pdf) if File.exist?(generated_pdf)
         end
