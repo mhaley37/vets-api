@@ -30,7 +30,9 @@ module AppealsApi
               form_fields.birth_day => form_data.veteran.birth_day,
               form_fields.birth_year => form_data.veteran.birth_year,
               form_fields.insurance_policy_number => form_data.veteran.insurance_policy_number,
-              form_fields.mailing_address_country => form_data.mailing_address,
+              form_fields.zip_code_5 => form_data.preferred_zip_code_5,
+              form_fields.mailing_address_state => form_data.preferred_state,
+              form_fields.mailing_address_country => form_data.preferred_country,
               form_fields.veteran_homeless => form_data.veteran.homeless?,
               form_fields.veteran_phone_area_code => form_data.preferred_phone,
 
@@ -120,11 +122,8 @@ module AppealsApi
 
               fill_text pdf, :veteran_first_name
               fill_text pdf, :veteran_last_name
-              fill_text pdf, :mailing_address_number_and_street
-              fill_text pdf, :mailing_address_city
-              fill_text pdf, :mailing_address_state
-              fill_text pdf, :mailing_address_zip_code
-              fill_text pdf, :mailing_address_country
+              fill_text pdf, :preferred_number_and_street
+              fill_text pdf, :preferred_city
               fill_text pdf, :preferred_phone
               fill_text pdf, :preferred_email,
                         long_text_override: 'See attached page for veteran email'

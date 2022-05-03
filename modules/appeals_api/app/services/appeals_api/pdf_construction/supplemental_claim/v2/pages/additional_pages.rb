@@ -23,6 +23,7 @@ module AppealsApi
             pdf.table(extra_locations_table_data, width: 540, header: true)
 
             pdf.text("\n\n\n\n\n<b>Signature of veteran claimant or representative:</b>\n #{form_data.veteran.full_name[0...180]}\n - Signed by digital authentication to api.va.gov", inline_format: true)
+            pdf.text("\n\n\n\n\n<b>Name of veteran claimant or representative:</b>\n #{form_data.veteran.full_name[0...180]}", inline_format: true)
 
             pdf
           end

@@ -17,6 +17,8 @@ module AppealsApi
                    :contestable_issues, :soc_opt_in, :new_evidence_locations, :new_evidence_dates,
                    :veteran_homeless?, :preferred_email, :preferred_phone,
                    :preferred_ssn_first_three, :preferred_ssn_last_four, :preferred_ssn_second_two,
+                   :preferred_number_and_street, :preferred_city, :preferred_state,
+                   :preferred_zip_code, :preferred_country,
                    :claimant, :veteran,
                    to: :supplemental_claim
 
@@ -63,6 +65,8 @@ module AppealsApi
           end
 
           def print_name_veteran_claimaint_or_rep
+            return 'See attached page for name of veteran claimant or rep' if long_signature?
+
             signing_appellant.full_name[0...180]
           end
 
@@ -102,7 +106,7 @@ module AppealsApi
             signing_appellant.phone_formatted.to_s
           end
 
-          def mailing_address
+          def preferred_mailing_address
             [
               signing_appellant.number_and_street,
               signing_appellant.city,
@@ -112,23 +116,23 @@ module AppealsApi
             ].compact.join(', ')
           end
 
-          def mailing_address_number_and_street
+          def preferred_number_and_street
             signing_appellant.number_and_street
           end
 
-          def mailing_address_city
+          def preferred_city
             signing_appellant.city
           end
 
-          def mailing_address_state
+          def preferred_state
             signing_appellant.state_code
           end
 
-          def mailing_address_zip_code
+          def preferred_zip_code_5
             signing_appellant.zip_code
           end
 
-          def mailing_address_country
+          def preferred_country
             signing_appellant.country_code
           end
 

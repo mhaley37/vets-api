@@ -167,15 +167,17 @@ module AppealsApi
             end
           end
 
+          # rubocop:disable Metrics/MethodLength
           def boxes
             {
               # PAGE 3 '#subform[2]'
               veteran_first_name: { at: [3, 592], width: 195 },
               veteran_last_name: { at: [238, 591], width: 300 },
-              mailing_address_number_and_street: { at: [25, 425], width: 512 },
-              mailing_address_city: { at: [193, 403], width: 307 },
-              mailing_address_state: { at: [60, 378], width: 25 },
-              mailing_address_zip_code: { at: [290, 380], width: 82 },
+              preferred_number_and_street: { at: [25, 425], width: 512 },
+              preferred_city: { at: [193, 403], width: 307 },
+              preferred_state: { at: [60, 378], width: 25 },
+              zip_code_5: { at: [290, 380], width: 82 },
+              zip_code_4: { at: [290, 380], width: 82 },
               mailing_address_country: { at: [150, 378], width: 25 },
               preferred_email: { at: [275, 348], width: 260 },
               preferred_phone: { at: [3, 348], width: 260 },
@@ -195,6 +197,7 @@ module AppealsApi
               print_name_veteran_claimaint_or_rep: { at: [0, 227], width: 540, height: 20, valign: :top  }
             }
           end
+          # rubocop:enable Metrics/MethodLength
         end
       end
     end
