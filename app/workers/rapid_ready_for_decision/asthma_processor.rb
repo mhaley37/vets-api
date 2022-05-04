@@ -36,7 +36,12 @@ module RapidReadyForDecision
     end
 
     def med_stats_hash(assessed_data)
-      { medications_count: assessed_data[:medications]&.size }
+      {
+        medications_count: assessed_data[:medications]&.size,
+        asthma_medications_count: assessed_data[:medications].select do |m|
+                                    m[:flagged]
+                                  end.count
+      }
     end
 
     def generate_pdf(assessed_data)

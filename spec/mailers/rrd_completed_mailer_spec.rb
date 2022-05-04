@@ -58,6 +58,48 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       expect(email.body).to include "Number of Active Medications: #{active_medications}"
       expect(email.body).to include 'PDF id in S3: a950ef07-9eaa-4784-b5af-bda8c50a83f9'
     end
+
+    context 'when the claim is for asthma' do
+      let(:rrd_pdf_json) do
+        { 'name' => 'VAMC_Asthma_Rapid_Decision_Evidence.pdf',
+          'confirmationCode' => 'fake_confirmation_code',
+          'attachmentId' => 'L048' }
+      end
+
+      let(:medications_count) { 1234 }
+
+      let(:asthma_medications_count) { 1234 }
+
+      let!(:submission) do
+        submission = create(:form526_submission, :asthma_claim_for_increase_with_uploads,
+                            user_uuid: 'fake uuid',
+                            auth_headers_json: 'fake auth headers')
+        # Set the metadata like RRD processors would
+        form_json = submission.form
+        form_json['form526_uploads'].append(rrd_pdf_json)
+        disabilities = form_json.dig('form526', 'form526', 'disabilities')
+        disabilities.first['specialIssues'] = ['RRD']
+
+        submission.save_metadata({
+                                   pdf_created: true,
+                                   # Set the medications_count like `add_medical_stats` is expected to do
+                                   med_stats: { medications_count: medications_count,
+                                                asthma_medications_count: asthma_medications_count },
+                                   pdf_guid: 'a950ef07-9eaa-4784-b5af-bda8c50a83f9'
+                                 })
+        submission
+      end
+
+      it 'has the expected content' do
+        expect(email.body).to include 'Environment: '
+        expect(email.body).to include 'A single-issue asthma (6602) claim for increase was submitted on va.gov.'
+        expect(email.body).to include 'A health summary PDF was generated and added to the claim\'s documentation.'
+        expect(email.body).to include 'Number of BP readings: N/A'
+        expect(email.body).to include 'PDF id in S3: a950ef07-9eaa-4784-b5af-bda8c50a83f9'
+        expect(email.body).to include 'Number of BP readings: N/A'
+        expect(email.body).to include "Number of Asthma Medications: #{asthma_medications_count}"
+      end
+    end
   end
 
   context 'when the claim was offramped due to an existing EP 020' do
