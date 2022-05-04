@@ -224,7 +224,7 @@ http_interactions:
                 "canCancel" : true,
                 "submittedRequestLimit" : 1,
                 "enterpriseSubmittedRequestLimit" : 1,
-                "enabled" : false
+                "enabled" : true
               }
             }, {
               "id" : "moveProgram",
@@ -308,7 +308,7 @@ http_interactions:
                 "canCancel" : true,
                 "submittedRequestLimit" : 2,
                 "enterpriseSubmittedRequestLimit" : 2,
-                "enabled" : false
+                "enabled" : true
               }
             }, {
               "id" : "foodAndNutrition",
@@ -362,7 +362,7 @@ http_interactions:
                 "patientHistoryRequired" : false,
                 "patientHistoryDuration" : 0,
                 "canCancel" : true,
-                "enabled" : false
+                "enabled" : true
               },
               "request" : {
                 "patientHistoryRequired" : false,
@@ -370,7 +370,7 @@ http_interactions:
                 "canCancel" : true,
                 "submittedRequestLimit" : 2,
                 "enterpriseSubmittedRequestLimit" : 2,
-                "enabled" : false
+                "enabled" : true
               }
             }, {
               "id" : "homeSleepTesting",

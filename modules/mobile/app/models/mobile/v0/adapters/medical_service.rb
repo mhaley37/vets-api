@@ -6,7 +6,7 @@ require 'date'
 module Mobile
   module V0
     module Adapters
-      class Service
+      class MedicalService
         # 411 = Podiatry
         SERVICE_TYPE_IDS = %w[amputation audiology covid optometry outpatientMentalHealth moveProgram foodAndNutrition
                               clinicalPharmacyPrimaryCare 411 primaryCare homeSleepTesting socialWork].freeze
@@ -18,17 +18,14 @@ module Mobile
 
             service_eligibilities.each do |facility|
               facility_id = facility.facility_id
-              facility_service = facility.services.select { |h| h[:id] == service }.first
+              facility_service = facility.services.find { |h| h[:id] == service }
               next if facility_service.nil?
 
               request_facilities << facility_id if facility_service.dig(:request, :enabled)
               direct_facilities << facility_id if facility_service.dig(:direct, :enabled)
             end
 
-            request_facilities.compact!
-            direct_facilities.compact!
-
-            Mobile::V0::Service.new(
+            Mobile::V0::MedicalService.new(
               name: service,
               request_eligible_facilities: request_facilities,
               direct_eligible_facilities: direct_facilities

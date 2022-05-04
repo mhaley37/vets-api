@@ -4,7 +4,7 @@ require 'rails_helper'
 require_relative '../support/iam_session_helper'
 require_relative '../support/matchers/json_schema_matcher'
 
-RSpec.describe 'Veterens Affairs Eligibility', type: :request do
+RSpec.describe 'veterans Affairs Eligibility', type: :request do
   include JsonSchemaMatchers
 
   let(:rsa_key) { OpenSSL::PKey::RSA.generate(2048) }
@@ -25,7 +25,7 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
   describe 'GET /mobile/v0/appointments/va/eligibility' do
     context 'valid params' do
       context 'one facility' do
-        let(:params) { { facilityIds: 489 } }
+        let(:params) { { facilityIds: ['489'] } }
 
         before do
           VCR.use_cassette('va_eligibility/get_scheduling_configurations_200', match_requests_on: %i[method uri]) do
@@ -55,8 +55,8 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
                'requestEligibleFacilities' => [],
                'directEligibleFacilities' => [] },
              { 'name' => 'optometry',
-               'requestEligibleFacilities' => [],
-               'directEligibleFacilities' => [] },
+               'requestEligibleFacilities' => ['489'],
+               'directEligibleFacilities' => ['489'] },
              { 'name' => 'outpatientMentalHealth',
                'requestEligibleFacilities' => [],
                'directEligibleFacilities' => [] },
@@ -70,10 +70,10 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
                'requestEligibleFacilities' => [],
                'directEligibleFacilities' => [] },
              { 'name' => '411',
-               'requestEligibleFacilities' => [],
+               'requestEligibleFacilities' => ['489'],
                'directEligibleFacilities' => [] },
              { 'name' => 'primaryCare',
-               'requestEligibleFacilities' => [],
+               'requestEligibleFacilities' => ['489'],
                'directEligibleFacilities' => [] },
              { 'name' => 'homeSleepTesting',
                'requestEligibleFacilities' => [],
@@ -147,7 +147,7 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
       end
 
       context 'all services enabled' do
-        let(:params) { { facilityIds: 489 } }
+        let(:params) { { facilityIds: ['489'] } }
 
         before do
           VCR.use_cassette('va_eligibility/get_scheduling_configurations_200_all_enabled',
@@ -210,7 +210,7 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
       end
 
       context 'bad facility' do
-        let(:params) { { facilityIds: 12_345_678 } }
+        let(:params) { { facilityIds: ['12345678'] } }
 
         before do
           VCR.use_cassette('va_eligibility/get_scheduling_configurations_200_bad_facility',
@@ -269,6 +269,25 @@ RSpec.describe 'Veterens Affairs Eligibility', type: :request do
                'directEligibleFacilities' => [] }]
           )
         end
+      end
+    end
+
+    context 'invalid params' do
+      before do
+        get '/mobile/v0/appointments/va/eligibility', params: nil, headers: iam_headers
+      end
+
+      it 'returns 400 response' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'error for missing parameter' do
+        expect(response.parsed_body).to eq({ 'errors' =>
+                                              [{ 'title' => 'Missing parameter',
+                                                 'detail' =>
+                                                  'The required parameter "facilityIds", is missing',
+                                                 'code' => '108',
+                                                 'status' => '400' }] })
       end
     end
   end
