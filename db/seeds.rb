@@ -5,3 +5,12 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+# DHP Seeds; Remove before merge to master
+
+Device.create(name: 'Vendor 1')
+Device.create(name: 'Vendor 2')
+VeteranDeviceRecord.create(icn: 'user1', device_id: 1, active: true)
+VeteranDeviceRecord.create(icn: 'user1', device_id: 2, active: false)
+
+
