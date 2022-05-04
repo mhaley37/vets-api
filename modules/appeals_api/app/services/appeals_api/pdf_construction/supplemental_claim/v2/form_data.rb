@@ -55,17 +55,21 @@ module AppealsApi
           end
 
           def signature_of_veteran_claimant_or_rep
-            return 'See attached page for signature of veteran claimant or rep' if long_signature?
+            return 'See attached page for signature of veteran, claimant, or rep' if long_signature?
 
-            "#{signing_appellant.full_name[0...180]} - Signed by digital authentication to api.va.gov"
+            "#{signing_appellant.full_name[0...170]} - Signed by digital authentication to api.va.gov"
           end
 
           def long_signature?
             signing_appellant.full_name.length > 70
           end
 
+          def long_name?
+            signing_appellant.full_name.length > 180
+          end
+
           def print_name_veteran_claimaint_or_rep
-            return 'See attached page for name of veteran claimant or rep' if long_signature?
+            return 'See attached page for name of veteran, claimant, or rep' if long_name?
 
             signing_appellant.full_name[0...180]
           end

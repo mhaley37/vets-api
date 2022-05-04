@@ -193,7 +193,7 @@ module AppealsApi
               new_evidence_locations: new_evidence_locations_coordinates,
               new_evidence_dates: new_evidence_dates_coordinates,
 
-              signature_of_veteran_claimant_or_rep: { at: [0, 251], width: 415, height: 20, valign: :top },
+              signature_of_veteran_claimant_or_rep: { at: [0, 251], width: 410, height: 10, valign: :top },
               print_name_veteran_claimaint_or_rep: { at: [0, 227], width: 540, height: 20, valign: :top  }
             }
           end
