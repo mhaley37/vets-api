@@ -16,6 +16,8 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
 
     let(:bp_readings_count) { 1234 }
 
+    let(:active_medications) { 1234 }
+
     let!(:submission) do
       submission = create(:form526_submission, :hypertension_claim_for_increase_with_uploads,
                           user_uuid: 'fake uuid',
@@ -29,7 +31,8 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       submission.save_metadata({
                                  pdf_created: true,
                                  # Set the bp_readings_count like `add_medical_stats` is expected to do
-                                 med_stats: { bp_readings_count: bp_readings_count },
+                                 med_stats: { bp_readings_count: bp_readings_count,
+                                              medications_count: active_medications },
                                  pdf_guid: 'a950ef07-9eaa-4784-b5af-bda8c50a83f9'
                                })
       submission
@@ -52,6 +55,7 @@ RSpec.describe RrdCompletedMailer, type: [:mailer] do
       expect(email.body).to include 'A single-issue hypertension (7101) claim for increase was submitted on va.gov.'
       expect(email.body).to include 'A health summary PDF was generated and added to the claim\'s documentation.'
       expect(email.body).to include "Number of BP readings: #{bp_readings_count}"
+      expect(email.body).to include "Number of Active Medications: #{active_medications}"
       expect(email.body).to include 'PDF id in S3: a950ef07-9eaa-4784-b5af-bda8c50a83f9'
     end
   end
