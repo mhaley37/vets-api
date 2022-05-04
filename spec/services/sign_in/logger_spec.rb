@@ -27,7 +27,7 @@ RSpec.describe SignIn::Logger do
           .with(message,
                 { code: code, token_type: 'refresh', user_id: user.uuid,
                   session_id: refresh_token.session_handle, timestamp: timestamp.to_s })
-        logger.info_log(message, { code: code }, token: refresh_token)
+        logger.info_log(message, { code: code }, refresh_token)
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe SignIn::Logger do
           .with(message,
                 { token_type: 'access', user_id: user.uuid, access_token_id: access_token.uuid,
                   session_id: access_token.session_handle, timestamp: timestamp.to_s })
-        logger.info_log(message, {}, token: access_token)
+        logger.info_log(message, {}, access_token)
       end
     end
   end
