@@ -342,7 +342,7 @@ RSpec.describe HealthCareApplication, type: :model do
 
         expect do
           described_class.new(form: {}.to_json, user: build(:user)).process!
-        end.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(Common::Exceptions::ValidationErrors)
       end
 
       it 'creates a PersonalInformationLog' do

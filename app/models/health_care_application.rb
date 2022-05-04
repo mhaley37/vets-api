@@ -79,7 +79,7 @@ class HealthCareApplication < ApplicationRecord
         user_loa: user&.loa
       )
 
-      PersonalInformationLog.create!(
+      PersonalInformationLog.create(
         data: parsed_form,
         error_class: 'HealthCareApplication ValidationError'
       )
