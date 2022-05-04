@@ -20,6 +20,7 @@ RSpec.describe VeteranDeviceRecordsService, type: :service do
 
     context 'when veteran device record exists but not active' do
       let!(:inactive_record) { create(:veteran_device_record, :inactive, icn: user.icn, device_id: device.id) }
+
       it 'sets the record active to true' do
         expect(inactive_record.active).to be(false)
 
@@ -34,6 +35,7 @@ RSpec.describe VeteranDeviceRecordsService, type: :service do
 
     context 'when veteran device record exists and active' do
       let!(:active_record) { create(:veteran_device_record, icn: user.icn, device_id: device.id) }
+
       it 'does not change the record' do
         expect(active_record.active).to be(true)
 
@@ -48,9 +50,10 @@ RSpec.describe VeteranDeviceRecordsService, type: :service do
 
     context 'when no device with given key exists' do
       it 'throws error' do
-        expect {
+        expected = expect do
           VeteranDeviceRecordsService.create_or_activate(user, 'non-existing-device')
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end
+        expected.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
