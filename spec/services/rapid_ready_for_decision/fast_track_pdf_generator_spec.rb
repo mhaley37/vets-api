@@ -23,7 +23,9 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator do
     Lighthouse::VeteransHealth::Client.new(2_000_163)
   end
 
-  let(:bp_data) { client.list_bp_observations }
+  let(:bp_data) do
+    client.list_resource('observations')
+  end
 
   let(:parsed_bp_data) do
     # At least one of the bp readings must be from the last year
@@ -34,7 +36,7 @@ RSpec.describe RapidReadyForDecision::FastTrackPdfGenerator do
   end
 
   let(:parsed_medications_data) do
-    RapidReadyForDecision::LighthouseMedicationRequestData.new(client.list_medication_requests).transform
+    RapidReadyForDecision::LighthouseMedicationRequestData.new(client.list_resource('medication_requests')).transform
   end
 
   let(:patient_name) do

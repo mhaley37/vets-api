@@ -5,15 +5,18 @@ require 'lighthouse/veterans_health/client'
 module RapidReadyForDecision
   class AsthmaProcessor < RrdProcessor
     def assess_data
-      claim_context.assessed_data = query_and_assess_lighthouse
-      claim_context.sufficient_evidence = claim_context.assessed_data[:medications].present?
+      assessed_data = query_and_assess_lighthouse
+
+      return if assessed_data[:medications].blank?
+
+      assessed_data
     end
 
     private
 
     def query_and_assess_lighthouse
       client = lighthouse_client
-      medications = assess_medications(client.list_medication_requests)
+      medications = assess_medications(client.list_resource('medication_requests'))
       { medications: medications }
     end
 
@@ -36,9 +39,9 @@ module RapidReadyForDecision
       { medications_count: assessed_data[:medications]&.size }
     end
 
-    def generate_pdf
-      RapidReadyForDecision::FastTrackPdfGenerator.new(claim_context.patient_info,
-                                                       claim_context.assessed_data,
+    def generate_pdf(assessed_data)
+      RapidReadyForDecision::FastTrackPdfGenerator.new(patient_info,
+                                                       assessed_data,
                                                        :asthma).generate
     end
   end

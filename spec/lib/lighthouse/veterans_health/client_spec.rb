@@ -35,7 +35,7 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
     end
   end
 
-  describe 'making requests' do
+  describe '#list_resource' do
     let(:jwt) { 'fake_client_assurance_token' }
     let(:jwt_double) { double('JWT Wrapper', token: jwt) }
     let(:bearer_token_object) { double('bearer response', body: { 'access_token' => 'blah' }) }
@@ -51,26 +51,28 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
         allow(@client).to receive(:authenticate).and_return bearer_token_object
       end
 
-      describe 'when requesting medication_requests' do
-        it 'authenticates to Lighthouse and retrieves a bearer token' do
-          @client.list_medication_requests
-          expect(@client.instance_variable_get(:@bearer_token)).to eq 'blah'
-        end
+      %w[observations medication_requests OBSERVATIONS MeDICATion_REQuests].each do |resource_str|
+        describe "when requesting #{resource_str}" do
+          it 'authenticates to Lighthouse and retrieves a bearer token' do
+            @client.list_resource(resource_str)
+            expect(@client.instance_variable_get(:@bearer_token)).to eq 'blah'
+          end
 
-        it 'sets the headers to include the bearer token' do
-          headers = {
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'User-Agent' => 'Vets.gov Agent',
-            'Authorization': 'Bearer blah'
-          }
+          it 'sets the headers to include the bearer token' do
+            headers = {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'User-Agent' => 'Vets.gov Agent',
+              'Authorization': 'Bearer blah'
+            }
 
-          @client.list_medication_requests
-          expect(@client.instance_variable_get(:@headers_hash)).to eq headers
+            @client.list_resource(resource_str)
+            expect(@client.instance_variable_get(:@headers_hash)).to eq headers
+          end
         end
       end
 
-      describe 'when the caller requests the BP Observations resource' do
+      describe 'when the caller requests the Observations resource' do
         let(:observations_api_path) { 'services/fhir/v0/r4/Observation' }
         let(:params_hash) do
           {
@@ -85,11 +87,11 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
           expect_any_instance_of(Lighthouse::VeteransHealth::Client).to receive(
             :perform_get
           ).with(observations_api_path, params_hash).and_call_original
-          @client.list_bp_observations
+          @client.list_resource('observations')
         end
 
         it 'returns the api response' do
-          expect(@client.list_bp_observations).to eq generic_response
+          expect(@client.list_resource('observations')).to eq generic_response
         end
       end
 
@@ -104,11 +106,11 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
           expect_any_instance_of(
             Lighthouse::VeteransHealth::Client
           ).to receive(:perform_get).with(medications_api_path, params_hash).and_call_original
-          @client.list_medication_requests
+          @client.list_resource('medication_requests')
         end
 
         it 'returns the api response' do
-          expect(@client.list_medication_requests).to eq generic_response
+          expect(@client.list_resource('medication_requests')).to eq generic_response
         end
 
         context 'when the response is larger than one page' do
@@ -150,7 +152,7 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
               { 'second': 'page' },
               { 'last': 'page' }
             ].as_json
-            expect(@client.list_medication_requests.body['entry']).to match expected_entries
+            expect(@client.list_resource('medication_requests').body['entry']).to match expected_entries
           end
         end
       end
@@ -176,6 +178,12 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
     end
 
     context 'unsuccessful requests' do
+      describe 'when an unsupported resource is requested' do
+        it 'raises an error and message' do
+          expect { @client.list_resource('whatever') }.to raise_error(ArgumentError, 'unsupported resource type')
+        end
+      end
+
       describe 'when a valid request to Lighthouse times out' do
         before do
           allow(@client).to receive(:perform).and_raise Faraday::TimeoutError
@@ -184,7 +192,7 @@ RSpec.describe Lighthouse::VeteransHealth::Client do
         end
 
         it 'raises an exception and message' do
-          expect { @client.list_medication_requests }.to raise_exception(Faraday::TimeoutError, 'timeout')
+          expect { @client.list_resource('medication_requests') }.to raise_exception(Faraday::TimeoutError, 'timeout')
         end
       end
     end

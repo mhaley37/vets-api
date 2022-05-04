@@ -8,12 +8,11 @@ RSpec.describe RapidReadyForDecision::RrdProcessor do
   let(:submission) { create(:form526_submission, :asthma_claim_for_increase) }
 
   describe '#add_medical_stats' do
-    subject { rrd_processor.add_medical_stats }
+    subject { rrd_processor.add_medical_stats(assessed_data) }
 
-    before do
-      rrd_processor.claim_context.assessed_data = { somekey: 'someValue' }
-      expect(rrd_processor).to receive(:med_stats_hash).and_return({ newkey: 'someValue' })
-    end
+    let(:assessed_data) { { somekey: 'someValue' } }
+
+    before { expect(rrd_processor).to receive(:med_stats_hash).and_return({ newkey: 'someValue' }) }
 
     it 'adds to rrd_metadata.med_stats' do
       subject
