@@ -8,7 +8,8 @@ module Mobile
     module Adapters
       class Service
         # 411 = Podiatry
-        SERVICE_TYPE_IDS = %w[amputation primaryCare foodAndNutrition 411 optometry audiology].freeze
+        SERVICE_TYPE_IDS = %w[amputation audiology covid optometry outpatientMentalHealth moveProgram foodAndNutrition
+                              clinicalPharmacyPrimaryCare 411 primaryCare homeSleepTesting socialWork].freeze
 
         def parse(service_eligibilities)
           SERVICE_TYPE_IDS.collect do |service|
@@ -17,9 +18,8 @@ module Mobile
 
             service_eligibilities.each do |facility|
               facility_id = facility.facility_id
-              service_index = facility.services.index { |h| h[:id] == service }
-              facility_service = facility.services[service_index]
-              next if service_index.nil?
+              facility_service = facility.services.select { |h| h[:id] == service }.first
+              next if facility_service.nil?
 
               request_facilities << facility_id if facility_service.dig(:request, :enabled)
               direct_facilities << facility_id if facility_service.dig(:direct, :enabled)
