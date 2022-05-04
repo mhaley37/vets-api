@@ -190,7 +190,7 @@ vet360:
     cache_enabled: false
     enabled: true
     timeout: 30
-    mock: false        
+    mock: false
   address_validation:
     hostname: "sandbox-api.va.gov"
     api_key: "<AV_KEY>"
@@ -528,12 +528,6 @@ caseflow:
 vic:
   url: https://some.fakesite.com
   signing_key_path: /fake/signing/key/path
-  prefill: true
-  s3:
-    aws_access_key_id: "aws_access_key_id"
-    aws_secret_access_key: "aws_secret_access_key"
-    region: "region"
-    bucket: "bucket"
 
 # Settings for (preneeds) burials.
 preneeds:
@@ -950,6 +944,11 @@ flipper:
     - simi.adebowale@adhocteam.us
     - tom.harrison@adhocteam.us
     - angela.agosto@adhocteam.us # Angela Agosto - Ad Hoc
+    - ryan.koch@agile6.com
+    - wesley.rowe@agile6.com
+    - jill.adams@agile6.com
+    - allison@cityfriends.tech
+    - cnunez@kindsys.us
 
 bgs:
   application: ~
@@ -1038,6 +1037,7 @@ lighthouse:
         - "patient/Observation.read"
         - "patient/Practitioner.read"
         - "patient/MedicationRequest.read"
+        - "patient/Condition.read"
       aud_claim_url: "https://deptva-eval.okta.com/oauth2/aus8nm1q0f7VQ0a482p7/v1/token"
       client_id: "0oaaxkp0aeXEJkMFw2p7"
       grant_type: "client_credentials"

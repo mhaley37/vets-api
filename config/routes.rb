@@ -84,7 +84,6 @@ Rails.application.routes.draw do
 
     resource :user, only: [:show]
     resource :post911_gi_bill_status, only: [:show]
-    resource :vso_appointments, only: [:create]
 
     resource :education_benefits_claims, only: %i[create show] do
       collection do
@@ -241,11 +240,6 @@ Rails.application.routes.draw do
       resources :cemeteries, only: :index, defaults: { format: :json }
       resources :burial_forms, only: :create, defaults: { format: :json }
       resources :preneed_attachments, only: :create
-    end
-
-    namespace :vic do
-      resources :profile_photo_attachments, only: %i[create show]
-      resources :supporting_documentation_attachments, only: :create
     end
 
     resources :gi_bill_feedbacks, only: %i[create show]

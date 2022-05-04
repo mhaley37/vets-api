@@ -12,7 +12,7 @@ module RapidReadyForDecision
     include Sidekiq::Form526JobStatusTracker::JobTracker
 
     extend SentryLogging
-    # https://github.com/mperham/sidekiq/issues/2168#issuecomment-72079636
+    # https://github.com/mperham/sidekiq/wiki/Error-Handling#automatic-job-retry
     sidekiq_options retry: 11
 
     def perform(form526_submission_id)
@@ -32,6 +32,7 @@ module RapidReadyForDecision
         message = "Sidekiq job id: #{jid}. The error was: #{e.message}.<br/>" \
                   "The backtrace was:\n #{e.backtrace.join(",<br/>\n ")}"
         form526_submission.send_rrd_alert_email('Rapid Ready for Decision (RRD) Job Errored', message)
+        form526_submission.save_metadata(error: e.message)
         raise
       end
     end
