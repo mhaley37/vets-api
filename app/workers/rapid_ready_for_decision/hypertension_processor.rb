@@ -20,7 +20,7 @@ module RapidReadyForDecision
 
     # This will become a service in the new architecture
     def assess_hypertension(bp_observations)
-      return [] if bp_observations.blank?
+      return {} if bp_observations.blank?
 
       relevant_readings = RapidReadyForDecision::LighthouseObservationData.new(bp_observations).transform
       { bp_readings: relevant_readings }
