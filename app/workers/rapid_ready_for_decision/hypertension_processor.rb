@@ -5,20 +5,17 @@ require 'lighthouse/veterans_health/client'
 module RapidReadyForDecision
   class HypertensionProcessor < RrdProcessor
     def assess_data
-      assessed_data = query_and_assess_lighthouse
-
-      return if assessed_data[:bp_readings].blank?
-
-      assessed_data
+      claim_context.assessed_data = query_and_assess_lighthouse
+      claim_context.sufficient_evidence = claim_context.assessed_data[:bp_readings].present?
     end
 
     private
 
     def query_and_assess_lighthouse
       client = lighthouse_client
-      bp_readings = assess_bp_readings(client.list_resource('observations'))
+      bp_readings = assess_bp_readings(client.list_bp_observations)
       # stop querying if bp_readings.blank?
-      medications = assess_medications(client.list_resource('medication_requests')) if bp_readings.present?
+      medications = assess_medications(client.list_medication_requests) if bp_readings.present?
 
       {
         bp_readings: bp_readings,
@@ -42,9 +39,9 @@ module RapidReadyForDecision
       { bp_readings_count: assessed_data[:bp_readings]&.size }
     end
 
-    def generate_pdf(assessed_data)
-      RapidReadyForDecision::FastTrackPdfGenerator.new(patient_info,
-                                                       assessed_data,
+    def generate_pdf
+      RapidReadyForDecision::FastTrackPdfGenerator.new(claim_context.patient_info,
+                                                       claim_context.assessed_data,
                                                        :hypertension).generate
     end
   end
