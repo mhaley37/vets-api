@@ -60,7 +60,6 @@ RSpec.describe RapidReadyForDecision::HypertensionProcessor do
           rrd_sidekiq_job.constantize.perform_async(submission.id)
 
           submission.reload
-          binding.pry
           expect(submission.form.dig('rrd_metadata', 'offramp_reason')).to eq 'insufficient_data'
         end
       end
