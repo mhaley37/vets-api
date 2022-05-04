@@ -861,7 +861,9 @@ RSpec.describe SignInController, type: :controller do
 
         it 'logs the session revocation' do
           expect(Rails.logger).to receive(:info).once.with(
-            'Sign in Service Session Revoke', { session: expected_session_handle }
+            'Sign in Service Session Revoke',
+            { session_id: expected_session_handle, access_token_id: nil, timestamp: timestamp.to_s,
+              token_type: 'refresh', user_id: user_account.id }
           )
           subject
         end
@@ -1076,11 +1078,11 @@ RSpec.describe SignInController, type: :controller do
 
         it 'logs the token refresh' do
           access_token = JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first
-          require 'pry'; binding.pry
+          # require 'pry'; binding.pry
           expect(Rails.logger).to have_received(:info).once.with(
             'Sign in Service Tokens Refresh',
-            { token_type: 'refresh', user_id: user.uuid, session_id: access_token_object.session_handle,
-              access_token_id: access_token_object.uuid, timestamp: timestamp.to_s }
+            { token_type: 'refresh', user_id: user.uuid, session_id: access_token['session_handle'],
+              access_token_id: access_token['uuid'], timestamp: timestamp.to_s }
           )
         end
       end

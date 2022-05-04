@@ -5,48 +5,42 @@ require 'rails_helper'
 RSpec.describe SignIn::Logger do
   let(:logger) { SignIn::Logger.new }
 
-  describe '#log_token' do
+  describe '#info_log' do
     let(:user_account) { create(:user_account) }
     let(:user) { create(:user, uuid: user_account.id) }
     let(:refresh_token) { create(:refresh_token, user_uuid: user_account.id) }
     let(:expected_token_hash) { Digest::SHA256.hexdigest(json_token) }
+    let(:timestamp) { Time.zone.now }
 
     before do
       allow(User).to receive(:find).and_return(user)
       allow(Rails.logger).to receive(:info)
+      allow(Time.zone).to receive(:now).and_return(timestamp)
     end
 
     context 'refresh token' do
-      let(:json_token) { refresh_token.to_json }
+      let(:message) { 'Sign in Service Token Response' }
+      let(:code) { SecureRandom.hex }
 
       it 'logs the refresh token' do
         expect(Rails.logger).to receive(:info)
-          .with('Sign in Service Token - create:',
-                hash_including(
-                  token_type: 'refresh',
-                  session_id: refresh_token.session_handle,
-                  user_id: user.uuid,
-                  refresh_token_hash: expected_token_hash
-                ))
-        logger.log_token(refresh_token, parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
+          .with(message,
+                { code: code, token_type: 'refresh', user_id: user.uuid,
+                  session_id: refresh_token.session_handle, timestamp: timestamp.to_s })
+        logger.info_log(message, { code: code }, token: refresh_token)
       end
     end
 
     context 'access token' do
       let(:access_token) { create(:access_token, user_uuid: user_account.id) }
-      let(:json_token) { access_token.to_json }
+      let(:message) { 'Sign in Service Introspect' }
 
       it 'logs the access token' do
         expect(Rails.logger).to receive(:info)
-          .with('Sign in Service Token - create:',
-                hash_including(
-                  token_type: 'access',
-                  session_id: access_token.session_handle,
-                  user_id: user.uuid,
-                  refresh_token_hash: access_token.refresh_token_hash,
-                  access_token_hash: expected_token_hash
-                ))
-        logger.log_token(access_token, parent_refresh_token_hash: access_token.parent_refresh_token_hash)
+          .with(message,
+                { token_type: 'access', user_id: user.uuid, access_token_id: access_token.uuid,
+                  session_id: access_token.session_handle, timestamp: timestamp.to_s })
+        logger.info_log(message, {}, token: access_token)
       end
     end
   end
