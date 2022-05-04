@@ -60,7 +60,7 @@ module RapidReadyForDecision
 
     def add_medical_stats
       med_stats_hash = med_stats_hash(@claim_context.assessed_data)
-      @claim_context.add_metadata(med_stats: med_stats_hash) unless med_stats_hash.blank?
+      @claim_context.add_metadata(med_stats: med_stats_hash) if med_stats_hash.present?
     end
 
     private
