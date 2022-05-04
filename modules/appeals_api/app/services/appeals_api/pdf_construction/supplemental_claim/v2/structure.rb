@@ -147,7 +147,7 @@ module AppealsApi
           # rubocop:enable Metrics/MethodLength
 
           def additional_pages?
-            additional_issues? || additional_evidence_locations? || form_data.long_signature? ||form_data.long_name?
+            additional_issues? || additional_evidence_locations? || form_data.long_signature? || form_data.long_name?
           end
 
           def additional_issues?
