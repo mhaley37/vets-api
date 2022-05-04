@@ -32,7 +32,7 @@ module MedicalCopays
     end
 
     def initialize
-      @settings = Flipper.enabled?(:medical_copays_api_key_change) ? Settings.mcp.vbs_v2 : Settings.mcp.vbs
+      @settings = endpoint_settings
     end
 
     ##
@@ -109,5 +109,8 @@ module MedicalCopays
     def api_key
       Flipper.enabled?(:medical_copays_api_key_change) ? 'apiKey' : 'x-api-key'
     end
+
+    def endpoint_settings
+      Flipper.enabled?(:medical_copays_api_key_change) ? Settings.mcp.vbs_v2 : Settings.mcp.vbs
   end
 end
