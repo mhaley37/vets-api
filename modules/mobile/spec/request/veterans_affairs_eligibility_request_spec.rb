@@ -165,6 +165,7 @@ RSpec.describe 'veterans Affairs Eligibility', type: :request do
         end
 
         it 'all service ids are hit when parsing upstream response except for covid request' do
+          # this is used to ensure that all the service ids in the parser are all matching to something in the response.
           services = response.parsed_body.dig('data', 'attributes', 'services')
 
           expect(services).to eq(
