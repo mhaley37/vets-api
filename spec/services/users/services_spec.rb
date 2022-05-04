@@ -11,18 +11,18 @@ RSpec.describe Users::Services do
     it 'returns an array of services authorized to the initialized user', :aggregate_failures do
       expect(subject.class).to eq Array
       expect(subject).to match_array(
-        [
-          'facilities',
-          'hca',
-          'edu-benefits',
-          'evss-claims',
-          'form526',
-          'user-profile',
-          'appeals-status',
-          'form-save-in-progress',
-          'form-prefill',
-          'identity-proofed',
-          'vet360',
+        %w[
+          facilities
+          hca
+          edu-benefits
+          evss-claims
+          form526
+          user-profile
+          appeals-status
+          form-save-in-progress
+          form-prefill
+          identity-proofed
+          vet360
         ]
       )
     end
@@ -32,13 +32,13 @@ RSpec.describe Users::Services do
 
       it 'returns only the services that are authorized to this loa1 user' do
         expect(subject).to match_array(
-          [
-            'facilities',
-            'hca',
-            'edu-benefits',
-            'user-profile',
-            'form-save-in-progress',
-            'form-prefill',
+          %w[
+            facilities
+            hca
+            edu-benefits
+            user-profile
+            form-save-in-progress
+            form-prefill
           ]
         )
       end
