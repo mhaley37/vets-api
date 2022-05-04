@@ -70,14 +70,6 @@ RSpec.describe SignIn::SessionRevoker do
               session_revoker.perform
               expect { session.reload }.to raise_error(ActiveRecord::RecordNotFound)
             end
-
-            it 'logs refresh token revocation' do
-              allow(Rails.logger).to receive(:info)
-              expect(Rails.logger).to receive(:info)
-                .once.with('Sign in Service Token - revoke:',
-                           hash_including(token_type: 'refresh', user_id: user_uuid))
-              subject
-            end
           end
 
           context 'when token hash in session does not match input refresh token or its stored parent' do

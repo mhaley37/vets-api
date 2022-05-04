@@ -56,14 +56,6 @@ RSpec.describe SignIn::RefreshTokenEncryptor do
         version_component = subject.split('.')[SignIn::Constants::RefreshToken::VERSION_POSITION]
         expect(version_component).to eq(expected_version_component)
       end
-
-      it 'logs refresh token encryption' do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger).to receive(:info)
-          .once.with('Sign in Service Token - encrypt:',
-                     hash_including(token_type: 'refresh', user_id: user.uuid))
-        subject
-      end
     end
   end
 end

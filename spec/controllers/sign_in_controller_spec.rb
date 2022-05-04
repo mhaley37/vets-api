@@ -6,8 +6,10 @@ RSpec.describe SignInController, type: :controller do
   let(:user_account) { create(:user_account) }
   let(:user_account_uuid) { user_account.id }
   let(:user) { create(:user, uuid: user_account_uuid) }
+  let(:timestamp) { Time.zone.now }
 
   before do
+    allow(Time.zone).to receive(:now).and_return(timestamp)
     allow(User).to receive(:find).and_return(user)
     allow(Rails.logger).to receive(:info)
   end
@@ -1074,10 +1076,11 @@ RSpec.describe SignInController, type: :controller do
 
         it 'logs the token refresh' do
           access_token = JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first
-
+          require 'pry'; binding.pry
           expect(Rails.logger).to have_received(:info).once.with(
             'Sign in Service Tokens Refresh',
-            { session: access_token['session_handle'], access_token: access_token['jti'] }
+            { token_type: 'refresh', user_id: user.uuid, session_id: access_token_object.session_handle,
+              access_token_id: access_token_object.uuid, timestamp: timestamp.to_s }
           )
         end
       end
@@ -1171,9 +1174,12 @@ RSpec.describe SignInController, type: :controller do
         end
 
         it 'logs the instrospection' do
-          expect(Rails.logger).to receive(:info)
-            .once.with('Sign in Service Introspect', { user: user.uuid })
           subject
+          expect(Rails.logger).to have_received(:info).once.with(
+            'Sign in Service Introspect',
+            { token_type: 'access', user_id: user.uuid, session_id: access_token_object.session_handle,
+              access_token_id: access_token_object.uuid, timestamp: timestamp.to_s }
+          )
         end
       end
     end

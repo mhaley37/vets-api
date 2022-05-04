@@ -9,9 +9,6 @@ module SignIn
     end
 
     def perform
-      sign_in_logger.log_token(access_token,
-                               event: 'encode',
-                               parent_refresh_token_hash: access_token.parent_refresh_token_hash)
       jwt_encode_access_token
     end
 
@@ -41,10 +38,6 @@ module SignIn
 
     def private_key
       OpenSSL::PKey::RSA.new(File.read(Settings.sign_in.jwt_encode_key))
-    end
-
-    def sign_in_logger
-      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

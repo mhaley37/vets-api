@@ -46,7 +46,7 @@ module SignIn
     end
 
     def create_new_access_token
-      new_access_token = SignIn::AccessToken.new(
+      SignIn::AccessToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         refresh_token_hash: refresh_token_hash,
@@ -54,19 +54,15 @@ module SignIn
         anti_csrf_token: anti_csrf_token,
         last_regeneration_time: refresh_created_time
       )
-      sign_in_logger.log_token(new_access_token)
-      new_access_token
     end
 
     def create_new_refresh_token(parent_refresh_token_hash: nil)
-      new_refresh_token = SignIn::RefreshToken.new(
+      SignIn::RefreshToken.new(
         session_handle: handle,
         user_uuid: user_account.id,
         parent_refresh_token_hash: parent_refresh_token_hash,
         anti_csrf_token: anti_csrf_token
       )
-      sign_in_logger.log_token(new_refresh_token, parent_refresh_token_hash: parent_refresh_token_hash)
-      new_refresh_token
     end
 
     def create_new_session
@@ -91,10 +87,6 @@ module SignIn
 
     def handle
       @handle ||= SecureRandom.uuid
-    end
-
-    def sign_in_logger
-      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

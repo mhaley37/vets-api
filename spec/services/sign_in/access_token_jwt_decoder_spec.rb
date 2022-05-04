@@ -85,14 +85,6 @@ RSpec.describe SignIn::AccessTokenJwtDecoder do
         it 'returns the decoded access token' do
           expect(subject).to eq access_token
         end
-
-        it 'logs access token decoding' do
-          allow(Rails.logger).to receive(:info)
-          expect(Rails.logger).to receive(:info)
-            .once.with('Sign in Service Token - decode:',
-                       hash_including(token_type: 'access', user_id: user.uuid))
-          subject
-        end
       end
     end
 

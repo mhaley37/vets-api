@@ -13,9 +13,6 @@ module SignIn
 
     def perform
       encrypted_refresh_token = serialize_and_encrypt_refresh_token
-      sign_in_logger.log_token(refresh_token,
-                               event: 'encrypt',
-                               parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
       build_refresh_token_string(encrypted_refresh_token)
     end
 
@@ -40,10 +37,6 @@ module SignIn
 
     def message_encryptor
       KmsEncrypted::Box.new
-    end
-
-    def sign_in_logger
-      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

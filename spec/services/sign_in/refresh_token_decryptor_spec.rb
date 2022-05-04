@@ -89,14 +89,6 @@ RSpec.describe SignIn::RefreshTokenDecryptor do
       it 'returns a decrypted refresh token with expected version' do
         expect(subject.version).to eq(expected_version)
       end
-
-      it 'logs refresh token decryption' do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger).to receive(:info)
-          .once.with('Sign in Service Token - decrypt:',
-                     hash_including(token_type: 'refresh', user_id: user.uuid))
-        subject
-      end
     end
   end
 end

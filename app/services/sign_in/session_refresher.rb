@@ -55,20 +55,16 @@ module SignIn
     end
 
     def create_child_refresh_token
-      new_child_token = SignIn::RefreshToken.new(
+      SignIn::RefreshToken.new(
         session_handle: session.handle,
         user_uuid: session.user_account.id,
         anti_csrf_token: updated_anti_csrf_token,
         parent_refresh_token_hash: refresh_token_hash
       )
-      sign_in_logger.log_token(new_child_token,
-                               event: 'rotate',
-                               parent_refresh_token_hash: refresh_token_hash)
-      new_child_token
     end
 
     def create_access_token
-      new_access_token = SignIn::AccessToken.new(
+      SignIn::AccessToken.new(
         session_handle: session.handle,
         user_uuid: session.user_account.id,
         refresh_token_hash: get_hash(child_refresh_token.to_json),
@@ -76,8 +72,6 @@ module SignIn
         anti_csrf_token: updated_anti_csrf_token,
         last_regeneration_time: last_regeneration_time
       )
-      sign_in_logger.log_token(new_access_token, event: 'rotate')
-      new_access_token
     end
 
     def last_regeneration_time
@@ -114,10 +108,6 @@ module SignIn
 
     def access_token
       @access_token ||= create_access_token
-    end
-
-    def sign_in_logger
-      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

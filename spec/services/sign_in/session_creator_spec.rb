@@ -108,14 +108,6 @@ RSpec.describe SignIn::SessionCreator do
           expect(refresh_token.user_uuid).to eq(expected_user_uuid)
           expect(refresh_token.parent_refresh_token_hash).to eq(expected_parent_refresh_token_hash)
         end
-
-        it 'logs the creation of the Refresh tokens' do
-          expect(Rails.logger).to receive(:info).twice.with(
-            'Sign in Service Token - create:',
-            hash_including(token_type: 'refresh', user_id: user.uuid)
-          )
-          subject.refresh_token
-        end
       end
 
       context 'expected access_token' do
@@ -157,14 +149,6 @@ RSpec.describe SignIn::SessionCreator do
           expect(access_token.refresh_token_hash).to eq(expected_refresh_token_hash)
           expect(access_token.parent_refresh_token_hash).to eq(expected_parent_refresh_token_hash)
           expect(access_token.last_regeneration_time).to eq(expected_last_regeneration_time)
-        end
-
-        it 'logs the creation of the Access token' do
-          expect(Rails.logger).to receive(:info).once.with(
-            'Sign in Service Token - create:',
-            hash_including(token_type: 'access', user_id: user.uuid)
-          )
-          subject.access_token
         end
       end
     end

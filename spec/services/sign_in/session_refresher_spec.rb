@@ -120,13 +120,6 @@ RSpec.describe SignIn::SessionRefresher do
                   expect(container.refresh_token.anti_csrf_token).to eq(expected_anti_csrf_token)
                   expect(container.refresh_token.parent_refresh_token_hash).to eq(expected_refresh_token_hash)
                 end
-
-                it 'logs the creation of the Refresh tokens' do
-                  expect(Rails.logger).to receive(:info)
-                    .once.with('Sign in Service Token - rotate:',
-                               hash_including(token_type: 'refresh', user_id: user.uuid))
-                  subject.refresh_token
-                end
               end
 
               context 'expected access token' do
@@ -147,13 +140,6 @@ RSpec.describe SignIn::SessionRefresher do
                   expect(container.access_token.parent_refresh_token_hash).to eq(expected_parent_refresh_token_hash)
                   expect(container.access_token.refresh_token_hash).to eq(expected_refresh_token_hash)
                   expect(container.access_token.last_regeneration_time).to eq(expected_last_regeneration_time)
-                end
-
-                it 'logs the creation of the Access token' do
-                  expect(Rails.logger).to receive(:info)
-                    .once.with('Sign in Service Token - rotate:',
-                               hash_including(token_type: 'access', user_id: user.uuid))
-                  subject.refresh_token
                 end
               end
             end

@@ -10,10 +10,9 @@ module SignIn
 
     def perform
       decrypted_component = get_decrypted_component
-
       validate_token!(decrypted_component)
 
-      refresh_token = SignIn::RefreshToken.new(
+      SignIn::RefreshToken.new(
         session_handle: decrypted_component.session_handle,
         user_uuid: decrypted_component.user_uuid,
         parent_refresh_token_hash: decrypted_component.parent_refresh_token_hash,
@@ -21,10 +20,6 @@ module SignIn
         nonce: decrypted_component.nonce,
         version: decrypted_component.version
       )
-      sign_in_logger.log_token(refresh_token,
-                               event: 'decrypt',
-                               parent_refresh_token_hash: refresh_token.parent_refresh_token_hash)
-      refresh_token
     end
 
     private
@@ -61,10 +56,6 @@ module SignIn
 
     def message_encryptor
       KmsEncrypted::Box.new
-    end
-
-    def sign_in_logger
-      @sign_in_logger = SignIn::Logger.new
     end
   end
 end

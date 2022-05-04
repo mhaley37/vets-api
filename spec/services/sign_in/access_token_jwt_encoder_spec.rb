@@ -45,14 +45,6 @@ RSpec.describe SignIn::AccessTokenJwtEncoder do
         expect(decoded_jwt.version).to eq expected_version
         expect(decoded_jwt.jti).to eq expected_jti
       end
-
-      it 'logs access token encoding' do
-        allow(Rails.logger).to receive(:info)
-        expect(Rails.logger).to receive(:info)
-          .once.with('Sign in Service Token - encode:',
-                     hash_including(token_type: 'access', user_id: user.uuid))
-        subject
-      end
     end
   end
 end
