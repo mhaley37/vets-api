@@ -6,10 +6,11 @@ RSpec.describe SignInController, type: :controller do
   let(:user_account) { create(:user_account) }
   let(:user_account_uuid) { user_account.id }
   let(:user) { create(:user, uuid: user_account_uuid) }
-  let(:timestamp) { Time.zone.now }
+  let(:current_time) { Time.zone.now }
+  let(:timestamp) { current_time.to_s }
 
   before do
-    allow(Time.zone).to receive(:now).and_return(timestamp)
+    allow(Time.zone).to receive(:now).and_return(current_time)
     allow(User).to receive(:find).and_return(user)
     allow(Rails.logger).to receive(:info)
   end
@@ -153,7 +154,7 @@ RSpec.describe SignInController, type: :controller do
             expect(Rails.logger).to receive(:info).once.with(
               'Sign in Service Authorization Attempt',
               { state: state, type: type[:type], client_state: nil,
-                code_challenge: code_challenge[:code_challenge],
+                code_challenge: code_challenge[:code_challenge], timestamp: timestamp,
                 code_challenge_method: code_challenge_method[:code_challenge_method] }
             )
             subject
@@ -247,7 +248,7 @@ RSpec.describe SignInController, type: :controller do
               expect(Rails.logger).to receive(:info).once.with(
                 'Sign in Service Authorization Attempt',
                 { state: state, type: type[:type], client_state: client_state[:state],
-                  code_challenge: code_challenge[:code_challenge],
+                  code_challenge: code_challenge[:code_challenge], timestamp: timestamp,
                   code_challenge_method: code_challenge_method[:code_challenge_method] }
               )
               subject
@@ -613,10 +614,10 @@ RSpec.describe SignInController, type: :controller do
           end
 
           it 'logs the authentication attempt' do
-            expect(Rails.logger).to receive(:info).once.with(
+            expect(Rails.logger).to receive(:info).with(
               'Sign in Service Authorization Callback',
-              { state: state[:state], code: code[:code],
-                login_code: client_code, type: type[:type], client_state: client_state }
+              { state: state[:state], type: type[:type], code: code[:code],
+                login_code: client_code, client_state: client_state, timestamp: timestamp }
             )
             subject
           end
@@ -862,7 +863,7 @@ RSpec.describe SignInController, type: :controller do
         it 'logs the session revocation' do
           expect(Rails.logger).to receive(:info).once.with(
             'Sign in Service Session Revoke',
-            { session_id: expected_session_handle, access_token_id: nil, timestamp: timestamp.to_s,
+            { session_id: expected_session_handle, timestamp: timestamp,
               token_type: 'refresh', user_id: user_account.id }
           )
           subject
@@ -1078,11 +1079,10 @@ RSpec.describe SignInController, type: :controller do
 
         it 'logs the token refresh' do
           access_token = JWT.decode(JSON.parse(subject.body)['data']['access_token'], nil, false).first
-          # require 'pry'; binding.pry
           expect(Rails.logger).to have_received(:info).once.with(
             'Sign in Service Tokens Refresh',
-            { token_type: 'refresh', user_id: user.uuid, session_id: access_token['session_handle'],
-              access_token_id: access_token['uuid'], timestamp: timestamp.to_s }
+            { token_type: 'refresh', user_id: user.uuid,
+              session_id: access_token['session_handle'], timestamp: timestamp }
           )
         end
       end
@@ -1180,7 +1180,7 @@ RSpec.describe SignInController, type: :controller do
           expect(Rails.logger).to have_received(:info).once.with(
             'Sign in Service Introspect',
             { token_type: 'access', user_id: user.uuid, session_id: access_token_object.session_handle,
-              access_token_id: access_token_object.uuid, timestamp: timestamp.to_s }
+              access_token_id: access_token_object.uuid, timestamp: timestamp }
           )
         end
       end

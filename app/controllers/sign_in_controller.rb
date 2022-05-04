@@ -23,9 +23,9 @@ class SignInController < ApplicationController
     state = SignIn::CodeChallengeStateMapper.new(code_challenge: code_challenge,
                                                  code_challenge_method: code_challenge_method,
                                                  client_state: client_state).perform
-    sign_in_logger.info_log('Sign in Service Authorization Attempt',
-                            { state: state, type: type, client_state: client_state,
-                              code_challenge: code_challenge, code_challenge_method: code_challenge_method })
+    attributes = { state: state, type: type, client_state: client_state, code_challenge: code_challenge,
+                   code_challenge_method: code_challenge_method }
+    sign_in_logger.info_log('Sign in Service Authorization Attempt', attributes)
     render body: auth_service(type).render_auth(state: state), content_type: 'text/html'
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -40,8 +40,8 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError unless code && state
 
     login_code, client_state = login(type, state, code)
-    sign_in_logger.info_log('Sign in Service Authorization Callback',
-                            { state: state, type: type, code: code, login_code: login_code, client_state: client_state })
+    attributes = { state: state, type: type, code: code, login_code: login_code, client_state: client_state }
+    sign_in_logger.info_log('Sign in Service Authorization Callback', attributes)
     redirect_to login_redirect_url(login_code, client_state)
   rescue => e
     render json: { errors: e }, status: :bad_request
@@ -56,7 +56,7 @@ class SignInController < ApplicationController
 
     user_account = SignIn::CodeValidator.new(code: code, code_verifier: code_verifier, grant_type: grant_type).perform
     session_container = SignIn::SessionCreator.new(user_account: user_account).perform
-    sign_in_logger.info_log('Sign in Service Token Response', { code: code }, token: session_container.refresh_token)
+    sign_in_logger.info_log('Sign in Service Token Response', { code: code }, session_container.refresh_token)
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -71,7 +71,7 @@ class SignInController < ApplicationController
     raise SignIn::Errors::MalformedParamsError if enable_anti_csrf && anti_csrf_token.nil?
 
     session_container = refresh_session(refresh_token, anti_csrf_token, enable_anti_csrf)
-    sign_in_logger.info_log('Sign in Service Tokens Refresh', {}, token: session_container.refresh_token)
+    sign_in_logger.info_log('Sign in Service Tokens Refresh', {}, session_container.refresh_token)
     render json: session_token_response(session_container), status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -92,7 +92,7 @@ class SignInController < ApplicationController
   end
 
   def introspect
-    sign_in_logger.info_log('Sign in Service Introspect', {}, token: bearer_token)
+    sign_in_logger.info_log('Sign in Service Introspect', {}, bearer_token)
     render json: @current_user, serializer: SignIn::IntrospectSerializer, status: :ok
   rescue => e
     render json: { errors: e }, status: :unauthorized
@@ -140,7 +140,7 @@ class SignInController < ApplicationController
 
   def revoke_session(refresh_token, anti_csrf_token, enable_anti_csrf)
     refresh_token = decrypted_refresh_token(refresh_token)
-    sign_in_logger.info_log('Sign in Service Session Revoke', {}, token: refresh_token)
+    sign_in_logger.info_log('Sign in Service Session Revoke', {}, refresh_token)
     SignIn::SessionRevoker.new(refresh_token: refresh_token,
                                anti_csrf_token: anti_csrf_token,
                                enable_anti_csrf: enable_anti_csrf).perform

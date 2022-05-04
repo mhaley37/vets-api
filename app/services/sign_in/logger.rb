@@ -2,9 +2,9 @@
 
 module SignIn
   class Logger
-    def info_log(message, attributes = {}, token: nil)
-      attributes[:timestamp] = Time.zone.now.to_s
+    def info_log(message, attributes = {}, token = nil)
       attributes = attributes.merge(token_payload(token)) if token
+      attributes[:timestamp] = Time.zone.now.to_s
       Rails.logger.info(message, attributes)
     end
 
