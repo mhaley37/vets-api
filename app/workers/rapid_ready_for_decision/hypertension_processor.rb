@@ -5,14 +5,14 @@ require 'lighthouse/veterans_health/client'
 module RapidReadyForDecision
   class HypertensionProcessor < RrdProcessor
     def assess_data
-      bp_observations = lighthouse_client.list_resource('observations')
+      bp_observations = lighthouse_client.list_bp_observations
       claim_context.assessed_data = assess_hypertension(bp_observations)
       claim_context.sufficient_evidence = claim_context.assessed_data[:bp_readings].present?
 
       return unless claim_context.sufficient_evidence
 
       # Add active medications to show in PDF
-      med_requests = lighthouse_client.list_resource('medication_requests')
+      med_requests = lighthouse_client.list_medication_requests
       claim_context.assessed_data[:medications] = filter_medications(med_requests)
     end
 

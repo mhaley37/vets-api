@@ -5,7 +5,7 @@ require 'lighthouse/veterans_health/client'
 module RapidReadyForDecision
   class AsthmaProcessor < RrdProcessor
     def assess_data
-      med_requests = lighthouse_client.list_resource('medication_requests')
+      med_requests = lighthouse_client.list_medication_requests
       claim_context.assessed_data = assess_asthma(med_requests)
       claim_context.sufficient_evidence = claim_context.assessed_data[:medications].present?
     end

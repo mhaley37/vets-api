@@ -63,7 +63,7 @@ RSpec.describe RapidReadyForDecision::RrdProcessor do
 
     context 'when no data from Lighthouse' do
       before do
-        allow_any_instance_of(Lighthouse::VeteransHealth::Client).to receive(:list_resource).and_return([])
+        allow_any_instance_of(Lighthouse::VeteransHealth::Client).to receive(:list_medication_requests).and_return([])
       end
 
       it 'finishes with offramp_reason: insufficient_data' do

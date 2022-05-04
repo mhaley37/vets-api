@@ -52,7 +52,7 @@ RSpec.describe RapidReadyForDecision::HypertensionProcessor do
 
     context 'when no data from Lighthouse' do
       before do
-        allow_any_instance_of(Lighthouse::VeteransHealth::Client).to receive(:list_resource).and_return([])
+        allow_any_instance_of(Lighthouse::VeteransHealth::Client).to receive(:list_bp_observations).and_return([])
       end
 
       it 'finishes with offramp_reason: insufficient_data' do
@@ -60,6 +60,7 @@ RSpec.describe RapidReadyForDecision::HypertensionProcessor do
           rrd_sidekiq_job.constantize.perform_async(submission.id)
 
           submission.reload
+          binding.pry
           expect(submission.form.dig('rrd_metadata', 'offramp_reason')).to eq 'insufficient_data'
         end
       end
