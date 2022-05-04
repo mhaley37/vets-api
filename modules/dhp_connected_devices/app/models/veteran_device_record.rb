@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class VeteranDeviceRecord < ApplicationRecord
-  validates :icn, :device_id, :active, presence: true
+  validates :icn, :device_id, presence: true
   belongs_to :device
   before_validation :validate_unique_ids, on: :create
 
