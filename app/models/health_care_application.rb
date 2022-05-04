@@ -81,7 +81,7 @@ class HealthCareApplication < ApplicationRecord
 
       PersonalInformationLog.create!(
         data: parsed_form,
-        error_class: "HealthCareApplication ValidationError"
+        error_class: 'HealthCareApplication ValidationError'
       )
 
       raise(Common::Exceptions::ValidationErrors, self)
