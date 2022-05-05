@@ -134,8 +134,17 @@ PATH
     veteran_verification (0.0.1)
 
 GEM
-  remote: https://rubygems.org/
   remote: https://enterprise.contribsys.com/
+  specs:
+    sidekiq-ent (2.3.1)
+      einhorn (>= 0.7.4)
+      sidekiq (>= 6.3.0)
+      sidekiq-pro (>= 5.3.0)
+    sidekiq-pro (5.3.1)
+      sidekiq (>= 6.3.0)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     Ascii85 (1.1.0)
     aasm (5.2.0)
@@ -602,7 +611,7 @@ GEM
     netrc (0.11.0)
     nio4r (2.5.8)
     no_proxy_fix (0.1.2)
-    nokogiri (1.13.4)
+    nokogiri (1.13.5)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     nori (2.6.0)
@@ -873,12 +882,6 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
-    sidekiq-ent (2.3.1)
-      einhorn (>= 0.7.4)
-      sidekiq (>= 6.3.0)
-      sidekiq-pro (>= 5.3.0)
-    sidekiq-pro (5.3.1)
-      sidekiq (>= 6.3.0)
     sidekiq-scheduler (3.2.1)
       e2mmap
       redis (>= 3, < 5)
