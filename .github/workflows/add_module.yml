@@ -23,7 +23,7 @@ jobs:
         image: redis
         # Set health checks to wait until redis has started
         options: >-
-          --health-cmd "redis-cli pingret"
+          --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -45,7 +45,11 @@ jobs:
     #      --health-interval 10s
     #      --health-timeout 5s
     #      --health-retries 5
-
+    env:
+      MODULE: newModule
+      DEFAULT_BRANCH: main
+      BRANCH_NAME: add-newModule-module
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       #- name: Start Redis
        # uses: supercharge/redis-github-action@1.4.0
@@ -69,9 +73,10 @@ jobs:
         run: |
          apt update -y  
          apt-get -y install pdftk
-      #- name: install -y pdfk
-      #  run: snap install pdftk
-      #- name: generate a module
-      #  run: rails g module mike 
       - name: scaffold module
-        run: vtk module add mike
+        run: vtk module add mike       
+      - name: Commit and push
+        uses: EndBug/add-and-commit@v9 
+        with:
+          message: Add ${{ env.MODULE }} module
+          new_branch: add-module-${ env.MODULE}-module
