@@ -47,6 +47,15 @@ jobs:
           gem install vtk
           gem update vtk
       - uses: actions/checkout@v3
+      - name: create file
+        run: touch fake-file.txt
+      - name: Commit and push
+        uses: EndBug/add-and-commit@v9 
+        with:
+          message: Add ${{ env.MODULE }} module
+          new_branch: add-module-${{ env.MODULE}}-module
+          author_name: Michael Haley
+          author_email: mike.haley@adhoceam.us      
       - name: Install dependencies
         run: bundle install
       - name: install snap
@@ -55,14 +64,14 @@ jobs:
          apt-get -y install pdftk
       - name: scaffold module
         run: vtk module add mike      
-      - name: Create and push branch
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'        
-          git checkout -b ${{ env.MODULE}}
-          git add .
-          git commit -m "Scaffold ${{ env.MODULE}} module"
-          git push -u origin ${{ env.MODULE }}         
+      #- name: Create and push branch
+      #  run: |
+      #    git config user.name 'github-actions[bot]'
+      #    git config user.email 'github-actions[bot]@users.noreply.github.com'        
+      #    git checkout -b ${{ env.MODULE}}
+      #    git add .
+      #    git commit -m "Scaffold ${{ env.MODULE}} module"
+      #    git push -u origin ${{ env.MODULE }}         
       #- name: Commit and push
       #  uses: EndBug/add-and-commit@v9 
       #  with:
