@@ -31,23 +31,23 @@ jobs:
     #      --health-retries 5
 
     steps:
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.4.0
-        with:
-          redis-version: 6    
+      #- name: Start Redis
+       # uses: supercharge/redis-github-action@1.4.0
+      #  with:
+      #    redis-version: 6    
       - name: install vtk
         run: |
           gem install vtk
           gem update vtk
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: bundle install
-      - name: rails-check
-        run: rails -v
-      - name: install snap
-        run: |
-         apt update -y  
-         apt-get -y install pdftk
+      #- name: Install dependencies
+      #  run: bundle install
+      #- name: rails-check
+      #  run: rails -v
+      #- name: install snap
+      #  run: |
+      #   apt update -y  
+      #   apt-get -y install pdftk
       #- name: install -y pdfk
       #  run: snap install pdftk
       #- name: generate a module
