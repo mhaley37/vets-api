@@ -16,6 +16,7 @@ path 'modules' do
   gem 'facilities_api'
   gem 'health_quest'
   gem 'identity'
+  gem 'lets_try_this_again'
   gem 'meb_api'
   gem 'mobile'
   gem 'my_health'
