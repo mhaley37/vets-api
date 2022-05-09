@@ -1,7 +1,7 @@
 name: generate
 
 on:
-  push:
+  #
   workflow_dispatch:
     inputs:
       module:
@@ -30,14 +30,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        #ports:
-          # Maps port 6379 on service container to the host
-        #  - 6379:6379
 
     env:
-      MODULE: mike-module
+      MODULE: ${{ github.event.inputs.module }}
       DEFAULT_BRANCH: master
-      BRANCH_NAME: add-mike-module
+      BRANCH_NAME: add-${{ github.event.inputs.module }}-module
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: install vtk
@@ -58,5 +55,3 @@ jobs:
         with:
           message: Add ${{ env.MODULE }} module using vtk
           new_branch: add-module-${{ env.MODULE}}-module
-          #author_name: Michael Haley
-        #author_email: mike.haley@adhoceam.us    
