@@ -23,7 +23,7 @@ jobs:
         image: redis
         # Set health checks to wait until redis has started
         options: >-
-          --health-cmd "redis-cli ping"
+          --health-cmd "redis-cli pingret"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -55,8 +55,7 @@ jobs:
       #  with:
       #    redis-version: '6.x'
       #- run: redis-cli ping   
-      - name: ping redis
-        run: ping localhost   
+      #- name: ping redis
       - name: install vtk
         run: |
           gem install vtk
@@ -70,8 +69,8 @@ jobs:
         run: |
          apt update -y  
          apt-get -y install pdftk
-      - name: install -y pdfk
-        run: snap install pdftk
+      #- name: install -y pdfk
+      #  run: snap install pdftk
       #- name: generate a module
       #  run: rails g module mike 
       - name: scaffold module
