@@ -1,0 +1,62 @@
+name: generate
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'The module to scaffold'
+        required: true
+        type: string
+  
+
+jobs:
+  scaffold-module:
+
+    runs-on: ubuntu-latest
+    container: 
+      image: ruby:2.7.6
+      options: --user root
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        #ports:
+          # Maps port 6379 on service container to the host
+        #  - 6379:6379
+
+    env:
+      MODULE: mike-module
+      DEFAULT_BRANCH: master
+      BRANCH_NAME: add-mike-module
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: install vtk
+        run: |
+          gem install vtk
+          gem update vtk
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: bundle install
+      - name: install snap
+        run: |
+         apt update -y  
+         apt-get -y install pdftk
+      - name: scaffold module
+        run: vtk module add ${{ env.MODULE }}            
+      - name: Commit and push
+        uses: EndBug/add-and-commit@v9 
+        with:
+          message: Add ${{ env.MODULE }} module using vtk
+          new_branch: add-module-${{ env.MODULE}}-module
+          #author_name: Michael Haley
+        #author_email: mike.haley@adhoceam.us    
