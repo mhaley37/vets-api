@@ -11,18 +11,41 @@ jobs:
   generate:
 
     runs-on: ubuntu-latest
+    container: 
+      ports: ['6379:6379']
+      image: ruby:2.7.6
+      options: --user root
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
+      - name: install vtk
+        run: |
+          gem install vtk
+          gem update vtk
       - uses: actions/checkout@v3
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
-        with:
-          ruby-version: '2.7.5'
       - name: Install dependencies
         run: bundle install
       - name: rails-check
         run: rails -v
-      - name: install pdfk
-        run: sudo snap install pdftk
+      - name: install snap
+        run: |
+         apt update -y  
+          apt-get -y install pdftk
+      - name: install -y pdfk
+        run: snap install pdftk
       - name: generate a module
         run: rails g module mike 
+      - name: scaffold module
+        run: vtk module add mike
