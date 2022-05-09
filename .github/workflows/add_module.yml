@@ -34,22 +34,26 @@ jobs:
       #- name: Start Redis
        # uses: supercharge/redis-github-action@1.4.0
       #  with:
-      #    redis-version: 6    
+      #    redis-version: 6   
+      - uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: '6.x'
+      - run: redis-cli ping       
       - name: install vtk
         run: |
           gem install vtk
           gem update vtk
       - uses: actions/checkout@v3
-      #- name: Install dependencies
-      #  run: bundle install
-      #- name: rails-check
-      #  run: rails -v
-      #- name: install snap
-      #  run: |
-      #   apt update -y  
-      #   apt-get -y install pdftk
-      #- name: install -y pdfk
-      #  run: snap install pdftk
+      - name: Install dependencies
+        run: bundle install
+      - name: rails-check
+        run: rails -v
+      - name: install snap
+        run: |
+         apt update -y  
+         apt-get -y install pdftk
+      - name: install -y pdfk
+        run: snap install pdftk
       #- name: generate a module
       #  run: rails g module mike 
       - name: scaffold module
