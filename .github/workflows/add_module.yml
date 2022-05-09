@@ -35,9 +35,9 @@ jobs:
         #  - 6379:6379
 
     env:
-      MODULE: newModule
+      MODULE: mike-module
       DEFAULT_BRANCH: master
-      BRANCH_NAME: add-newModule-module
+      BRANCH_NAME: add-mike-module
       GITHUB_TOKEN: ${{ github.token }}
     steps:
       - name: install vtk
