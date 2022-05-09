@@ -43,8 +43,8 @@ jobs:
         run: |
          apt update -y  
           apt-get -y install pdftk
-      - name: install -y pdfk
-        run: snap install pdftk
+      #- name: install -y pdfk
+      #  run: snap install pdftk
       - name: generate a module
         run: rails g module mike 
       - name: scaffold module
