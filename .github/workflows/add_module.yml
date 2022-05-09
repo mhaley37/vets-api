@@ -1,0 +1,28 @@
+name: generate
+
+on:
+  push:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+  
+
+jobs:
+  generate:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@359bebbc29cbe6c87da6bc9ea3bc930432750108
+        with:
+          ruby-version: '2.7.5'
+      - name: Install dependencies
+        run: bundle install
+      - name: rails-check
+        run: rails -v
+      - name: install pdfk
+        run: sudo snap install pdftk
+      - name: generate a module
+        run: rails g module mike 
