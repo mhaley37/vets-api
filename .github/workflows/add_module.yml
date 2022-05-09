@@ -8,12 +8,10 @@ on:
         description: 'The module to scaffold'
         required: true
         type: string
-  pull_request:
-    branches: [ main ]
   
 
 jobs:
-  generate:
+  scaffold-module:
 
     runs-on: ubuntu-latest
     container: 
@@ -32,9 +30,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
+        #ports:
           # Maps port 6379 on service container to the host
-          - 6379:6379
+        #  - 6379:6379
 
     env:
       MODULE: newModule
@@ -47,15 +45,6 @@ jobs:
           gem install vtk
           gem update vtk
       - uses: actions/checkout@v3
-      - name: create file
-        run: touch fake-file.txt
-      - name: Commit and push
-        uses: EndBug/add-and-commit@v9 
-        with:
-          message: Add ${{ env.MODULE }} module
-          new_branch: add-module-${{ env.MODULE}}-module
-          author_name: Michael Haley
-          author_email: mike.haley@adhoceam.us      
       - name: Install dependencies
         run: bundle install
       - name: install snap
@@ -63,17 +52,11 @@ jobs:
          apt update -y  
          apt-get -y install pdftk
       - name: scaffold module
-        run: vtk module add mike      
-      #- name: Create and push branch
-      #  run: |
-      #    git config user.name 'github-actions[bot]'
-      #    git config user.email 'github-actions[bot]@users.noreply.github.com'        
-      #    git checkout -b ${{ env.MODULE}}
-      #    git add .
-      #    git commit -m "Scaffold ${{ env.MODULE}} module"
-      #    git push -u origin ${{ env.MODULE }}         
-      #- name: Commit and push
-      #  uses: EndBug/add-and-commit@v9 
-      #  with:
-      #    message: Add ${{ env.MODULE }} module
-      #    new_branch: add-module-${ env.MODULE}-module
+        run: vtk module add ${{ env.MODULE }}            
+      - name: Commit and push
+        uses: EndBug/add-and-commit@v9 
+        with:
+          message: Add ${{ env.MODULE }} module using vtk
+          new_branch: add-module-${{ env.MODULE}}-module
+          #author_name: Michael Haley
+        #author_email: mike.haley@adhoceam.us    
