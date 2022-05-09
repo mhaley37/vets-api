@@ -36,20 +36,6 @@ jobs:
           # Maps port 6379 on service container to the host
           - 6379:6379
 
-    # Service containers to run with `container-job`
-    # services:
-    #  # Label used to access the service container
-    #  redis:
-    #    # Docker Hub image
-    #    image: redis
-    #    ports:
-    #      - 6379:6379
-    #    # Set health checks to wait until redis has started
-    #    options: >-
-    #      --health-cmd "redis-cli ping"
-    #      --health-interval 10s
-    #      --health-timeout 5s
-    #      --health-retries 5
     env:
       MODULE: newModule
       DEFAULT_BRANCH: master
@@ -71,6 +57,8 @@ jobs:
         run: vtk module add mike      
       - name: Create and push branch
         run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'        
           git checkout -b ${{ env.MODULE}}
           git add .
           git commit -m "Scaffold ${{ env.MODULE}} module"
