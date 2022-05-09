@@ -19,6 +19,7 @@ path 'modules' do
   gem 'meb_api'
   gem 'mobile'
   gem 'my_health'
+  gem 'my_new_module'
   gem 'openid_auth'
   gem 'test_user_dashboard'
   gem 'va_forms'
