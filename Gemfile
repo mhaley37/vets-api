@@ -17,6 +17,7 @@ path 'modules' do
   gem 'health_quest'
   gem 'identity'
   gem 'meb_api'
+  gem 'mike_module'
   gem 'mobile'
   gem 'my_health'
   gem 'openid_auth'

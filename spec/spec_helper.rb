@@ -60,6 +60,7 @@ unless ENV['NOCOVERAGE']
     add_group 'HealthQuest', 'modules/health_quest/'
     add_group 'Identity', 'modules/identity/'
     add_group 'MebApi', 'modules/meb_api/'
+    add_group 'MikeModule', 'modules/mike_module/'
     add_group 'Mobile', 'modules/mobile/'
     add_group 'MyHealth', 'modules/my_health/'
     add_group 'OpenidAuth', 'modules/openid_auth/'
