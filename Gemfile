@@ -8,6 +8,7 @@ ruby '~> 2.7.6'
 path 'modules' do
   gem 'appeals_api'
   gem 'apps_api'
+  gem 'bugging'
   gem 'check_in'
   gem 'claims_api'
   gem 'covid_research'

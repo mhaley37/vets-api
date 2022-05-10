@@ -98,6 +98,7 @@ PATH
     apps_api (0.0.1)
       faraday
       sidekiq
+    bugging (0.1.0)
     check_in (0.1.0)
     claims_api (0.0.1)
     covid_research (0.1.0)
@@ -1006,6 +1007,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   breakers
+  bugging!
   bundler-audit
   byebug
   carrierwave
