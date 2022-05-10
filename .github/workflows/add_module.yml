@@ -14,9 +14,9 @@ jobs:
   scaffold-module:
 
     runs-on: ubuntu-latest
-    container: 
-      image: ruby:2.7.6
-      options: --user root
+    #container: 
+    #  image: ruby:2.7.6
+    #  options: --user root
 
 
     # Service containers to run with `runner-job`
@@ -26,7 +26,8 @@ jobs:
         # Docker Hub image
         image: redis
         # Set health checks to wait until redis has started
-
+        ports:
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -39,17 +40,30 @@ jobs:
       BRANCH_NAME: add-${{ github.event.inputs.module }}-module
       GITHUB_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+      #  with:
+      #    bundler-cache: true    
+      - uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-      
       - name: install vtk
         run: |
-          gem install vtk
-          gem update vtk
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: bundle install
+          sudo gem install vtk
+          sudo gem update vtk      
+      #- name: Install dependencies
+      # run: bundle install
+      - name: Bundle install
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
       - name: install snap
         run: |
-         apt update -y  
-         apt-get -y install pdftk
+         sudo apt update -y  
+         sudo apt-get -y install pdftk
       - name: scaffold module
         run: vtk module add ${{ env.MODULE }}            
       - name: Commit and push
