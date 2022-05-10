@@ -93,6 +93,7 @@ GIT
 PATH
   remote: modules
   specs:
+    a_new_one (0.1.0)
     appeals_api (0.0.1)
       sidekiq
     apps_api (0.0.1)
@@ -988,6 +989,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  a_new_one!
   aasm
   active_model_serializers!
   activerecord-import

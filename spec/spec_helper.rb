@@ -49,6 +49,7 @@ unless ENV['NOCOVERAGE']
     add_filter 'version.rb'
 
     # Modules
+    add_group 'ANewOne', 'modules/a_new_one/'
     add_group 'AppealsApi', 'modules/appeals_api/'
     add_group 'AppsApi', 'modules/apps_api'
     add_group 'CheckIn', 'modules/check_in/'

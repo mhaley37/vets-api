@@ -414,6 +414,7 @@ Rails.application.routes.draw do
   end
 
   # Modules
+  mount ANewOne::Engine, at: '/a_new_one'
   mount CheckIn::Engine, at: '/check_in'
   mount CovidResearch::Engine, at: '/covid-research'
   mount CovidVaccine::Engine, at: '/covid_vaccine'

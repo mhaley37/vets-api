@@ -60,6 +60,7 @@ class SimpleCovHelper
 
   def self.add_modules
     # Modules
+    add_group 'ANewOne', 'modules/a_new_one/'
     add_group 'AppealsApi', 'modules/appeals_api/'
     add_group 'CheckIn', 'modules/check_in/'
     add_group 'ClaimsApi', 'modules/claims_api/'

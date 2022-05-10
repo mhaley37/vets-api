@@ -6,6 +6,7 @@ ruby '~> 2.7.6'
 
 # Modules
 path 'modules' do
+  gem 'a_new_one'
   gem 'appeals_api'
   gem 'apps_api'
   gem 'check_in'
