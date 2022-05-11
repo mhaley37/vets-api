@@ -1,4 +1,4 @@
-name: generate
+name: generate new module
 
 on:
   #
@@ -37,11 +37,11 @@ jobs:
 
     env:
       MODULE: ${{ github.event.inputs.module }}
-      DESCRIPTION: ${{ github.event.inputs.description || format('{{The {0} module for vets-api}}', github.event.inputs.module) }}
+      DESCRIPTION: ${{ github.event.inputs.description || format('{The {0} module for vets-api}', github.event.inputs.module) }}
       DEFAULT_BRANCH: master
       BRANCH_NAME: add-${{ github.event.inputs.module }}-module
       MODULE_DIR: modules/${{ github.event.inputs.module }}
-      CONFIG_YAML_PATH: modules/${{ github.event.inputs.module }}/catalog-info.yaml
+      CONFIG_YAML_PATH: modules/${{ github.event.inputs.module }}/catalog-info.yaml  
       GITHUB_TOKEN: ${{ github.token }}
       ROOT_DIR: ${{ github.server_url}}/${{ github.repository }}
     steps:
