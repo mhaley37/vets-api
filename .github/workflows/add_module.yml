@@ -8,15 +8,16 @@ on:
         description: 'The module to scaffold'
         required: true
         type: string
+      description:
+        description: 'The description of the module'
+        required: false
+        type: string        
   
 
 jobs:
   scaffold-module:
 
     runs-on: ubuntu-latest
-    #container: 
-    #  image: ruby:2.7.6
-    #  options: --user root
 
 
     # Service containers to run with `runner-job`
@@ -36,28 +37,50 @@ jobs:
 
     env:
       MODULE: ${{ github.event.inputs.module }}
+      DESCRIPTION: ${{ github.event.inputs.description || format('{{The {0} module for vets-api}}', github.event.inputs.module) }}
       DEFAULT_BRANCH: master
       BRANCH_NAME: add-${{ github.event.inputs.module }}-module
+      MODULE_DIR: modules/${{ github.event.inputs.module }}
+      CONFIG_YAML_PATH: modules/${{ github.event.inputs.module }}/catalog-info.yaml
       GITHUB_TOKEN: ${{ github.token }}
+      ROOT_DIR: ${{ github.server_url}}/${{ github.repository }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3  
       - uses: ruby/setup-ruby@v1
-      #  with:
-      #    bundler-cache: true    
       - name: install vtk
         run: |
           sudo gem install vtk
           sudo gem update vtk      
       - name: Install dependencies
         run: bundle install
-      - name: install snap
+      - name: install pdftk
         run: |
          sudo apt update -y  
          sudo apt-get -y install pdftk
+      # Might be faster to replace this with calls to `rails g` directly  
       - name: scaffold module
-        run: vtk module add ${{ env.MODULE }}            
+        run: vtk module add ${{ env.MODULE }}     
+      - name: create catalog-info.yaml
+        run: |
+          echo "apiVersion: backstage.io/v1alpha1" > ${{ env.CONFIG_YAML_PATH }}
+          echo "kind: Component" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "  metadata:" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    name: ${{ env.MODULE }}" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    description: ${{ env.DESCRIPTION }}" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    tags:" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "      - ruby" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "      - rails" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    annotations: " >> ${{ env.CONFIG_YAML_PATH }}
+          echo "      backstage.io/view-url: ${{ env.ROOT_DIR}}/blob/master/${{ env.MODULE_DIR}}/catalog-info.yaml" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "      backstage.io/edit-url: ${{ env.ROOT_DIR}}/edit/master/${{ env.MODULE_DIR}}/catalog-info.yaml" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "      backstage.io/source-location: ${{ env.ROOT_DIR}}/tree/master/${{ env.MODULE_DIR}}/" >> ${{ env.CONFIG_YAML_PATH }}          
+          echo "  spec:" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    type: service" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    owner: platform-console-services" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    lifecycle: experimental" >> ${{ env.CONFIG_YAML_PATH }}
+          echo "    subcomponentOf: vets-api" >> ${{ env.CONFIG_YAML_PATH}}
       - name: Commit and push
         uses: EndBug/add-and-commit@v9 
         with:
           message: Add ${{ env.MODULE }} module using vtk
-          new_branch: add-module-${{ env.MODULE}}-module
+          new_branch: add-module-${{ env.BRANCH_NAME}}-module
