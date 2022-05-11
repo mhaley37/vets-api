@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+  metadata:
+    name: a-new-module
+    description: the new description fort his
+    tags:
+      - ruby
+      - rails
+    annotations: 
+      backstage.io/view-url: /blob/master/modules/a-new-module/catalog-info.yaml
+      backstage.io/edit-url: /edit/master/modules/a-new-module/catalog-info.yaml
+      backstage.io/source-location: /tree/master/modules/a-new-module/
+  spec:
+    type: service
+    owner: platform-console-services
+    lifecycle: experimental
+    subcomponentOf: vets-api
