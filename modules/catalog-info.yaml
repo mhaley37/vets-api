@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+  metadata:
+    name: vets-api-module
+    description: my-description
+    tags:
+      - ruby
+      - rails
+  spec:
+    type: service
+    owner: platform-console-services
+    lifecycle: experimental
