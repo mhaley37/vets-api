@@ -20,6 +20,7 @@ path 'modules' do
   gem 'mobile'
   gem 'my_health'
   gem 'openid_auth'
+  gem 'red_peters'
   gem 'test_user_dashboard'
   gem 'va_forms'
   gem 'va_notify'

@@ -64,6 +64,7 @@ unless ENV['NOCOVERAGE']
     add_group 'MyHealth', 'modules/my_health/'
     add_group 'OpenidAuth', 'modules/openid_auth/'
     add_group 'Policies', 'app/policies'
+    add_group 'RedPeters', 'modules/red_peters/'
     add_group 'Serializers', 'app/serializers'
     add_group 'Services', 'app/services'
     add_group 'Swagger', 'app/swagger'
