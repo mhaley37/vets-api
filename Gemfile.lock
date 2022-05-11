@@ -110,6 +110,7 @@ PATH
     health_quest (0.1.0)
     identity (0.1.0)
     meb_api (0.1.0)
+    mike_new_module_awesome (0.1.0)
     mobile (0.1.0)
       dry-validation
     my_health (0.1.0)
@@ -1073,6 +1074,7 @@ DEPENDENCIES
   mail
   meb_api!
   memoist
+  mike_new_module_awesome!
   mimemagic
   mini_magick
   mobile!

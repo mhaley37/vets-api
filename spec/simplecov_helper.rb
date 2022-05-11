@@ -69,6 +69,7 @@ class SimpleCovHelper
     add_group 'HealthQuest', 'modules/health_quest'
     add_group 'Identity', 'modules/identity/'
     add_group 'MebApi', 'modules/meb_api/'
+    add_group 'MikeNewModuleAwesome', 'modules/mike_new_module_awesome/'
     add_group 'MyHealth', 'modules/my_health/'
     add_group 'OpenidAuth', 'modules/openid_auth/'
     add_group 'Policies', 'app/policies'
